@@ -1,0 +1,36 @@
+<div class="bg-white rounded-lg shadow-sm border p-6 mb-4" style="margin-top: 15px;">
+    <h3 class="text-lg font-semibold text-gray-900 mb-6" style="margin-bottom: 30px;">Quick Overview</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-3">
+                <i class="pi pi-users" style="font-size: 25px;color: #2563EB;"></i>
+            </div>
+            <div class="text-2xl font-bold text-gray-900">{{students}}</div>
+            <div class="text-sm text-gray-600">Total Students</div>
+        </div>
+        
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mb-3">
+                <i class="pi pi-book" style="font-size: 25px;color: green;"></i>
+            </div>
+            <div class="text-2xl font-bold text-gray-900">{{courses}}</div>
+            <div class="text-sm text-gray-600">Active Courses</div>
+        </div>
+        
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mb-3">
+            <i class="pi pi-check-circle" style="font-size: 25px;color: green;"></i>
+            </div>
+            <div class="text-2xl font-bold text-gray-900">{{attendanceRate}}%</div>
+            <div class="text-sm text-gray-600">Attendance Rate</div>
+        </div>
+
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-orange-100 rounded-lg mb-3">
+              <i class="pi pi-clock" style="font-size: 25px;color: rgb(234 88 12);"></i>
+            </div>
+            <div class="text-2xl font-bold text-gray-900">{{lateArrivals}}</div>
+            <div class="text-sm text-gray-600">Late Arrivals</div>
+        </div>
+    </div>
+</div>

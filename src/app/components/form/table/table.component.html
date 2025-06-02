@@ -1,0 +1,66 @@
+<p-card *ngIf="attendance && filteredData">
+    <p class="title"><i class="pi pi-table" style="font-size: 25px;color: #2563EB;margin-right: 15px;"></i>Detailed Records</p>
+    <div class="tags">
+        <p-tag icon="pi pi-check" severity="success" value="Presences: {{present}}" />
+        <p-tag icon="pi pi-clock" severity="warn" value="Latenesses: {{late}}" />
+        <p-tag icon="pi pi-times" severity="danger" value="Absences: {{absent}}" />
+    </div>
+
+    <div style="display: flex;">
+        <div style="width: 50%;margin-right: 5px;">
+            <p-select [(ngModel)]="selectedStudent" (ngModelChange)="searchQuery(0)" [options]="students" [filter]="true" [showClear]="true" placeholder="Select a Student" class="w-full">
+                <ng-template #selectedItem let-selectedOption>
+                    <div class="flex items-center gap-2">
+                        <div>{{ selectedOption }}</div>
+                    </div>
+                </ng-template>
+                <ng-template let-student #item>
+                    <div class="flex items-center gap-2">
+                        <div>{{ student }}</div>
+                    </div>
+                </ng-template>
+            </p-select>
+        </div>
+        <div style="width: 50%;margin-left: 5px;">
+            <p-select [(ngModel)]="selectedCourse" (ngModelChange)="searchQuery(1)" [options]="courses" [filter]="true" [showClear]="true" placeholder="Select a Course" class="w-full">
+                <ng-template #selectedItem let-selectedOption>
+                    <div class="flex items-center gap-2">
+                        <div>{{ selectedOption }}</div>
+                    </div>
+                </ng-template>
+                <ng-template let-student #item>
+                    <div class="flex items-center gap-2">
+                        <div>{{ student }}</div>
+                    </div>
+                </ng-template>
+            </p-select>
+        </div>
+    </div>
+
+    <p-table [value]="filteredData" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+        <ng-template #header>
+            <tr>
+                <th>ID</th>
+                <th>Course</th>
+                <th>Seniority</th>
+                <th>Attendance</th>
+                <th>Status</th>
+                <th>Grade</th>
+                <th>Date</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-filteredData>
+            <tr>
+                <td>{{filteredData.sis_student_id}}</td>
+                <td>{{filteredData.sis_course_id}}</td>
+                <td>{{filteredData.current_class_cde}}</td>
+                <td *ngIf="filteredData.attendance === 'present'"><p-tag icon="pi pi-check" severity="success" [value]="filteredData.attendance" [rounded]="true" /></td>
+                <td *ngIf="filteredData.attendance === 'absent'"><p-tag icon="pi pi-times" severity="danger" [value]="filteredData.attendance" [rounded]="true" /></td>
+                <td *ngIf="filteredData.attendance === 'late'"><p-tag icon="pi pi-clock" severity="warn" [value]="filteredData.attendance" [rounded]="true" /></td>
+                <td>{{filteredData.status}}</td>
+                <td>{{filteredData.grade}}</td>
+                <td>{{formatDate(filteredData.class_date)}}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-card>

@@ -1,0 +1,4 @@
+<p-card *ngIf="attendance">
+    <p class="title"><i class="pi pi-chart-bar" style="font-size: 25px;color: #2563EB;margin-right: 15px;"></i>Attendance Statistics</p>
+    <p-chart type="bar" [data]="data" [options]="options" class="h-[30rem]" />
+</p-card>

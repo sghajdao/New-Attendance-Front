@@ -1,0 +1,13 @@
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+p-card {
+    flex: 1 1 calc(25% - 10px);
+    padding: 5px;
+    /* max-width: 100%; */
+}

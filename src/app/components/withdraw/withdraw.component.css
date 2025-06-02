@@ -1,0 +1,23 @@
+.page {
+    width: 100%;
+    padding: 30px;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.student-name {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.card-body {
+    display: flex;
+    justify-content: space-between;
+}
+
+p-button {
+    margin: 5px;
+}

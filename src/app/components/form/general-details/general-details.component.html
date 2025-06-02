@@ -1,0 +1,38 @@
+<div class="cards" *ngIf="attendance">
+    <p-card header="Total Students">
+        <div class="flex items-center justify-between">
+            <div>
+              <p class="text-2xl font-bold text-blue-600">{{total}}</p>
+              <p class="text-sm text-gray-600">Students</p>
+            </div>
+            <i class="pi pi-users text-blue-600" style="font-size: 2.5rem;margin-top: -20px;"></i>
+        </div>
+    </p-card>
+    <p-card header="Presences">
+        <div class="flex items-center justify-between">
+            <div>
+              <p class="text-2xl font-bold text-green-600">{{presences}}</p>
+              <p class="text-sm text-gray-600">Present</p>
+            </div>
+            <i class="pi pi-check-circle text-green-600" style="font-size: 2.5rem;margin-top: -20px;"></i>
+        </div>
+    </p-card>
+    <p-card header="Absences">
+        <div class="flex items-center justify-between">
+            <div>
+              <p class="text-2xl font-bold text-red-600">{{absences}}</p>
+              <p class="text-sm text-gray-600">Absent</p>
+            </div>
+            <i class="pi pi-times-circle text-red-600" style="font-size: 2.5rem;margin-top: -20px;"></i>
+        </div>
+    </p-card>
+    <p-card header="Latenesses">
+        <div class="flex items-center justify-between">
+            <div>
+              <p class="text-2xl font-bold text-yellow-500">{{latenesses}}</p>
+              <p class="text-sm text-gray-600">Late</p>
+            </div>
+            <i class="pi pi-clock text-yellow-500" style="font-size: 2.5rem;margin-top: -20px;"></i>
+        </div>
+    </p-card>
+</div>

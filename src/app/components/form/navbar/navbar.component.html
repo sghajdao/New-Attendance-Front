@@ -1,0 +1,12 @@
+<div class="header shadow-sm p-3 bg-body-tertiary rounded">
+    <div class="name">
+        <p-button routerLink="/" icon="pi pi-arrow-left" label="Back to Dashboard" severity="secondary" />
+        <i class="pi pi-filter" style="font-size: 25px;color: #2563EB;"></i>
+        <p class="app-name">Attendance Filters</p>
+    </div>
+    <div class="buttons">
+        <button (click)="applyFilters()" type="button" class="filter-button">Apply Filters</button>
+        <button (click)="exportReport()" type="button" class="export-button"><i class="pi pi-download" style="font-size: 15px;margin-right: 15px;"></i>Export</button>
+        <!-- <p-button label="Export" severity="contrast" icon="pi pi-download" /> -->
+    </div>
+</div>

@@ -1,0 +1,40 @@
+<app-navbar></app-navbar>
+
+<div class="page">
+    <div>
+        <p-card>
+            <div style="display: flex;width: 350px;justify-content: space-between;">
+                <i class="pi pi-user-minus" style="font-size: 25px;color: red;"></i>
+                <p class="title">Students Exceeding Absence Limit</p>
+            </div>
+            
+            <p style="color: gray;">No students currently exceed the absence limit.</p>
+        </p-card>
+    </div>
+
+    <div class="mt-4">
+        <p-card>
+            <div style="display: flex;width: 225px;justify-content: space-between;">
+                <i class="pi pi-clock" style="font-size: 25px;margin-top: 4px;"></i>
+                <p class="title">Withdrawal Requests</p>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div>
+                        <p class="student-name">Bob Smith&emsp;<p-tag icon="pi pi-clock" severity="warn" value="Pending" [rounded]="true" /></p>
+                        <pre style="color: gray;">
+Student ID: STU002
+Course: Introduction to Computer Science (CS101)
+Reason: Excessive absences (8 out of 10 classes)
+Requested by: Dr. Smith on 2024-01-20</pre>
+                    </div>
+                    <div style="display: flex;">
+                        <p-button icon="pi pi-check" label="Approve" variant="outlined" severity="success" />
+                        <p-button icon="pi pi-times" label="Decline" variant="outlined" severity="danger" />
+                    </div>
+                </div>
+            </div>
+        </p-card>
+    </div>
+</div>

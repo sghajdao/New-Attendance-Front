@@ -1,0 +1,11 @@
+.title {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.tags {
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+    margin: 10px;
+}

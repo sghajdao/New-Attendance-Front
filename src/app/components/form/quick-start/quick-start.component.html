@@ -1,0 +1,17 @@
+<div class="card-body">
+    <p class="card-title">Quick Stats</p>
+    <div style="width: 100%;padding-top: 10px;color: gray;">
+        <div style="display: flex;justify-content: space-between;width: 100%;">
+            <p>Total Students</p>
+            <p-badge [value]="students" severity="secondary" />
+        </div>
+        <div style="display: flex;justify-content: space-between;width: 100%;">
+            <p>Total Courses</p>
+            <p-badge [value]="courses" severity="secondary" />
+        </div>
+        <div style="display: flex;justify-content: space-between;width: 100%;">
+            <p>Attendance Records</p>
+            <p-badge [value]="attendanceRecords + '%'" severity="secondary" />
+        </div>
+    </div>
+</div>
