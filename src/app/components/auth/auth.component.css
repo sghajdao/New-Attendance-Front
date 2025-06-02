@@ -1,0 +1,32 @@
+.page {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth {
+    width: 600px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.filter-button {
+    width: 250px;
+    height: 50px;
+    background-color: #2563EB;
+    color: white;
+    border-radius: 5px;
+    transition: 0.3s;
+    margin-bottom: 20px;
+}
+
+.filter-button:hover {
+    background-color: #2056c9;
+}

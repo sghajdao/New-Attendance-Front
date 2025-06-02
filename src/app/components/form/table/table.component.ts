@@ -66,7 +66,6 @@ export class TableComponent implements OnChanges {
       month: 'short',   // 'Sep'
       year: 'numeric',  // '2024'
     };
-  
     return new Intl.DateTimeFormat('en-US', options).format(parsedDate);
   }
 }

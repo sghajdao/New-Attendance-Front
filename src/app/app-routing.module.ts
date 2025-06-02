@@ -14,6 +14,10 @@ const routes: Routes = [
     path: "wf",
     loadChildren:()=>import("./components/withdraw/withdraw.module").then(m=>m.WithdrawModule),
   },
+  {
+    path: "auth",
+    loadChildren:()=>import("./components/auth/auth.module").then(m=>m.AuthModule),
+  },
 ];
 
 @NgModule({

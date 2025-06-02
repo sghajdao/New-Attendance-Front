@@ -98,7 +98,7 @@
                 <p class="card-title">Filter by Start Date</p>
 
                 <div class="flex-auto w-full">
-                    <p-datepicker formControlName="startDate" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
+                    <p-datepicker [minDate]="minDate" [maxDate]="maxDate" formControlName="startDate" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
                 </div>
             </p-card>
 
@@ -110,11 +110,11 @@
                 <p class="card-title">Filter by End Date</p>
 
                 <div class="flex-auto w-full">
-                    <p-datepicker formControlName="endDate" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
+                    <p-datepicker [minDate]="minDate" [maxDate]="maxDate" formControlName="endDate" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
                 </div>
             </p-card>
 
-            <p-card>
+            <!-- <p-card>
                 <div style="display: flex;padding-bottom: 20px;">
                     <i class="pi pi-gauge" style="font-size: 25px;color: rgb(85, 217, 247);margin-right: 15px;"></i>
                     <p class="card-title">Absence Limit Percentage</p>
@@ -126,7 +126,7 @@
                 </div>
                 <input [disabled]="globalFormGroup.value.absenceLimitEnabled === 'off'? true : false" type="text" pInputText formControlName="absentLimit" class="w-full mb-4"/>
                 <p-slider [disabled]="globalFormGroup.value.absenceLimitEnabled === 'off'? true : false" formControlName="absentLimit" class="w-full" />
-            </p-card>
+            </p-card> -->
         </div>
     </div>
 

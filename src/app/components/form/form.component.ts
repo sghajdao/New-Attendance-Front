@@ -1,5 +1,5 @@
-import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Attendance } from '../../models/entities/attendance';
 
 @Component({
@@ -22,14 +22,15 @@ export class FormComponent implements OnInit {
 
   value: number = 50;
 
-  formGroup!: FormGroup;
-
   globalFormGroup!: FormGroup;
 
   stateOptions: any[] = [
       { label: 'Off', value: 'off' },
       { label: 'On', value: 'on' }
   ];
+
+  minDate?: Date
+  maxDate?: Date
 
   ngOnInit(): void {
     const data = localStorage.getItem('init')
@@ -46,10 +47,6 @@ export class FormComponent implements OnInit {
       'C', 'H', 'D'
     ]
 
-    this.formGroup = new FormGroup({
-      value: new FormControl('on')
-    });
-
     this.globalFormGroup = this.fb.group({
       studentId: [null],
       courseId: [null],
@@ -59,6 +56,25 @@ export class FormComponent implements OnInit {
       endDate: [null],
       absenceLimitEnabled: 'on',
       absentLimit: [50]
+    });
+
+    this.globalFormGroup.get('startDate')?.valueChanges.subscribe((startDate: Date) => {
+      if (startDate) {
+        this.minDate = startDate;
+        const minDateObj = new Date(startDate);
+        const maxDateObj = new Date(minDateObj);
+        maxDateObj.setDate(minDateObj.getDate() + 7);
+        this.maxDate = maxDateObj;
+      }
+    });
+    this.globalFormGroup.get('endDate')?.valueChanges.subscribe((endDate: Date) => {
+      if (endDate) {
+        this.maxDate = endDate;
+        const endDateObj = new Date(endDate);
+        const minDateObj = new Date(endDateObj);
+        minDateObj.setDate(endDateObj.getDate() - 7);
+        this.minDate = minDateObj;
+      }
     });
   }
 
@@ -77,5 +93,6 @@ export class FormComponent implements OnInit {
 
   getAttendance(response: Attendance[]) {
     this.attendance = response
+    window.scrollTo(0, document.body.scrollHeight);
   }
 }
