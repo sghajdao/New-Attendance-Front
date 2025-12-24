@@ -1,4 +1,4 @@
-<div class="cards" *ngIf="attendance">
+<div class="cards" *ngIf="show">
     <p-card header="Total Students">
         <div class="flex items-center justify-between">
             <div>
@@ -8,7 +8,7 @@
             <i class="pi pi-users text-blue-600" style="font-size: 2.5rem;margin-top: -20px;"></i>
         </div>
     </p-card>
-    <p-card header="Presences">
+    <p-card header="Present Students">
         <div class="flex items-center justify-between">
             <div>
               <p class="text-2xl font-bold text-green-600">{{presences}}</p>
@@ -17,7 +17,7 @@
             <i class="pi pi-check-circle text-green-600" style="font-size: 2.5rem;margin-top: -20px;"></i>
         </div>
     </p-card>
-    <p-card header="Absences">
+    <p-card header="Absent Students">
         <div class="flex items-center justify-between">
             <div>
               <p class="text-2xl font-bold text-red-600">{{absences}}</p>
@@ -26,7 +26,7 @@
             <i class="pi pi-times-circle text-red-600" style="font-size: 2.5rem;margin-top: -20px;"></i>
         </div>
     </p-card>
-    <p-card header="Latenesses">
+    <p-card header="Late Students">
         <div class="flex items-center justify-between">
             <div>
               <p class="text-2xl font-bold text-yellow-500">{{latenesses}}</p>

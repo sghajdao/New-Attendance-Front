@@ -1,6 +1,7 @@
 .page {
     width: 100%;
     padding: 30px;
+    padding-top: 100px;
 }
 
 .title {
@@ -20,4 +21,12 @@
 
 p-button {
     margin: 5px;
+}
+
+.spinner {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

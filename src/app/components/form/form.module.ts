@@ -22,7 +22,11 @@ import { TableComponent } from './table/table.component';
 import { TableModule } from 'primeng/table';
 import { GeneralDetailsComponent } from './general-details/general-details.component';
 import { QuickStartComponent } from './quick-start/quick-start.component';
-
+import { BlockUIModule } from 'primeng/blockui';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { Toast } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 
 @NgModule({
@@ -50,6 +54,11 @@ import { QuickStartComponent } from './quick-start/quick-start.component';
     SelectButtonModule,
     ReactiveFormsModule,
     TableModule,
-]
+    BlockUIModule,
+    ProgressSpinnerModule,
+    MultiSelectModule,
+    Toast,
+  ],
+  providers: [MessageService]
 })
 export class FormModule { }

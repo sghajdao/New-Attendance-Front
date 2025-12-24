@@ -3,12 +3,15 @@
     margin-top: 50px;
     display: flex;
     justify-content: space-between;
-    /* flex-wrap: wrap; */
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .card {
-    margin: 5px;
+    /* margin: 5px; */
     transition: 0.3s;
+    min-width: 250px;
+    flex: 1 1 calc(33% - 10px);
 }
 
 .card:hover {

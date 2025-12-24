@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { AttendanceService } from '../../services/attendance.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -10,13 +9,10 @@ import { AttendanceService } from '../../services/attendance.service';
 })
 export class HomeComponent implements OnInit {
     constructor(
-        private router: Router,
-        private attendanceService: AttendanceService
+      private authService: AuthService,
     ) {}
 
-    ngOnInit(): void {
-      this.attendanceService.getInitData().subscribe({
-        next: data => localStorage.setItem('init', JSON.stringify(data))
-      })
-    }
+  ngOnInit(): void {
+    // this.authService.setCookie().subscribe()
+  }
 }

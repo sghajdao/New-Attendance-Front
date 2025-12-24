@@ -1,5 +1,7 @@
-import { AfterViewChecked, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Attendance } from '../../../models/entities/attendance';
+import { Subscription } from 'rxjs';
+import { AttendanceService } from '../../../services/attendance.service';
 
 @Component({
   selector: 'app-table',
@@ -7,15 +9,33 @@ import { Attendance } from '../../../models/entities/attendance';
   templateUrl: './table.component.html',
   styleUrl: './table.component.css'
 })
-export class TableComponent implements OnChanges {
-  constructor() {}
+export class TableComponent implements OnInit {
+  constructor(
+    private attendanceService: AttendanceService,
+  ) {}
 
-  @Input() attendance?: Attendance[]
+  ngOnInit(): void {
+    this.attendanceService.attendance$.subscribe(data => {
+      this.attendance = data
+        this.students = []
+        this.courses = []
+        this.attendanceTypes = []
+        new Set(data.map(a => a.sis_student_id)).forEach(a => this.students.push(a))
+        new Set(data.map(a => a.sis_course_id)).forEach(a => this.courses.push(a))
+        new Set(data.map(a => a.attendance)).forEach(a => this.attendanceTypes.push(a))
+        this.filteredData = data
+        this.fillTags(this.filteredData!)
+    })
+  }
+
+  attendance?: Attendance[]
   filteredData?: Attendance[]
   students: number[] = []
   selectedStudent: string = ''
   courses: string[] = []
   selectedCourse: string = ''
+  attendanceTypes: string[] = []
+  selectedAttenanceType: string = ''
 
   absent: number = 0
   present: number = 0
@@ -23,26 +43,20 @@ export class TableComponent implements OnChanges {
 
   searchQuery(flag: number) {
     if (this.selectedStudent && this.attendance && flag === 0) {
-      console.log(this.selectedStudent)
       this.filteredData = this.attendance.filter(a => a.sis_student_id === +this.selectedStudent)
       this.fillTags(this.filteredData)
     }
-    else if (this.selectedCourse && this.attendance && flag === 1) {
+    else if (this.selectedAttenanceType && this.attendance && flag === 1) {
+      this.filteredData = this.attendance.filter(a => a.attendance === this.selectedAttenanceType)
+      this.fillTags(this.filteredData)
+    }
+    else if (this.selectedCourse && this.attendance && flag === 2) {
       this.filteredData = this.attendance.filter(a => a.sis_course_id === this.selectedCourse)
       this.fillTags(this.filteredData)
     }
     else if (this.attendance) {
         this.filteredData = this.attendance
         this.fillTags(this.filteredData)
-    }
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (this.attendance) {
-      new Set(this.attendance.map(a => a.sis_student_id)).forEach(a => this.students.push(a))
-      new Set(this.attendance.map(a => a.sis_course_id)).forEach(a => this.courses.push(a))
-      this.filteredData = this.attendance
-      this.fillTags(this.filteredData)
     }
   }
 

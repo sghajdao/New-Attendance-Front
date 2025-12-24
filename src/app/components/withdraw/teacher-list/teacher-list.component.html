@@ -1,0 +1,39 @@
+<div style="width: 100%;">
+    <p-card>
+        <div style="display: flex;width: 100%;justify-content: space-between;">
+            <div style="display: flex;width: 350px;justify-content: space-between;">
+                <i class="pi pi-user-minus" style="font-size: 25px;color: red;"></i>
+                <p class="title">Students Exceeding Absence Limit</p>
+            </div>
+            <p-autocomplete class="position-absolute mt-3 start-50 translate-middle" [(ngModel)]="selectedStudent" (ngModelChange)="filterStudent()" placeholder="Student ID..." />
+            <p-button (onClick)="downloadStudentsCsv()" label="Export" severity="contrast" />
+        </div>
+
+        <div class="tag">
+            <p-tag  icon="pi pi-users" severity="contrast" value="Total: {{total}}" />
+        </div>
+
+        <div class="list">
+            <p *ngIf="!student || !students?.length" style="color: gray;">No students currently exceed the absence limit.</p>
+            <div class="card" *ngFor="let item of students">
+                <div class="card-body">
+                    <div>
+                        <p class="student-name">{{item.first_name}} {{item.last_name}}</p>
+                        <pre style="color: gray;">
+Student ID: {{item.sis_student_id}}
+Course: {{item.course_code}}
+Reason: Excessive absences (absences: {{item.count}}, limit: {{item.absent_limit}})
+Professor Name: {{item.teacher_name}}</pre>
+                    </div>
+                    <div style="display: flex;">
+                        <p-button (click)="openDialog($event, item)" icon="pi pi-check" label="Approve" variant="outlined" severity="success" />
+                        <!-- <p-button icon="pi pi-times" label="Decline" variant="outlined" severity="danger" /> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </p-card>
+</div>
+
+<p-toast />
+<p-confirmdialog />

@@ -1,0 +1,36 @@
+<div class="mt-4">
+    <p-card>
+        <div style="display: flex;width: 225px;justify-content: space-between;">
+            <i class="pi pi-clock" style="font-size: 25px;margin-top: 4px;"></i>
+            <p class="title">Withdrawal Requests</p>
+            <p-autocomplete class="position-absolute mt-3 start-50 translate-middle" [(ngModel)]="selectedStudent" (ngModelChange)="filterStudent()" placeholder="Student ID..." />
+        </div>
+        <div class="tags">
+            <p-tag icon="pi pi-users" severity="contrast" value="Total: {{total}}" />
+            <p-tag icon="pi pi-clock" severity="warn" value="Pending: {{pending}}" />
+            <p-tag icon="pi pi-check" severity="success" value="Approved: {{approved}}" />
+        </div>
+        <div class="list">
+            <p *ngIf="!students || !students?.length" style="color: gray;">No students currently exceed the absence limit.</p>
+            <div class="card" *ngFor="let item of students">
+                <div class="card-body">
+                    <div>
+                        <p *ngIf="!item.wf" class="student-name">{{item.first_name}} {{item.last_name}}&emsp;<p-tag icon="pi pi-clock" severity="warn" value="Pending" [rounded]="true" /></p>
+                        <p *ngIf="item.wf" class="student-name">{{item.first_name}} {{item.last_name}}&emsp;<p-tag icon="pi pi-check" severity="success" value="Approved" [rounded]="true" /></p>
+                        <pre style="color: gray;">
+Student ID: {{item.student_id}}
+Course: {{item.course_cde}}
+Reason: Excessive absences (absences: {{item.count}}, limit: {{item.absent_limit}})
+Requested by: Dr. {{item.teacher_name}}
+Requested on: {{formatDateToDDMMYYY(item.request_date)}}
+<span *ngIf="item.wf && item.approve_date">Approved on: {{formatDateToDDMMYYY(item.approve_date)}}</span></pre>
+                    </div>
+                    <div *ngIf="!item.wf && isAdmin" style="display: flex;">
+                        <p-button (click)="openDialog($event, item, 0)" icon="pi pi-check" label="Approve" variant="outlined" severity="success" />
+                        <p-button (click)="openDialog($event, item, 1)" icon="pi pi-times" label="Decline" variant="outlined" severity="danger" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </p-card>
+</div>

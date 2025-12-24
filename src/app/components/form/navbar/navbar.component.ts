@@ -1,36 +1,46 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FilrterRequest } from '../../../models/dto/filterRequest';
 import { AttendanceService } from '../../../services/attendance.service';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription, take } from 'rxjs';
 import { Attendance } from '../../../models/entities/attendance';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-navbar',
   standalone: false,
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css'
+  styleUrl: './navbar.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NavbarComponent implements OnDestroy {
+export class NavbarComponent implements OnDestroy, OnInit {
   constructor(
     private attendanceService: AttendanceService,
+    private messageService: MessageService
   ) {}
 
   @Input() filter?: FilrterRequest
-  @Output() attendance = new EventEmitter<Attendance[]>()
 
   toExport?: Attendance[]
+  private worker: Worker | undefined;
 
   subsciptions: Subscription[] = []
 
+  @Output() sub = new EventEmitter<Observable<Attendance[]>>()
+
+  ngOnInit(): void {
+    const sub = this.attendanceService.attendance$.subscribe(data => this.toExport = data)
+    this.subsciptions.push(sub)
+  }
+
   applyFilters() {
-    if (this.filter) {
-      const sub = this.attendanceService.filterAttendance(this.filter).subscribe({
-        next: data => {
-          this.attendance.emit(data)
-          this.toExport = data
-        }
-      })
-      this.subsciptions.push(sub)
+    if (this.filter && this.filter.session && (this.filter.session || (this.filter.studentIds && this.filter.studentIds.length) || this.filter.courseId || this.filter.seniority || this.filter.status || (this.filter.startDate && this.filter.endDate))) {
+      if (this.filter.status != 'H' || (this.filter.status === 'H' && this.filter.grade != null && !this.filter.grade.length)) {
+        this.filter.grade = null
+        this.filter.wfLevel = null
+      }
+      if (this.filter.session === 'Intersession') this.filter.session = 'ES'
+      else if (this.filter.session === 'Fall Semester') this.filter.session = 'FA'
+      this.sub.emit(this.attendanceService.filterAttendance(this.filter).pipe(take(1)))
     }
   }
 
@@ -48,30 +58,45 @@ export class NavbarComponent implements OnDestroy {
   }
 
   exportReport() {
-    if (this.toExport) {
-      let report: Attendance[] = []
-      for (let a of this.toExport) {
-        let item: Attendance = {
-          sis_student_id: a.sis_student_id,
-          sis_course_id: a.sis_course_id,
-          attendance: a.attendance,
-          count: this.toExport.filter(i => i.sis_student_id === a.sis_student_id && i.sis_course_id === a.sis_course_id && i.attendance === a.attendance).length,
-          current_class_cde: a.current_class_cde,
-          sis_teacher_id: a.sis_teacher_id,
-          course_code: a.course_code,
-          teacher_name: a.teacher_name
+    if (this.toExport && this.filter && this.filter.status === 'H' && this.filter.grade && this.filter.grade.includes('WF')) {
+      this.attendanceService.getWflist().subscribe({
+        next: (wflist) => {
+          const mergedData = this.toExport!.map(attendance => {
+            const wfItem = wflist.find(wf => wf.student_id === attendance.sis_student_id && wf.course === attendance.sis_course_id);
+            return wfItem ? { ...attendance, wf_requested_on: wfItem.request_date, wf_approved_on: wfItem.approve_date } : attendance;
+          });
+          if (mergedData.length > 1000)
+            this.messageService.add({ severity: 'info', summary: 'Wait', detail: 'Please wait a while...', life: 3000 });
+          this.worker = new Worker(new URL('../../../reports.worker', import.meta.url), { type: 'module' });
+          this.worker.postMessage(mergedData);
+          this.worker!.onmessage = ({ data }: { data: Attendance[] }) => {
+            const csvData = this.convertToCsv(data.map(({ class_date, ...item }) => item))
+            const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'attendanceReport.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+          };
         }
-        if (!report.filter(i => i.sis_student_id === item.sis_student_id && i.sis_course_id === item.sis_course_id && i.attendance === item.attendance).length)
-          report.push(item)
-      }
-      const csvData = this.convertToCsv(report.map(({ class_date, ...item }) => item))
-      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'attendanceReport.csv';
-      a.click();
-      window.URL.revokeObjectURL(url);
+      })
+    }
+    else if (this.toExport) {
+      if (this.toExport.length > 1000)
+        this.messageService.add({ severity: 'info', summary: 'Wait', detail: 'Please wait a while...', life: 3000 });
+      this.worker = new Worker(new URL('../../../reports.worker', import.meta.url), { type: 'module' });
+      this.worker.postMessage(this.toExport);
+      this.worker!.onmessage = ({ data }: { data: Attendance[] }) => {
+        const csvData = this.convertToCsv(data.map(({ class_date, ...item }) => item))
+        const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'attendanceReport.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      };
     }
   }
 

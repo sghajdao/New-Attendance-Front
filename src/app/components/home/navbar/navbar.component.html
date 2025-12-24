@@ -1,4 +1,4 @@
-<div class="header shadow-sm p-3 bg-body-tertiary rounded">
+<div class="header shadow-sm p-3 rounded">
     <div class="name">
         <i class="pi pi-chart-line" style="font-size: 25px;color: #2563EB;"></i>
         <p class="app-name">Attendance Dashboard</p>
@@ -6,6 +6,9 @@
     <div class="buttons">
         <button routerLink="/form" type="button" class="filter-button"><i class="pi pi-filter" style="font-size: 15px"></i>Open Filters</button>
         <button routerLink="/wf" type="button" class="wf-button"><i class="pi pi-user-minus" style="font-size: 15px"></i>Withdrawals</button>
-        <button type="button" class="logout-button"><i class="pi pi-sign-out" style="font-size: 15px"></i>Sign Out</button>
+        <button (click)="openDialog($event)" type="button" class="logout-button"><i class="pi pi-sign-out" style="font-size: 15px"></i>Sign Out</button>
     </div>
 </div>
+
+<p-toast />
+<p-confirmdialog />

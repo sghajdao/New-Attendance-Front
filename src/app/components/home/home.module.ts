@@ -9,6 +9,10 @@ import { MenubarModule } from 'primeng/menubar';
 import { NavbarComponent } from './navbar/navbar.component';
 import { FilteringDetailsComponent } from './filtering-details/filtering-details.component';
 import { QuickOverviewComponent } from './quick-overview/quick-overview.component';
+import { DialogModule } from 'primeng/dialog';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 
 @NgModule({
@@ -16,7 +20,7 @@ import { QuickOverviewComponent } from './quick-overview/quick-overview.componen
     HomeComponent,
     NavbarComponent,
     FilteringDetailsComponent,
-    QuickOverviewComponent
+    QuickOverviewComponent,
   ],
   imports: [
     CommonModule,
@@ -24,6 +28,12 @@ import { QuickOverviewComponent } from './quick-overview/quick-overview.componen
     CardModule,
     ButtonModule,
     MenubarModule,
+    DialogModule,
+    ConfirmDialogModule,
+    ToastModule,
+  ],
+  providers: [
+    ConfirmationService, MessageService
   ]
 })
 export class HomeModule { }

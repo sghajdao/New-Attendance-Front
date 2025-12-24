@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Attendance } from '../../models/entities/attendance';
+import { Observable, Subscription } from 'rxjs';
+import { AttendanceService } from '../../services/attendance.service';
 
 @Component({
   selector: 'app-form',
@@ -8,29 +10,30 @@ import { Attendance } from '../../models/entities/attendance';
   templateUrl: './form.component.html',
   styleUrl: './form.component.css'
 })
-export class FormComponent implements OnInit {
+export class FormComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
+    private attendanceService: AttendanceService,
   ) {}
-
-  attendance?: Attendance[]
-
+  
+  seesions: string[] = ['Intersession', 'Fall Semester']
   students: string[] = []
   courses: string[] = []
-  seniorities: string[] = []
-  status: string[] = []
-
-  value: number = 50;
-
+  seniorities: string[] = ['FR', 'SO', 'JR', 'SR', 'GR']
+  status: string[] = ['C', 'H', 'D']
+  grades: string[] = ['W', 'WF', 'NGW', 'NG', 'EX', 'A']
+  // all / half / one left
+  wfLevel: string[] = ['All', 'One Left']
+  
   globalFormGroup!: FormGroup;
-
-  stateOptions: any[] = [
-      { label: 'Off', value: 'off' },
-      { label: 'On', value: 'on' }
-  ];
-
+  
   minDate?: Date
   maxDate?: Date
+  
+  result: number = 0
+  blockCards: boolean = true
+  
+  subscriptions: Subscription[] = []
 
   ngOnInit(): void {
     const data = localStorage.getItem('init')
@@ -38,27 +41,20 @@ export class FormComponent implements OnInit {
       this.students = JSON.parse(data).students
       this.courses = JSON.parse(data).courses
     }
-
-    this.seniorities = [
-      'FR', 'SO', 'JR', 'SR'
-    ]
-
-    this.status = [
-      'C', 'H', 'D'
-    ]
-
+    
     this.globalFormGroup = this.fb.group({
-      studentId: [null],
+      session: [null],
+      studentIds: [[]],
       courseId: [null],
       seniority: [null],
       status: [null],
+      grade: [[]],
+      wfLevel: [null],
       startDate: [null],
-      endDate: [null],
-      absenceLimitEnabled: 'on',
-      absentLimit: [50]
+      endDate: [null]
     });
-
-    this.globalFormGroup.get('startDate')?.valueChanges.subscribe((startDate: Date) => {
+    
+    const sub1 = this.globalFormGroup.get('startDate')?.valueChanges.subscribe((startDate: Date) => {
       if (startDate) {
         this.minDate = startDate;
         const minDateObj = new Date(startDate);
@@ -67,7 +63,7 @@ export class FormComponent implements OnInit {
         this.maxDate = maxDateObj;
       }
     });
-    this.globalFormGroup.get('endDate')?.valueChanges.subscribe((endDate: Date) => {
+    const sub2 = this.globalFormGroup.get('endDate')?.valueChanges.subscribe((endDate: Date) => {
       if (endDate) {
         this.maxDate = endDate;
         const endDateObj = new Date(endDate);
@@ -76,23 +72,53 @@ export class FormComponent implements OnInit {
         this.minDate = minDateObj;
       }
     });
+    const sub3 = this.globalFormGroup.get('session')?.valueChanges.subscribe((session: string) => {
+      if (session && session === 'Intersession') {
+        this.courses = this.courses.filter(c => c.startsWith('ES'))
+      }
+    });
+    this.subscriptions.push(sub1!, sub2!, sub3!);
   }
 
   clearFilters() {
     this.globalFormGroup = this.fb.group({
-      studentId: [null],
+      session: [null],
+      studentIds: [[]],
       courseId: [null],
       seniority: [null],
       status: [null],
+      grade: [[]],
+      wfLevel: [null],
       startDate: [null],
       endDate: [null],
-      absenceLimitEnabled: 'on',
-      absentLimit: [50]
     });
+    this.minDate = undefined
+    this.maxDate = undefined
   }
 
-  getAttendance(response: Attendance[]) {
-    this.attendance = response
-    window.scrollTo(0, document.body.scrollHeight);
+  getSub(obs: Observable<Attendance[]>) {
+    this.result = 1
+    const sub = obs.subscribe({
+      next: data => {
+        this.attendanceService.attendanceSource.next(data)
+        this.result = 2
+        setTimeout(() => {
+          window.scrollTo(0, document.body.scrollHeight);
+        }, 1000)
+      }
+    })
+    this.subscriptions.push(sub)
+  }
+
+  formatDateToDDMMYYYY(date: Date): string {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+  
+    return `${day}-${month}-${year}`;
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe())
   }
 }

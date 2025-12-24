@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectorRef, Component, effect, inject, Input, OnChanges, OnInit, PLATFORM_ID, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { Attendance } from '../../../models/entities/attendance';
+import { AttendanceService } from '../../../services/attendance.service';
 
 @Component({
   selector: 'app-bar-chart',
@@ -8,23 +9,27 @@ import { Attendance } from '../../../models/entities/attendance';
   templateUrl: './bar-chart.component.html',
   styleUrl: './bar-chart.component.css'
 })
-export class BarChartComponent implements OnChanges {
-  constructor(private cd: ChangeDetectorRef) {}
+export class BarChartComponent implements OnInit {
+    constructor(
+        private cd: ChangeDetectorRef,
+        private attendanceService: AttendanceService,
+    ) {}
 
-  data: any;
+    ngOnInit(): void {
+        this.attendanceService.attendance$.subscribe(data => {
+            this.attendance = data
+            this.initChart()
+        })
+    }
+
+    data: any;
 
     options: any;
 
     platformId = inject(PLATFORM_ID);
 
-    @Input() attendance?: Attendance[]
+    attendance?: Attendance[]
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (this.attendance) {
-            console.log(this.attendance)
-            this.initChart();
-        }
-    }
 
     initChart() {
     if (isPlatformBrowser(this.platformId)) {
@@ -37,7 +42,14 @@ export class BarChartComponent implements OnChanges {
         const generateDayLabels = () => {
             const labels = [];
             for (let i = 6; i >= 0; i--) {
-                const date = new Date();
+                const latest_date = this.attendance!
+                    .filter(a => a.class_date) // filter out undefined/null class_date
+                    .reduce((latest, current) => {
+                        return new Date(current.class_date!) > new Date(latest.class_date!)
+                        ? current
+                        : latest;
+                    }).class_date;
+                const date = new Date(latest_date!);
                 date.setDate(date.getDate() - i);
                 
                 // Format as day name (e.g., "Monday", "Tuesday")
@@ -57,7 +69,14 @@ export class BarChartComponent implements OnChanges {
         const generateAttendanceData = (type: string) => {
             const data = [];
             for (let i = 6; i >= 0; i--) {
-                const date = new Date();
+                const latest_date = this.attendance!
+                    .filter(a => a.class_date) // filter out undefined/null class_date
+                    .reduce((latest, current) => {
+                        return new Date(current.class_date!) > new Date(latest.class_date!)
+                        ? current
+                        : latest;
+                    }).class_date;
+                const date = new Date(latest_date!);
                 date.setDate(date.getDate() - i);
                 
                 // Format date to match your attendance data format (adjust as needed)

@@ -1,0 +1,36 @@
+.list {
+    max-height: 700px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.tag {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin: 10px;
+}
+
+.card {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.student-name {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.card-body {
+    display: flex;
+    justify-content: space-between;
+}
+
+p-button {
+    margin: 5px;
+}

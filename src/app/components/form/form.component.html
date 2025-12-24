@@ -1,19 +1,52 @@
-<app-navbar [filter]="globalFormGroup.value" (attendance)="getAttendance($event)"></app-navbar>
-<div class="page" [formGroup]="globalFormGroup">
+<div *ngIf="result === 0 || result === 2" class="page" [formGroup]="globalFormGroup">
     <div class="left">
         <div style="width: 100%;display: flex;justify-content: space-between;padding: 5px;">
             <p class="title">Filter Options</p>
-            <p-button *ngIf="globalFormGroup.value.studentId ||globalFormGroup.value.courseId || globalFormGroup.value.seniority || globalFormGroup.value.status" (onClick)="clearFilters()" label="Clear All Filters" variant="text" severity="danger" />
+            <p-button *ngIf="globalFormGroup.value.studentId ||globalFormGroup.value.courseId || globalFormGroup.value.seniority || globalFormGroup.value.status || globalFormGroup.value.startDate || globalFormGroup.value.endDate" (onClick)="clearFilters()" label="Clear All Filters" variant="text" severity="danger" />
         </div>
-        <div class="filters">
+
+        <div class="session">
             <p-card>
+                <div style="display: flex;padding-bottom: 20px;">
+                    <i class="pi pi-calendar" style="font-size: 25px;color: #2563EB;margin-right: 15px;"></i>
+                    <p class="card-title">Academic Session (Required)</p>
+                </div>
+                <p class="card-title">Select Session</p>
+
+                <p-select formControlName="session" [options]="seesions" [filter]="true" [showClear]="true" placeholder="Choose a session" class="w-full">
+                    <ng-template #selectedItem let-selectedOption>
+                        <div class="flex items-center gap-2">
+                            <div>{{ selectedOption }}</div>
+                        </div>
+                    </ng-template>
+                    <ng-template let-session #item>
+                        <div class="flex items-center gap-2">
+                            <div>{{ session }}</div>
+                        </div>
+                    </ng-template>
+                </p-select>
+            </p-card>
+
+            <div *ngIf="!globalFormGroup.value.session" class="alert alert-warning" role="alert">
+                Please select an academic session first to enable other filters.
+            </div>
+        </div>
+        
+        <p-blockui [target]="pnl" [blocked]="globalFormGroup.value.session? false : true" />
+        <p-blockui [target]="pnl2" [blocked]="globalFormGroup.value.session? false : true" />
+        <p-blockui [target]="pnl3" [blocked]="globalFormGroup.value.session? false : true" />
+        <p-blockui [target]="pnl4" [blocked]="globalFormGroup.value.session? false : true" />
+        <p-blockui [target]="pnl5" [blocked]="globalFormGroup.value.session? false : true" />
+        <p-blockui [target]="pnl6" [blocked]="globalFormGroup.value.session? false : true" />
+        <div class="filters">
+            <p-card #pnl>
                 <div style="display: flex;padding-bottom: 20px;">
                     <i class="pi pi-users" style="font-size: 25px;color: #2563EB;margin-right: 15px;"></i>
                     <p class="card-title">Students</p>
                 </div>
                 <p class="card-title">Filter by Students</p>
 
-                <p-select formControlName="studentId" [options]="students" [filter]="true" [showClear]="true" placeholder="Select a Student" class="w-full">
+                <!-- <p-select formControlName="studentId" [options]="students" [filter]="true" [showClear]="true" placeholder="Select a Student" class="w-full">
                     <ng-template #selectedItem let-selectedOption>
                         <div class="flex items-center gap-2">
                             <div>{{ selectedOption }}</div>
@@ -24,10 +57,11 @@
                             <div>{{ student }}</div>
                         </div>
                     </ng-template>
-                </p-select>
+                </p-select> -->
+                <p-multiselect [options]="students" formControlName="studentIds" placeholder="Select Students" [maxSelectedLabels]="3" display="chip" class="w-full" />
             </p-card>
 
-            <p-card>
+            <p-card #pnl2>
                 <div style="display: flex;padding-bottom: 20px;">
                     <i class="pi pi-book" style="font-size: 25px;color: green;margin-right: 15px;"></i>
                     <p class="card-title">Courses</p>
@@ -48,7 +82,7 @@
                 </p-select>
             </p-card>
 
-            <p-card>
+            <p-card #pnl3>
                 <div style="display: flex;padding-bottom: 20px;">
                     <i class="pi pi-graduation-cap" style="font-size: 25px;color: rgba(168, 85, 247, 1);margin-right: 15px;"></i>
                     <p class="card-title">Seniority</p>
@@ -69,28 +103,57 @@
                 </p-select>
             </p-card>
 
-            <p-card>
+            <p-card #pnl4>
                 <div style="display: flex;padding-bottom: 20px;">
                     <i class="pi pi-bookmark-fill" style="font-size: 25px;color: rgb(220, 247, 85);margin-right: 15px;"></i>
                     <p class="card-title">Status</p>
                 </div>
                 <p class="card-title">Filter by Status</p>
 
-                <p-select [options]="status" formControlName="status" [filter]="true" [showClear]="true" placeholder="Select a Status" class="w-full">
-                    <ng-template #selectedItem let-selectedOption>
-                        <div class="flex items-center gap-2">
-                            <div>{{ selectedOption }}</div>
-                        </div>
-                    </ng-template>
-                    <ng-template let-status #item>
-                        <div class="flex items-center gap-2">
-                            <div>{{ status }}</div>
-                        </div>
-                    </ng-template>
-                </p-select>
+                <div style="width: 100%;display: flex;gap: 10px;">
+                    <p-select [options]="status" formControlName="status" [filter]="true" [showClear]="true" placeholder="Select a Status" class="w-full">
+                        <ng-template #selectedItem let-selectedOption>
+                            <div class="flex items-center gap-2">
+                                <div>{{ selectedOption }}</div>
+                            </div>
+                        </ng-template>
+                        <ng-template let-status #item>
+                            <div class="flex items-center gap-2">
+                                <div>{{ status }}</div>
+                            </div>
+                        </ng-template>
+                    </p-select>
+                    <!-- <p-select *ngIf="globalFormGroup.value.status === 'H'" [options]="grades" formControlName="grade" [filter]="true" [showClear]="true" placeholder="Select a Grade" class="w-full">
+                        <ng-template #selectedItem let-selectedOption>
+                            <div class="flex items-center gap-2">
+                                <div>{{ selectedOption }}</div>
+                            </div>
+                        </ng-template>
+                        <ng-template let-grade #item>
+                            <div class="flex items-center gap-2">
+                                <div>{{ grade }}</div>
+                            </div>
+                        </ng-template>
+                    </p-select> -->
+                    <p-multiselect *ngIf="globalFormGroup.value.status === 'H'" [options]="grades" formControlName="grade" placeholder="Select a Grade" [maxSelectedLabels]="3" display="chip" class="w-full" />
+                </div>
+                <div style="margin-top: 5px;width: 100%;">
+                    <p-select *ngIf="(globalFormGroup.value.grade.includes('WF') || globalFormGroup.value.grade.includes('W')) && globalFormGroup.value.status === 'H'" [options]="wfLevel" formControlName="wfLevel" [filter]="true" [showClear]="true" placeholder="Withdrawal status" class="w-full">
+                        <ng-template #selectedItem let-selectedOption>
+                            <div class="flex items-center gap-2">
+                                <div>{{ selectedOption }}</div>
+                            </div>
+                        </ng-template>
+                        <ng-template let-level #item>
+                            <div class="flex items-center gap-2">
+                                <div>{{ level }}</div>
+                            </div>
+                        </ng-template>
+                    </p-select>
+                </div>
             </p-card>
 
-            <p-card>
+            <p-card #pnl5>
                 <div style="display: flex;padding-bottom: 20px;">
                     <i class="pi pi-calendar" style="font-size: 25px;color: rgb(247, 161, 85);margin-right: 15px;"></i>
                     <p class="card-title">Start Date</p>
@@ -102,7 +165,7 @@
                 </div>
             </p-card>
 
-            <p-card>
+            <p-card #pnl6>
                 <div style="display: flex;padding-bottom: 20px;">
                     <i class="pi pi-calendar" style="font-size: 25px;color: rgb(247, 85, 85);margin-right: 15px;"></i>
                     <p class="card-title">End Date</p>
@@ -113,20 +176,6 @@
                     <p-datepicker [minDate]="minDate" [maxDate]="maxDate" formControlName="endDate" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
                 </div>
             </p-card>
-
-            <!-- <p-card>
-                <div style="display: flex;padding-bottom: 20px;">
-                    <i class="pi pi-gauge" style="font-size: 25px;color: rgb(85, 217, 247);margin-right: 15px;"></i>
-                    <p class="card-title">Absence Limit Percentage</p>
-                </div>
-                <div style="display: flex;justify-content: space-between;padding-bottom: 10px;">
-                    <form [formGroup]="globalFormGroup">
-                        <p-selectbutton [options]="stateOptions" formControlName="absenceLimitEnabled" optionLabel="label" optionValue="value" />
-                    </form>
-                </div>
-                <input [disabled]="globalFormGroup.value.absenceLimitEnabled === 'off'? true : false" type="text" pInputText formControlName="absentLimit" class="w-full mb-4"/>
-                <p-slider [disabled]="globalFormGroup.value.absenceLimitEnabled === 'off'? true : false" formControlName="absentLimit" class="w-full" />
-            </p-card> -->
         </div>
     </div>
 
@@ -135,11 +184,21 @@
         <div class="card summary">
             <div class="card-body">
                 <p class="card-title">Filter Summary</p>
-                <p *ngIf="!globalFormGroup.value.studentId && !globalFormGroup.value.courseId && !globalFormGroup.value.seniority && !globalFormGroup.value.status" style="color: gray;">No filters applied</p>
-                <p *ngIf="globalFormGroup.value.studentId" style="color: gray;">Selected Student: <p-tag icon="pi pi-user" severity="secondary" value="{{globalFormGroup.value.studentId}}" /></p>
+                <p *ngIf="!globalFormGroup.value.studentId && !globalFormGroup.value.courseId && !globalFormGroup.value.seniority && !globalFormGroup.value.status && !globalFormGroup.value.session" style="color: gray;">No filters applied</p>
+                <p *ngIf="globalFormGroup.value.session" style="color: gray;">Selected Session: <p-tag icon="pi pi-calendar" severity="secondary" value="{{globalFormGroup.value.session}}" /></p>
+                <p *ngIf="globalFormGroup.value.studentIds?.length" style="color: gray;">
+                    Selected Students:
+                    <p-tag 
+                      icon="pi pi-user" 
+                      severity="secondary" 
+                      [value]="globalFormGroup.value.studentIds.join(', ')" 
+                      styleClass="truncate-tag" />
+                </p>
                 <p *ngIf="globalFormGroup.value.courseId" style="color: gray;">Selected Course: <p-tag icon="pi pi-book" severity="secondary" value="{{globalFormGroup.value.courseId}}" /></p>
                 <p *ngIf="globalFormGroup.value.seniority" style="color: gray;">Selected Seniority: <p-tag icon="pi pi-graduation-cap" severity="secondary" value="{{globalFormGroup.value.seniority}}" /></p>
                 <p *ngIf="globalFormGroup.value.status" style="color: gray;">Selected Status: <p-tag icon="pi pi-bookmark-fill" severity="secondary" value="{{globalFormGroup.value.status}}" /></p>
+                <p *ngIf="globalFormGroup.value.startDate" style="color: gray;">Selected Start Date: <p-tag icon="pi pi-calendar" severity="secondary" value="{{formatDateToDDMMYYYY(globalFormGroup.value.startDate)}}" /></p>
+                <p *ngIf="globalFormGroup.value.endDate" style="color: gray;">Selected End Date: <p-tag icon="pi pi-calendar" severity="secondary" value="{{formatDateToDDMMYYYY(globalFormGroup.value.endDate)}}" /></p>
             </div>
         </div>
 
@@ -149,10 +208,16 @@
     </div>
 </div>
 
-<div class="resault" *ngIf="attendance">
-    <p class="title">Filter Resaults</p>
-    <app-general-details [attendance]="attendance"></app-general-details>
-    <app-bar-chart [attendance]="attendance"></app-bar-chart>
+<div class="resault" *ngIf="result === 2">
+    <p class="title">Filter Results</p>
+    <app-general-details></app-general-details>
+    <app-bar-chart></app-bar-chart>
     <p></p>
-    <app-table [attendance]="attendance"></app-table>
+    <app-table></app-table>
 </div>
+
+<div class="spinner" *ngIf="result === 1">
+    <p-progress-spinner ariaLabel="loading" />
+</div>
+
+<app-navbar [filter]="globalFormGroup.value" (sub)="getSub($event)"></app-navbar>

@@ -1,30 +1,30 @@
 <div class="page">
-    <app-navbar></app-navbar>
-
-    <div class="body">
-        <div style="display: flex;width: 100%;justify-content: center;">
-            <div class="description">
-                <p class="title">Welcome to Your Attendance Dashboard</p>
-                <p class="subtitle">Track and analyze student attendance with powerful filtering capabilities. Filter by students, courses, and seniority levels to get the insights you need.</p>
-            </div>
-        </div>
-        <div style="display: flex;justify-content: center;margin-top: 20px;">
-            <button style="width: 250px;height: 50px;" routerLink="/form" class="filter-button"><i class="pi pi-filter" style="font-size: 15px"></i> Start Filtering Data</button>
-        </div>
-
-        <app-filtering-details></app-filtering-details>
-
-        <app-quick-overview></app-quick-overview>
-
-        <div class="text-center bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-8 text-white">
-          <h3 class="text-2xl font-bold mb-4">Ready to Analyze Your Data?</h3>
-          <p class="text-blue-100 mb-6 max-w-2xl mx-auto">
-            Use our powerful filtering system to dive deep into attendance patterns and generate insights 
-            that matter for your educational institution.
-          </p>
-          <div style="display: flex;justify-content: center;margin-top: 20px;">
-            <button class="last-button"><i class="pi pi-filter" style="font-size: 15px"></i>Access Filter Dashboard</button>
-          </div>
-        </div>
+  
+  <div class="body">
+    <div style="display: flex;width: 100%;justify-content: center;">
+      <div class="description">
+        <p class="title">Welcome to Your Attendance Dashboard</p>
+        <p class="subtitle">Track and analyze student attendance with powerful filtering capabilities. Filter by students, courses, and seniority levels to get the insights you need.</p>
+      </div>
     </div>
+    <div style="display: flex;justify-content: center;margin-top: 20px;">
+      <button style="width: 250px;height: 50px;" routerLink="/form" class="filter-button"><i class="pi pi-filter" style="font-size: 15px"></i>&emsp;Start Filtering Data</button>
+    </div>
+    
+    <app-filtering-details></app-filtering-details>
+    
+    <app-quick-overview></app-quick-overview>
+    
+    <div class="text-center bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-8 text-white">
+      <h3 class="text-2xl font-bold mb-4">Ready to Analyze Your Data?</h3>
+      <p class="text-blue-100 mb-6 max-w-2xl mx-auto">
+        Use our powerful filtering system to dive deep into attendance patterns and generate insights 
+        that matter for your educational institution.
+      </p>
+      <div style="display: flex;justify-content: center;margin-top: 20px;">
+        <button routerLink="/form" class="last-button"><i class="pi pi-filter" style="font-size: 15px"></i>Access Filter Dashboard</button>
+      </div>
+    </div>
+  </div>
+  <app-navbar></app-navbar>
 </div>

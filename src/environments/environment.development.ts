@@ -1,4 +1,12 @@
 export const environment = {
-    filterUrl: 'https://tour.aui.ma/api/filter',
-    initUrl: 'https://tour.aui.ma/api/init'
+    authUrl: 'https://attendance.aui.ma/auth/user',
+    filterUrl: 'https://attendance.aui.ma/api/filter',
+    initUrl: 'https://attendance.aui.ma/api/init',
+    logoutUrl: 'https://attendance.aui.ma/logout',
+    cookietUrl: 'https://attendance.aui.ma/auth/set-cookie',
+    wflistUrl: 'https://attendance.aui.ma/wf/student-list',
+    addWflistUrl: 'https://attendance.aui.ma/wf/add-wflist',
+    WflistUrl: 'https://attendance.aui.ma/wf/wflist',
+    WithdrawUrl: 'https://attendance.aui.ma/wf/withdraw',
+    refuseUrl: 'https://attendance.aui.ma/wf/refuse'
 };

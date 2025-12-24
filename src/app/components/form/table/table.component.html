@@ -1,4 +1,4 @@
-<p-card *ngIf="attendance && filteredData">
+<p-card *ngIf="attendance && filteredData && filteredData.length">
     <p class="title"><i class="pi pi-table" style="font-size: 25px;color: #2563EB;margin-right: 15px;"></i>Detailed Records</p>
     <div class="tags">
         <p-tag icon="pi pi-check" severity="success" value="Presences: {{present}}" />
@@ -7,37 +7,51 @@
     </div>
 
     <div style="display: flex;">
-        <div style="width: 50%;margin-right: 5px;">
+        <div style="width: 33%;margin-right: 5px;">
             <p-select [(ngModel)]="selectedStudent" (ngModelChange)="searchQuery(0)" [options]="students" [filter]="true" [showClear]="true" placeholder="Select a Student" class="w-full">
                 <ng-template #selectedItem let-selectedOption>
                     <div class="flex items-center gap-2">
                         <div>{{ selectedOption }}</div>
                     </div>
                 </ng-template>
-                <ng-template let-student #item>
+                <ng-template let-value #item>
                     <div class="flex items-center gap-2">
-                        <div>{{ student }}</div>
+                        <div>{{ value }}</div>
                     </div>
                 </ng-template>
             </p-select>
         </div>
-        <div style="width: 50%;margin-left: 5px;">
-            <p-select [(ngModel)]="selectedCourse" (ngModelChange)="searchQuery(1)" [options]="courses" [filter]="true" [showClear]="true" placeholder="Select a Course" class="w-full">
+        <div style="width: 33%;margin-right: 5px;margin-left: 5px;">
+            <p-select [(ngModel)]="selectedAttenanceType" (ngModelChange)="searchQuery(1)" [options]="attendanceTypes" [filter]="true" [showClear]="true" placeholder="Select an Attendance Type" class="w-full">
                 <ng-template #selectedItem let-selectedOption>
                     <div class="flex items-center gap-2">
                         <div>{{ selectedOption }}</div>
                     </div>
                 </ng-template>
-                <ng-template let-student #item>
+                <ng-template let-value #item>
                     <div class="flex items-center gap-2">
-                        <div>{{ student }}</div>
+                        <div>{{ value }}</div>
+                    </div>
+                </ng-template>
+            </p-select>
+        </div>
+        <div style="width: 33%;margin-left: 5px;">
+            <p-select [(ngModel)]="selectedCourse" (ngModelChange)="searchQuery(2)" [options]="courses" [filter]="true" [showClear]="true" placeholder="Select a Course" class="w-full">
+                <ng-template #selectedItem let-selectedOption>
+                    <div class="flex items-center gap-2">
+                        <div>{{ selectedOption }}</div>
+                    </div>
+                </ng-template>
+                <ng-template let-value #item>
+                    <div class="flex items-center gap-2">
+                        <div>{{ value }}</div>
                     </div>
                 </ng-template>
             </p-select>
         </div>
     </div>
 
-    <p-table [value]="filteredData" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+    <p-table [virtualScroll]="true" [virtualScrollItemSize]="40" [lazy]="true" [value]="filteredData" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
         <ng-template #header>
             <tr>
                 <th>ID</th>

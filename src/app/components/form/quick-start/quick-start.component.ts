@@ -20,7 +20,6 @@ export class QuickStartComponent implements OnInit{
       this.students = JSON.parse(data).students.length
       this.courses = JSON.parse(data).courses.length
       this.attendanceRecords = JSON.parse(data).attendanceRate
-      console.log(JSON.parse(data))
     }
   }
 }

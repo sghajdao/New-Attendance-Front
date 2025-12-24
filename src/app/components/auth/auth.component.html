@@ -4,7 +4,8 @@
             <p class="title">Welcome Back</p>
             <p style="text-align: center;color: gray;">Sign in to access your attendance dashboard</p>
             <div style="display: flex;justify-content: center;margin-top: 20px;">
-                <button routerLink="/" class="filter-button"><i class="pi pi-sign-in" style="font-size: 15px"></i>&emsp;Sign in with Microsoft</button>
+                <button *ngIf="!authenticated" (click)="login()" class="filter-button"><i class="pi pi-sign-in" style="font-size: 15px"></i>&emsp;Sign in with Microsoft</button>
+                <button *ngIf="authenticated" class="filter-button"><i class="pi pi-sign-out" style="font-size: 15px"></i>&emsp;Sign out with Microsoft</button>
             </div>
             <p style="text-align: center;color: gray;">Access your attendance tracking and management tools</p>
         </p-card>

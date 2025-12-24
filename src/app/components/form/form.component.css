@@ -2,6 +2,7 @@
     width: 100%;
     padding: 30px;
     display: flex;
+    padding-top: 100px;
 }
 
 .left {
@@ -16,6 +17,10 @@
 .card-title {
     font-weight: 500;
     padding-bottom: 10px;
+}
+
+.session {
+    width: 100%;
 }
 
 .filters {
@@ -44,10 +49,27 @@ p-card {
     margin-bottom: 20px;
 }
 
+::ng-deep .truncate-tag .p-tag-value {
+    display: inline-block;
+    max-width: 150px; /* adjust to your card width */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
 .quick {
     padding: 10px;
 }
 
 .resault {
     margin: 30px;
+}
+
+.spinner {
+    width: 100%;
+    height: calc(100vh - 70px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
