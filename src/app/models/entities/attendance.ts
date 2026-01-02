@@ -1,19 +1,18 @@
 export interface Attendance {
-    id?: number,
-    first_name?: string,
-    last_name?: string,
-    sis_student_id: number,
-    sis_course_id: string,
-    attendance: string,
-    count: number,
-    class_date?: Date
-    current_class_cde: string,
-    sis_teacher_id: number,
-    course_code: string,
-    teacher_name: string,
-    absent_limit: number,
-    status?: string,
-    grade?: string,
-    wf_requested_on?: Date,
-    wf_approved_on?: Date,
+    id?: number;
+    student_sis_id: number;
+    course_sis_id: string;
+    attendance: string;
+    count: number;
+    marked_at: Date;
+    seniority: string;
+    marked_by_sis_id: number;
+    course_name: string;
+    instructor_name: string;
+    status: string;
+    grade: string;
+    trmCde: string;
+    absentLimit: number;
+    firstName: string;
+    lastName: string;
 }

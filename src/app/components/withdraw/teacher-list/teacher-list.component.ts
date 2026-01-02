@@ -36,7 +36,7 @@ export class TeacherListComponent implements OnChanges {
   openDialog(event: Event, student: Attendance) {
     this.confirmationService.confirm({
         target: event.target as EventTarget,
-        message: 'Are you sure you want to set WF to ' + student.sis_student_id + ' for excessive absences?',
+        message: 'Are you sure you want to set WF to ' + student.student_sis_id + ' for excessive absences?',
         header: 'Confirmation',
         closable: true,
         closeOnEscape: true,
@@ -67,21 +67,21 @@ export class TeacherListComponent implements OnChanges {
   approve(student: Attendance) {
     const id = localStorage.getItem('id')
     let request: Wflist = {
-      teacher_id: id? +id : student.sis_teacher_id,
-      teacher_name: student.teacher_name,
-      student_id: student.sis_student_id,
+      teacher_id: id? +id : student.marked_by_sis_id,
+      teacher_name: student.instructor_name,
+      student_id: student.student_sis_id,
       request_date: new Date(),
-      course: student.sis_course_id,
+      course: student.course_sis_id,
       count: student.count,
       wf: false,
-      course_cde: student.course_code,
-      absent_limit: student.absent_limit
+      course_cde: student.course_name,
+      absent_limit: student.absentLimit
     }
     
     this.attendanceService.addToWflist(request).subscribe({
       next: data => {
         this.student.emit(student)
-        this.students = this.students?.filter(a => !(a.sis_student_id === student.sis_student_id && a.sis_course_id === student.sis_course_id))
+        this.students = this.students?.filter(a => !(a.student_sis_id === student.student_sis_id && a.course_sis_id === student.course_sis_id))
         this.messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'Successfully added to withdrawal requests' })
         this.total = this.students!.length
       }
@@ -97,7 +97,7 @@ export class TeacherListComponent implements OnChanges {
       return;
     }
 
-    this.students = this.backupStudents.filter(a => a.sis_student_id.toString().startsWith(query)) || this.backupStudents;
+    this.students = this.backupStudents.filter(a => a.student_sis_id.toString().startsWith(query)) || this.backupStudents;
     this.total = this.students.length;
   }
 
@@ -113,7 +113,7 @@ export class TeacherListComponent implements OnChanges {
     csvRows.push(headers.join(','));
   
     // Add rows
-    this.students.filter(a => a.count >= a.absent_limit + 3).forEach(student => {
+    this.students.filter(a => a.count >= a.absentLimit + 3).forEach(student => {
       const values = headers.map(h => {
         const val = (student as Record<string, any>)[h] ?? '';
         // Escape quotes and commas

@@ -18,12 +18,12 @@
             <div class="card" *ngFor="let item of students">
                 <div class="card-body">
                     <div>
-                        <p class="student-name">{{item.first_name}} {{item.last_name}}</p>
+                        <p class="student-name">{{item.firstName}} {{item.lastName}}</p>
                         <pre style="color: gray;">
-Student ID: {{item.sis_student_id}}
-Course: {{item.course_code}}
-Reason: Excessive absences (absences: {{item.count}}, limit: {{item.absent_limit}})
-Professor Name: {{item.teacher_name}}</pre>
+Student ID: {{item.student_sis_id}}
+Course: {{item.course_name}}
+Reason: Excessive absences (absences: {{item.count}}, limit: {{item.absentLimit}})
+Professor Name: {{item.instructor_name}}</pre>
                     </div>
                     <div style="display: flex;">
                         <p-button (click)="openDialog($event, item)" icon="pi pi-check" label="Approve" variant="outlined" severity="success" />

@@ -65,15 +65,15 @@
         </ng-template>
         <ng-template #body let-filteredData>
             <tr>
-                <td>{{filteredData.sis_student_id}}</td>
-                <td>{{filteredData.sis_course_id}}</td>
-                <td>{{filteredData.current_class_cde}}</td>
+                <td>{{filteredData.student_sis_id}}</td>
+                <td>{{filteredData.course_sis_id}}</td>
+                <td>{{filteredData.seniority}}</td>
                 <td *ngIf="filteredData.attendance === 'present'"><p-tag icon="pi pi-check" severity="success" [value]="filteredData.attendance" [rounded]="true" /></td>
                 <td *ngIf="filteredData.attendance === 'absent'"><p-tag icon="pi pi-times" severity="danger" [value]="filteredData.attendance" [rounded]="true" /></td>
                 <td *ngIf="filteredData.attendance === 'late'"><p-tag icon="pi pi-clock" severity="warn" [value]="filteredData.attendance" [rounded]="true" /></td>
                 <td>{{filteredData.status}}</td>
                 <td>{{filteredData.grade}}</td>
-                <td>{{formatDate(filteredData.class_date)}}</td>
+                <td>{{formatDate(filteredData.marked_at)}}</td>
             </tr>
         </ng-template>
     </p-table>

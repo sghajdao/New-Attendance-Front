@@ -34,3 +34,10 @@
 p-button {
     margin: 5px;
 }
+
+input {
+    width: 50px;
+    border: solid 1px #dcdcdc;
+    border-radius: 6px;
+    text-indent: 10px;
+}

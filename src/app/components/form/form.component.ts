@@ -16,7 +16,7 @@ export class FormComponent implements OnInit, OnDestroy {
     private attendanceService: AttendanceService,
   ) {}
   
-  seesions: string[] = ['Intersession', 'Fall Semester']
+  seesions: string[] = ['ES Intersession', 'Fall Semester', 'Winter Intersession']
   students: string[] = []
   courses: string[] = []
   seniorities: string[] = ['FR', 'SO', 'JR', 'SR', 'GR']

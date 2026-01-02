@@ -27,10 +27,21 @@ Requested on: {{formatDateToDDMMYYY(item.request_date)}}
                     </div>
                     <div *ngIf="!item.wf && isAdmin" style="display: flex;">
                         <p-button (click)="openDialog($event, item, 0)" icon="pi pi-check" label="Approve" variant="outlined" severity="success" />
-                        <p-button (click)="openDialog($event, item, 1)" icon="pi pi-times" label="Decline" variant="outlined" severity="danger" />
+                        <p-button (click)="getStudentToDecline(item)" icon="pi pi-times" label="Decline" variant="outlined" severity="danger" />
                     </div>
                 </div>
             </div>
         </div>
     </p-card>
+
+    <p-dialog header="Set new absent limit" [modal]="true" [(visible)]="showDeclineDialog" [style]="{ width: '25rem' }">
+        <div class="flex items-center gap-4 mb-4">
+            <p class="font-semibold w-50 m-0">New absent limit</p>
+            <input [(ngModel)]="newAbsentLimit" type="number" class="flex-auto" autocomplete="off" />
+        </div>
+        <div class="flex justify-end gap-1">
+            <p-button label="Cancel" severity="secondary" (click)="showDeclineDialog = false" />
+            <p-button label="Save" severity="contrast" (click)="refuse()" />
+        </div>
+    </p-dialog>
 </div>

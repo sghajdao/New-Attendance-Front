@@ -20,8 +20,8 @@ export class TableComponent implements OnInit {
         this.students = []
         this.courses = []
         this.attendanceTypes = []
-        new Set(data.map(a => a.sis_student_id)).forEach(a => this.students.push(a))
-        new Set(data.map(a => a.sis_course_id)).forEach(a => this.courses.push(a))
+        new Set(data.map(a => a.student_sis_id)).forEach(a => this.students.push(a))
+        new Set(data.map(a => a.course_sis_id)).forEach(a => this.courses.push(a))
         new Set(data.map(a => a.attendance)).forEach(a => this.attendanceTypes.push(a))
         this.filteredData = data
         this.fillTags(this.filteredData!)
@@ -43,7 +43,7 @@ export class TableComponent implements OnInit {
 
   searchQuery(flag: number) {
     if (this.selectedStudent && this.attendance && flag === 0) {
-      this.filteredData = this.attendance.filter(a => a.sis_student_id === +this.selectedStudent)
+      this.filteredData = this.attendance.filter(a => a.student_sis_id === +this.selectedStudent)
       this.fillTags(this.filteredData)
     }
     else if (this.selectedAttenanceType && this.attendance && flag === 1) {
@@ -51,7 +51,7 @@ export class TableComponent implements OnInit {
       this.fillTags(this.filteredData)
     }
     else if (this.selectedCourse && this.attendance && flag === 2) {
-      this.filteredData = this.attendance.filter(a => a.sis_course_id === this.selectedCourse)
+      this.filteredData = this.attendance.filter(a => a.course_sis_id === this.selectedCourse)
       this.fillTags(this.filteredData)
     }
     else if (this.attendance) {

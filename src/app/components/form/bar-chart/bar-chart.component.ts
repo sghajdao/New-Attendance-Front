@@ -43,12 +43,12 @@ export class BarChartComponent implements OnInit {
             const labels = [];
             for (let i = 6; i >= 0; i--) {
                 const latest_date = this.attendance!
-                    .filter(a => a.class_date) // filter out undefined/null class_date
+                    .filter(a => a.marked_at) // filter out undefined/null marked_at
                     .reduce((latest, current) => {
-                        return new Date(current.class_date!) > new Date(latest.class_date!)
+                        return new Date(current.marked_at!) > new Date(latest.marked_at!)
                         ? current
                         : latest;
-                    }).class_date;
+                    }).marked_at;
                 const date = new Date(latest_date!);
                 date.setDate(date.getDate() - i);
                 
@@ -70,12 +70,12 @@ export class BarChartComponent implements OnInit {
             const data = [];
             for (let i = 6; i >= 0; i--) {
                 const latest_date = this.attendance!
-                    .filter(a => a.class_date) // filter out undefined/null class_date
+                    .filter(a => a.marked_at) // filter out undefined/null marked_at
                     .reduce((latest, current) => {
-                        return new Date(current.class_date!) > new Date(latest.class_date!)
+                        return new Date(current.marked_at!) > new Date(latest.marked_at!)
                         ? current
                         : latest;
-                    }).class_date;
+                    }).marked_at;
                 const date = new Date(latest_date!);
                 date.setDate(date.getDate() - i);
                 
@@ -83,7 +83,7 @@ export class BarChartComponent implements OnInit {
                 const dateString = date.toISOString().split('T')[0]; // YYYY-MM-DD format
                 
                 const dayAttendance = this.attendance?.filter(a => {
-                    const attendanceDate = new Date(a.class_date!).toISOString().split('T')[0];
+                    const attendanceDate = new Date(a.marked_at!).toISOString().split('T')[0];
                     return attendanceDate === dateString && a.attendance === type; // assuming you have a status field
                 }) || [];
                 

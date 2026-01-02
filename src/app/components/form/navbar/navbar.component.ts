@@ -38,8 +38,9 @@ export class NavbarComponent implements OnDestroy, OnInit {
         this.filter.grade = null
         this.filter.wfLevel = null
       }
-      if (this.filter.session === 'Intersession') this.filter.session = 'ES'
+      if (this.filter.session === 'ES Intersession') this.filter.session = 'ES'
       else if (this.filter.session === 'Fall Semester') this.filter.session = 'FA'
+      else if (this.filter.session === 'Winter Intersession') this.filter.session = 'WI'
       this.sub.emit(this.attendanceService.filterAttendance(this.filter).pipe(take(1)))
     }
   }
@@ -62,7 +63,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
       this.attendanceService.getWflist().subscribe({
         next: (wflist) => {
           const mergedData = this.toExport!.map(attendance => {
-            const wfItem = wflist.find(wf => wf.student_id === attendance.sis_student_id && wf.course === attendance.sis_course_id);
+            const wfItem = wflist.find(wf => wf.student_id === attendance.student_sis_id && wf.course === attendance.course_sis_id);
             return wfItem ? { ...attendance, wf_requested_on: wfItem.request_date, wf_approved_on: wfItem.approve_date } : attendance;
           });
           if (mergedData.length > 1000)
@@ -70,7 +71,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
           this.worker = new Worker(new URL('../../../reports.worker', import.meta.url), { type: 'module' });
           this.worker.postMessage(mergedData);
           this.worker!.onmessage = ({ data }: { data: Attendance[] }) => {
-            const csvData = this.convertToCsv(data.map(({ class_date, ...item }) => item))
+            const csvData = this.convertToCsv(data.map(({ marked_at, ...item }) => item))
             const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -88,7 +89,7 @@ export class NavbarComponent implements OnDestroy, OnInit {
       this.worker = new Worker(new URL('../../../reports.worker', import.meta.url), { type: 'module' });
       this.worker.postMessage(this.toExport);
       this.worker!.onmessage = ({ data }: { data: Attendance[] }) => {
-        const csvData = this.convertToCsv(data.map(({ class_date, ...item }) => item))
+        const csvData = this.convertToCsv(data.map(({ marked_at, ...item }) => item))
         const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
