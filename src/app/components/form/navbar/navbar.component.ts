@@ -38,9 +38,11 @@ export class NavbarComponent implements OnDestroy, OnInit {
         this.filter.grade = null
         this.filter.wfLevel = null
       }
-      if (this.filter.session === 'ES Intersession') this.filter.session = 'ES'
-      else if (this.filter.session === 'Fall Semester') this.filter.session = 'FA'
+      if (this.filter.session === 'Fall Semester') this.filter.session = 'FA'
       else if (this.filter.session === 'Winter Intersession') this.filter.session = 'WI'
+      else if (this.filter.session === 'Spring Semester') this.filter.session = 'SP'
+
+      this.filter.studentIds = this.filter.studentIds?.map(id => id.toString()) || []
       this.sub.emit(this.attendanceService.filterAttendance(this.filter).pipe(take(1)))
     }
   }

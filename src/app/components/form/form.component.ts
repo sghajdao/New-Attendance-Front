@@ -16,9 +16,10 @@ export class FormComponent implements OnInit, OnDestroy {
     private attendanceService: AttendanceService,
   ) {}
   
-  seesions: string[] = ['ES Intersession', 'Fall Semester', 'Winter Intersession']
+  seesions: string[] = ['Fall Semester', 'Winter Intersession', 'Spring Semester']
   students: string[] = []
   courses: string[] = []
+  coursesBackup: string[] = []
   seniorities: string[] = ['FR', 'SO', 'JR', 'SR', 'GR']
   status: string[] = ['C', 'H', 'D']
   grades: string[] = ['W', 'WF', 'NGW', 'NG', 'EX', 'A']
@@ -40,6 +41,7 @@ export class FormComponent implements OnInit, OnDestroy {
     if (data) {
       this.students = JSON.parse(data).students
       this.courses = JSON.parse(data).courses
+      this.coursesBackup = JSON.parse(data).courses
     }
     
     this.globalFormGroup = this.fb.group({
@@ -73,8 +75,14 @@ export class FormComponent implements OnInit, OnDestroy {
       }
     });
     const sub3 = this.globalFormGroup.get('session')?.valueChanges.subscribe((session: string) => {
-      if (session && session === 'Intersession') {
-        this.courses = this.courses.filter(c => c.startsWith('ES'))
+      if (session && session === 'Fall Semester') {
+        this.courses = this.coursesBackup.filter(c => c.startsWith('FA'))
+      }
+      else if (session && session === 'Winter Intersession') {
+        this.courses = this.coursesBackup.filter(c => c.startsWith('WI'))
+      }
+      else if (session && session === 'Spring Semester') {
+        this.courses = this.coursesBackup.filter(c => c.startsWith('SP'))
       }
     });
     this.subscriptions.push(sub1!, sub2!, sub3!);

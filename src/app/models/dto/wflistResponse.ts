@@ -1,8 +1,8 @@
 export interface WflistResponse {
     id?: number,
-    teacher_id: number,
+    teacher_id: string,
     teacher_name: string,
-    student_id: number,
+    student_id: string,
     request_date: Date,
     course: string,
     count: number,

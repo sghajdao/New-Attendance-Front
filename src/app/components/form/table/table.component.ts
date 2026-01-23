@@ -30,7 +30,7 @@ export class TableComponent implements OnInit {
 
   attendance?: Attendance[]
   filteredData?: Attendance[]
-  students: number[] = []
+  students: string[] = []
   selectedStudent: string = ''
   courses: string[] = []
   selectedCourse: string = ''
@@ -43,7 +43,7 @@ export class TableComponent implements OnInit {
 
   searchQuery(flag: number) {
     if (this.selectedStudent && this.attendance && flag === 0) {
-      this.filteredData = this.attendance.filter(a => a.student_sis_id === +this.selectedStudent)
+      this.filteredData = this.attendance.filter(a => a.student_sis_id === this.selectedStudent)
       this.fillTags(this.filteredData)
     }
     else if (this.selectedAttenanceType && this.attendance && flag === 1) {

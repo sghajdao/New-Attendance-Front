@@ -67,7 +67,7 @@ export class TeacherListComponent implements OnChanges {
   approve(student: Attendance) {
     const id = localStorage.getItem('id')
     let request: Wflist = {
-      teacher_id: id? +id : student.marked_by_sis_id,
+      teacher_id: id? id : student.marked_by_sis_id,
       teacher_name: student.instructor_name,
       student_id: student.student_sis_id,
       request_date: new Date(),

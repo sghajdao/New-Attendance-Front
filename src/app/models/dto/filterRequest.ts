@@ -2,7 +2,7 @@ export interface FilrterRequest {
     userId?: number,
     userEmail?: string,
     session: string,
-    studentIds: number[],
+    studentIds: string[],
     courseId: string,
     seniority: string,
     status: string,
