@@ -17,9 +17,10 @@ export class QuickStartComponent implements OnInit{
   ngOnInit(): void {
     const data = localStorage.getItem('init')
     if (data) {
-      this.students = JSON.parse(data).students.length
-      this.courses = JSON.parse(data).courses.length
-      this.attendanceRecords = JSON.parse(data).attendanceRate
+      const currentData: InitData = JSON.parse(data).filter((item: InitData) => item.trmCde === 'SP').at(0)!
+      this.students = currentData.students.length
+      this.courses = currentData.courses.length
+      this.attendanceRecords = currentData.attendanceRate
     }
   }
 }

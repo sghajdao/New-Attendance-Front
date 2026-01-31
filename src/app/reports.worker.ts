@@ -6,25 +6,27 @@ addEventListener('message', ({ data }: { data: Attendance[] }) => {
   let report: Attendance[] = []
   for (let a of data) {
     let item: Attendance = {
-      sis_student_id: a.sis_student_id,
-      first_name: a.first_name,
-      last_name: a.last_name,
-      sis_course_id: a.sis_course_id,
+      student_sis_id: a.student_sis_id,
+      firstName: a.firstName,
+      lastName: a.lastName,
+      course_sis_id: a.course_sis_id,
       attendance: a.attendance,
-      count: data.filter(i => i.sis_student_id === a.sis_student_id && i.sis_course_id === a.sis_course_id && i.attendance === a.attendance).length,
-      current_class_cde: a.current_class_cde,
-      sis_teacher_id: a.sis_teacher_id,
-      course_code: a.course_code,
+      count: data.filter(i => i.student_sis_id === a.student_sis_id && i.course_sis_id === a.course_sis_id && i.attendance === a.attendance).length,
+      seniority: a.seniority,
+      marked_by_sis_id: a.marked_by_sis_id,
+      course_name: a.course_name,
       status: a.status,
       grade: a.grade,
-      teacher_name: a.teacher_name,
-      absent_limit: a.absent_limit,
+      instructor_name: a.instructor_name,
+      absentLimit: a.absentLimit,
+      marked_at: a.marked_at,
+      trmCde: a.trmCde
     }
-    if (a.wf_requested_on)
-      item.wf_requested_on = a.wf_requested_on
-    if (a.wf_approved_on)
-      item.wf_approved_on = a.wf_approved_on
-    if (!report.filter(i => i.sis_student_id === item.sis_student_id && i.sis_course_id === item.sis_course_id && i.attendance === item.attendance).length)
+    // if (a.wf_requested_on)
+    //   item.wf_requested_on = a.wf_requested_on
+    // if (a.wf_approved_on)
+    //   item.wf_approved_on = a.wf_approved_on
+    if (!report.filter(i => i.student_sis_id === item.student_sis_id && i.course_sis_id === item.course_sis_id && i.attendance === item.attendance).length)
       report.push(item)
   }
   postMessage(report);

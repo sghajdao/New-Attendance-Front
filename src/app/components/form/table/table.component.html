@@ -71,6 +71,7 @@
                 <td *ngIf="filteredData.attendance === 'present'"><p-tag icon="pi pi-check" severity="success" [value]="filteredData.attendance" [rounded]="true" /></td>
                 <td *ngIf="filteredData.attendance === 'absent'"><p-tag icon="pi pi-times" severity="danger" [value]="filteredData.attendance" [rounded]="true" /></td>
                 <td *ngIf="filteredData.attendance === 'late'"><p-tag icon="pi pi-clock" severity="warn" [value]="filteredData.attendance" [rounded]="true" /></td>
+                <td *ngIf="filteredData.attendance === 'unmarked'"><p-tag icon="pi pi-question-circle" severity="secondary" [value]="filteredData.attendance" [rounded]="true" /></td>
                 <td>{{filteredData.status}}</td>
                 <td>{{filteredData.grade}}</td>
                 <td>{{formatDate(filteredData.marked_at)}}</td>

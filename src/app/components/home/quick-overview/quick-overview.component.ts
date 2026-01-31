@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AttendanceService } from '../../../services/attendance.service';
-import { Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-quick-overview',
@@ -33,21 +33,22 @@ export class QuickOverviewComponent implements OnInit, OnDestroy {
             // this.courses = data.courses.length
             // this.attendanceRate = data.attendanceRate
             // this.lateArrivals = data.lateArrivals
+            const currentData = data.filter(item => item.trmCde === 'SP').at(0)
             let studentsStop = setInterval(() => {
               this.students++
-              if (this.students === data.students.length) clearInterval(studentsStop)
+              if (this.students === currentData?.students.length) clearInterval(studentsStop)
             })
             let coursesStop = setInterval(() => {
               this.courses++
-              if (this.courses === data.courses.length) clearInterval(coursesStop)
+              if (this.courses === currentData?.courses.length) clearInterval(coursesStop)
             })
             let attendanceRateStop = setInterval(() => {
               this.attendanceRate++
-              if (this.attendanceRate === data.attendanceRate) clearInterval(attendanceRateStop)
+              if (this.attendanceRate === currentData?.attendanceRate) clearInterval(attendanceRateStop)
             })
             let lateArrivalsStop = setInterval(() => {
               this.lateArrivals++
-              if (this.lateArrivals === data.lateArrivals) clearInterval(lateArrivalsStop)
+              if (this.lateArrivals === currentData?.lateArrivals) clearInterval(lateArrivalsStop)
             })
           }
         }

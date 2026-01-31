@@ -29,7 +29,7 @@ export class AttendanceService {
   }
 
   getInitData() {
-    return this.http.post<InitData>(environment.initUrl, this.getAuthRequest());
+    return this.http.post<InitData[]>(environment.initUrl, this.getAuthRequest());
   }
 
   getStudentList() {

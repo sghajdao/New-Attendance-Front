@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Attendance } from '../../models/entities/attendance';
 import { Observable, Subscription } from 'rxjs';
 import { AttendanceService } from '../../services/attendance.service';
+import { InitData } from '../../models/dto/initData';
 
 @Component({
   selector: 'app-form',
@@ -19,13 +20,13 @@ export class FormComponent implements OnInit, OnDestroy {
   seesions: string[] = ['Fall Semester', 'Winter Intersession', 'Spring Semester']
   students: string[] = []
   courses: string[] = []
-  coursesBackup: string[] = []
   seniorities: string[] = ['FR', 'SO', 'JR', 'SR', 'GR']
   status: string[] = ['C', 'H', 'D']
   grades: string[] = ['W', 'WF', 'NGW', 'NG', 'EX', 'A']
   // all / half / one left
   wfLevel: string[] = ['All', 'One Left']
   
+  dataBackup: InitData[] = []
   globalFormGroup!: FormGroup;
   
   minDate?: Date
@@ -39,9 +40,7 @@ export class FormComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const data = localStorage.getItem('init')
     if (data) {
-      this.students = JSON.parse(data).students
-      this.courses = JSON.parse(data).courses
-      this.coursesBackup = JSON.parse(data).courses
+      this.dataBackup = JSON.parse(data)
     }
     
     this.globalFormGroup = this.fb.group({
@@ -76,13 +75,16 @@ export class FormComponent implements OnInit, OnDestroy {
     });
     const sub3 = this.globalFormGroup.get('session')?.valueChanges.subscribe((session: string) => {
       if (session && session === 'Fall Semester') {
-        this.courses = this.coursesBackup.filter(c => c.startsWith('FA'))
+        this.courses = this.dataBackup.filter(c => c.trmCde === 'FA').at(0)?.courses || []
+        this.students = this.dataBackup.filter(c => c.trmCde === 'FA').at(0)?.students || []
       }
       else if (session && session === 'Winter Intersession') {
-        this.courses = this.coursesBackup.filter(c => c.startsWith('WI'))
+        this.courses = this.dataBackup.filter(c => c.trmCde === 'WI').at(0)?.courses || []
+        this.students = this.dataBackup.filter(c => c.trmCde === 'WI').at(0)?.students || []
       }
       else if (session && session === 'Spring Semester') {
-        this.courses = this.coursesBackup.filter(c => c.startsWith('SP'))
+        this.courses = this.dataBackup.filter(c => c.trmCde === 'SP').at(0)?.courses || []
+        this.students = this.dataBackup.filter(c => c.trmCde === 'SP').at(0)?.students || []
       }
     });
     this.subscriptions.push(sub1!, sub2!, sub3!);
