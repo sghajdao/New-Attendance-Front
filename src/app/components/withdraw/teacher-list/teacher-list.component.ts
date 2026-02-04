@@ -75,7 +75,8 @@ export class TeacherListComponent implements OnChanges {
       count: student.count,
       wf: false,
       course_cde: student.course_name,
-      absent_limit: student.absentLimit
+      absent_limit: student.absentLimit,
+      excused: 0,
     }
     
     this.attendanceService.addToWflist(request).subscribe({

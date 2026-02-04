@@ -11,7 +11,7 @@
             <p-tag icon="pi pi-check" severity="success" value="Approved: {{approved}}" />
         </div>
         <div class="list">
-            <p *ngIf="!students || !students?.length" style="color: gray;">No students currently exceed the absence limit.</p>
+            <p *ngIf="!students || !students.length" style="color: gray;">No students currently exceed the absence limit.</p>
             <div class="card" *ngFor="let item of students">
                 <div class="card-body">
                     <div>
@@ -37,7 +37,7 @@ Requested on: {{formatDateToDDMMYYY(item.request_date)}}
     <p-dialog header="Set new absent limit" [modal]="true" [(visible)]="showDeclineDialog" [style]="{ width: '25rem' }">
         <div class="flex items-center gap-4 mb-4">
             <p class="font-semibold w-50 m-0">New absent limit</p>
-            <input [(ngModel)]="newAbsentLimit" type="number" class="flex-auto" autocomplete="off" />
+            <input [(ngModel)]="excused" type="number" class="flex-auto" autocomplete="off" />
         </div>
         <div class="flex justify-end gap-1">
             <p-button label="Cancel" severity="secondary" (click)="showDeclineDialog = false" />

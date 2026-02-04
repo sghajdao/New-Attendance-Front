@@ -10,4 +10,5 @@ export interface Wflist {
     course_cde: string,
     absent_limit: number,
     approve_date?: Date,
+    excused: number,
 }

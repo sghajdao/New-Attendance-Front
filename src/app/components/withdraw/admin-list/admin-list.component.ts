@@ -29,7 +29,7 @@ export class AdminListComponent implements OnChanges, OnInit {
   total: number = 0
   pending: number = 0
   approved: number = 0
-  newAbsentLimit: number = 3
+  excused: number = 0
 
   selectedStudent: string = ''
 
@@ -60,6 +60,7 @@ export class AdminListComponent implements OnChanges, OnInit {
         absent_limit: this.student.absentLimit,
         first_name: this.student.firstName,
         last_name: this.student.lastName,
+        excused: 0,
       }
       this.students.push(item)
       this.total = this.students.length
@@ -104,7 +105,6 @@ export class AdminListComponent implements OnChanges, OnInit {
 
   getStudentToDecline(student: WflistResponse) {
     this.studentToDecline = student
-    this.newAbsentLimit = student.absent_limit
     this.showDeclineDialog = true
   }
 
@@ -141,32 +141,33 @@ export class AdminListComponent implements OnChanges, OnInit {
 
   refuse() {
     if (!this.studentToDecline) return
-    this.studentToDecline.absent_limit = this.newAbsentLimit
+    this.studentToDecline.excused = this.excused
     this.showDeclineDialog = false
-    // let request: Wflist = {
-    //   id: this.studentToDecline.id,
-    //   student_id: this.studentToDecline.student_id,
-    //   course: this.studentToDecline.course,
-    //   teacher_id: this.studentToDecline.teacher_id,
-    //   request_date: this.studentToDecline.request_date,
-    //   count: this.studentToDecline.count,
-    //   course_cde: this.studentToDecline.course_cde,
-    //   absent_limit: this.studentToDecline.absent_limit,
-    //   teacher_name: this.studentToDecline.teacher_name,
-    //   wf: false
-    // }
-    // this.messageService.add({ severity: 'warn', summary: 'Wait', detail: 'Please wait a while...' })
-    // this.attendanceService.refuseRequest(request).subscribe({
-    //   next: data => {
-    //     this.students = this.students.filter(a => a.student_id != this.studentToDecline?.student_id && a.course != this.studentToDecline?.course)
-    //     this.total = this.students.length
-    //     this.pending = this.students.filter(a => a.wf === false).length
-    //     this.messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'Successfully refused the request' })
-    //   },
-    //   error: err => {
-    //     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'An error occurred while refusing the request' })
-    //   }
-    // })
+    let request: Wflist = {
+      id: this.studentToDecline.id,
+      student_id: this.studentToDecline.student_id,
+      course: this.studentToDecline.course,
+      teacher_id: this.studentToDecline.teacher_id,
+      request_date: this.studentToDecline.request_date,
+      count: this.studentToDecline.count,
+      course_cde: this.studentToDecline.course_cde,
+      absent_limit: this.studentToDecline.absent_limit,
+      teacher_name: this.studentToDecline.teacher_name,
+      wf: false,
+      excused: this.excused,
+    }
+    this.messageService.add({ severity: 'warn', summary: 'Wait', detail: 'Please wait a while...' })
+    this.attendanceService.refuseRequest(request).subscribe({
+      next: data => {
+        this.students = this.students.filter(a => a.student_id != this.studentToDecline?.student_id && a.course != this.studentToDecline?.course)
+        this.total = this.students.length
+        this.pending = this.students.filter(a => a.wf === false).length
+        this.messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'Successfully refused the request' })
+      },
+      error: err => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'An error occurred while refusing the request' })
+      }
+    })
   }
 
   filterStudent() {

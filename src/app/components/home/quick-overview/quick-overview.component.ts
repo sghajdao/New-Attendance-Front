@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AttendanceService } from '../../../services/attendance.service';
 import { filter, Subscription } from 'rxjs';
+import { InitData } from '../../../models/dto/initData';
 
 @Component({
   selector: 'app-quick-overview',
@@ -27,12 +28,9 @@ export class QuickOverviewComponent implements OnInit, OnDestroy {
       this.sub = this.attendanceService.getInitData().subscribe({
         next: data => {
           if (data) {
+            localStorage.removeItem('init')
             localStorage.setItem('init', JSON.stringify(data))
             localStorage.setItem('lastUpdate', JSON.stringify(new Date()))
-            // this.students = data.students.length
-            // this.courses = data.courses.length
-            // this.attendanceRate = data.attendanceRate
-            // this.lateArrivals = data.lateArrivals
             const currentData = data.filter(item => item.trmCde === 'SP').at(0)
             let studentsStop = setInterval(() => {
               this.students++
@@ -55,26 +53,24 @@ export class QuickOverviewComponent implements OnInit, OnDestroy {
       })
     }
     else if (initData) {
+      const data: InitData[] = JSON.parse(initData)
+      const currentData = data.filter(item => item.trmCde === 'SP').at(0)
       let studentsStop = setInterval(() => {
         this.students++
-        if (this.students === JSON.parse(initData).students.length) clearInterval(studentsStop)
+        if (this.students === currentData?.students.length) clearInterval(studentsStop)
       })
       let coursesStop = setInterval(() => {
         this.courses++
-        if (this.courses === JSON.parse(initData).courses.length) clearInterval(coursesStop)
+        if (this.courses === currentData?.courses.length) clearInterval(coursesStop)
       })
       let attendanceRateStop = setInterval(() => {
         this.attendanceRate++
-        if (this.attendanceRate === JSON.parse(initData).attendanceRate) clearInterval(attendanceRateStop)
+        if (this.attendanceRate === currentData?.attendanceRate) clearInterval(attendanceRateStop)
       })
       let lateArrivalsStop = setInterval(() => {
         this.lateArrivals++
-        if (this.lateArrivals === JSON.parse(initData).lateArrivals) clearInterval(lateArrivalsStop)
+        if (this.lateArrivals === currentData?.lateArrivals) clearInterval(lateArrivalsStop)
       })
-      // this.students = JSON.parse(initData).students.length
-      // this.courses = JSON.parse(initData).courses.length
-      // this.attendanceRate = JSON.parse(initData).attendanceRate
-      // this.lateArrivals = JSON.parse(initData).lateArrivals
     }
   }
 

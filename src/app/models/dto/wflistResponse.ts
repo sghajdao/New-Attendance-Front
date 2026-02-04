@@ -11,5 +11,6 @@ export interface WflistResponse {
     absent_limit: number,
     approve_date?: Date,
     first_name?: string,
-    last_name?: string
+    last_name?: string,
+    excused: number
 }
