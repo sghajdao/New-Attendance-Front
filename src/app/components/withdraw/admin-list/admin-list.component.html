@@ -34,10 +34,11 @@ Requested on: {{formatDateToDDMMYYY(item.request_date)}}
         </div>
     </p-card>
 
-    <p-dialog header="Set new absent limit" [modal]="true" [(visible)]="showDeclineDialog" [style]="{ width: '25rem' }">
+    <p-dialog header="Set excused absences" [modal]="true" [(visible)]="showDeclineDialog" [style]="{ width: '25rem' }">
         <div class="flex items-center gap-4 mb-4">
-            <p class="font-semibold w-50 m-0">New absent limit</p>
-            <input [(ngModel)]="excused" type="number" class="flex-auto" autocomplete="off" />
+            <p class="font-semibold w-50 m-0">Excused absences</p>
+            <p-inputnumber [(ngModel)]="excused" mode="decimal" [showButtons]="true" inputId="minmax-buttons" [min]="0" [max]="10" />
+            <!-- <input [(ngModel)]="excused" type="number" class="flex-auto" autocomplete="off" min="1" /> -->
         </div>
         <div class="flex justify-end gap-1">
             <p-button label="Cancel" severity="secondary" (click)="showDeclineDialog = false" />

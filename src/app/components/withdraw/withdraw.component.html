@@ -1,7 +1,7 @@
 
 <div *ngIf="students && requests" class="page">
-    <app-teacher-list [students]="students" (student)="addToWflist($event)"></app-teacher-list>
-    <app-admin-list [students]="requests" [student]="wfStudent"></app-admin-list>
+    <app-teacher-list [students]="students" [withdrawnStudents]="withdrawnStudents" (student)="addToWflist($event)"></app-teacher-list>
+    <app-admin-list [students]="requests" [student]="wfStudent" (withdrawnStudents)="getWithdrawnStudents($event)"></app-admin-list>
 </div>
 
 <div *ngIf="!students || !requests" class="spinner">

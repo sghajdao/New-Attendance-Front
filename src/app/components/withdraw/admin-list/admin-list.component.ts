@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Attendance } from '../../../models/entities/attendance';
 import { AttendanceService } from '../../../services/attendance.service';
 import { Wflist } from '../../../models/entities/wflist';
@@ -20,6 +20,7 @@ export class AdminListComponent implements OnChanges, OnInit {
 
   @Input() student?: Attendance
   @Input() students: WflistResponse[] = []
+  @Output() withdrawnStudents = new EventEmitter<WflistResponse[]>()
   backupStudents: WflistResponse[] = []
   studentToDecline?: WflistResponse
 
@@ -46,6 +47,7 @@ export class AdminListComponent implements OnChanges, OnInit {
       this.approved = this.students.filter(a => a.wf === true).length
 
       this.students.forEach(a => this.backupStudents.push(a))
+      this.withdrawnStudents.emit(this.students.filter(a => a.wf === true))
     }
     if (changes['student'] && this.student) {
       let item: WflistResponse = {

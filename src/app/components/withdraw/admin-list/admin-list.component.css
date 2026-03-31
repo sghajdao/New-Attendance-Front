@@ -40,4 +40,5 @@ input {
     border: solid 1px #dcdcdc;
     border-radius: 6px;
     text-indent: 10px;
+    height: 40px;
 }

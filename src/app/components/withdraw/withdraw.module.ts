@@ -16,6 +16,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 
 @NgModule({
@@ -38,6 +39,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     AutoCompleteModule,
     ReactiveFormsModule,
     FormsModule,
+    InputNumberModule,
+    TagModule,
   ],
   providers: [
     MessageService, ConfirmationService

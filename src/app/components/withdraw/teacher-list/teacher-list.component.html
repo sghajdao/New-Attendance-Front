@@ -18,7 +18,10 @@
             <div class="card" *ngFor="let item of students">
                 <div class="card-body">
                     <div>
-                        <p class="student-name">{{item.firstName}} {{item.lastName}}</p>
+                        <div style="display: flex;gap: 10px;align-items: center;margin-bottom: 10px;">
+                            <p class="student-name">{{item.firstName}} {{item.lastName}}</p>
+                            <p-tag *ngIf="isReinstates(item)" icon="pi pi-undo" severity="warn" value="Reinstated" [rounded]="true" />
+                        </div>
                         <pre style="color: gray;">
 Student ID: {{item.student_sis_id}}
 Course: {{item.course_name}}
@@ -27,12 +30,25 @@ Professor Name: {{item.instructor_name}}</pre>
                     </div>
                     <div style="display: flex;">
                         <p-button (click)="openDialog($event, item)" icon="pi pi-check" label="Approve" variant="outlined" severity="success" />
+                        <p-button *ngIf="isAdmin" (click)="getStudentToDecline(item)" icon="pi pi-times" label="Decline" variant="outlined" severity="danger" />
                         <!-- <p-button icon="pi pi-times" label="Decline" variant="outlined" severity="danger" /> -->
                     </div>
                 </div>
             </div>
         </div>
     </p-card>
+
+    <p-dialog header="Set excused absences" [modal]="true" [(visible)]="showDeclineDialog" [style]="{ width: '25rem' }">
+        <div class="flex items-center gap-4 mb-4">
+            <p class="font-semibold w-50 m-0">Excused absences</p>
+            <p-inputnumber [(ngModel)]="excused" mode="decimal" [showButtons]="true" inputId="minmax-buttons" [min]="0" [max]="10" />
+            <!-- <input [(ngModel)]="excused" type="number" class="flex-auto" autocomplete="off" min="1" /> -->
+        </div>
+        <div class="flex justify-end gap-1">
+            <p-button label="Cancel" severity="secondary" (click)="showDeclineDialog = false" />
+            <p-button label="Save" severity="contrast" (click)="refuse()" />
+        </div>
+    </p-dialog>
 </div>
 
 <p-toast />

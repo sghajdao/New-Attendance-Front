@@ -17,6 +17,7 @@ export class WithdrawComponent implements OnInit {
 
   students?: Attendance[]
   requests?: WflistResponse[]
+  withdrawnStudents: WflistResponse[] = []
 
   wfStudent?: Attendance
 
@@ -36,5 +37,9 @@ export class WithdrawComponent implements OnInit {
 
   addToWflist(student: Attendance) {
     this.wfStudent = student
+  }
+
+  getWithdrawnStudents(students: WflistResponse[]) {
+    this.withdrawnStudents = students
   }
 }
