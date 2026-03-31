@@ -187,6 +187,10 @@ export class AdminListComponent implements OnChanges, OnInit {
     this.approved = this.students.filter(a => a.wf === true).length
   }
 
+  getNumberOfWf(student: WflistResponse) {
+    return this.students.filter(a => a.student_id === student.student_id && a.course === student.course && a.wf === true).length
+  }
+
   formatDateToDDMMYYY(date: Date): string {
     date = new Date(date)
     const day = String(date.getDate()).padStart(2, '0');

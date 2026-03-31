@@ -24,6 +24,7 @@ Reason: Excessive absences (absences: {{item.count}}, limit: {{item.absent_limit
 Requested by: Dr. {{item.teacher_name}}
 Requested on: {{formatDateToDDMMYYY(item.request_date)}}
 <span *ngIf="item.wf && item.approve_date">Approved on: {{formatDateToDDMMYYY(item.approve_date)}}</span></pre>
+<span *ngIf="isAdmin">Withdrawal courses: {{getNumberOfWf(item)}}</span>
                     </div>
                     <div *ngIf="!item.wf && isAdmin" style="display: flex;">
                         <p-button (click)="openDialog($event, item, 0)" icon="pi pi-check" label="Approve" variant="outlined" severity="success" />
