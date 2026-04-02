@@ -42,22 +42,24 @@ export class TableComponent implements OnInit {
   late: number = 0
 
   searchQuery(flag: number) {
-    if (this.selectedStudent && this.attendance && flag === 0) {
-      this.filteredData = this.attendance.filter(a => a.student_sis_id === this.selectedStudent)
-      this.fillTags(this.filteredData)
+    // Start with the original attendance data
+    let filtered = this.attendance ? [...this.attendance] : [];
+    
+    if (this.selectedStudent) {
+      filtered = filtered.filter(a => a.student_sis_id === this.selectedStudent);
     }
-    else if (this.selectedAttenanceType && this.attendance && flag === 1) {
-      this.filteredData = this.attendance.filter(a => a.attendance === this.selectedAttenanceType)
-      this.fillTags(this.filteredData)
+    
+    if (this.selectedAttenanceType) {
+      filtered = filtered.filter(a => a.attendance === this.selectedAttenanceType);
     }
-    else if (this.selectedCourse && this.attendance && flag === 2) {
-      this.filteredData = this.attendance.filter(a => a.course_sis_id === this.selectedCourse)
-      this.fillTags(this.filteredData)
+    
+    if (this.selectedCourse) {
+      filtered = filtered.filter(a => a.course_sis_id === this.selectedCourse);
     }
-    else if (this.attendance) {
-        this.filteredData = this.attendance
-        this.fillTags(this.filteredData)
-    }
+    
+    this.filteredData = filtered;
+    
+    this.fillTags(this.filteredData);
   }
 
   fillTags(data: Attendance[]) {

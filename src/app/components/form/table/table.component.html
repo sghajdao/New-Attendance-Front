@@ -51,7 +51,7 @@
         </div>
     </div>
 
-    <p-table [virtualScroll]="true" [virtualScrollItemSize]="100" [lazy]="true" [value]="filteredData" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+    <p-table [virtualScroll]="true" [rows]="100" [virtualScrollItemSize]="60" [lazy]="true" [value]="filteredData" [scrollable]="true" scrollHeight="500px" [tableStyle]="{'min-width': '50rem'}">
         <ng-template #header>
             <tr>
                 <th>ID</th>

@@ -17,14 +17,14 @@
                     <div>
                         <p *ngIf="!item.wf" class="student-name">{{item.first_name}} {{item.last_name}}&emsp;<p-tag icon="pi pi-clock" severity="warn" value="Pending" [rounded]="true" /></p>
                         <p *ngIf="item.wf" class="student-name">{{item.first_name}} {{item.last_name}}&emsp;<p-tag icon="pi pi-check" severity="success" value="Approved" [rounded]="true" /></p>
-                        <pre style="color: gray;">
+                        <pre style="color: gray;margin-bottom: 0;">
 Student ID: {{item.student_id}}
 Course: {{item.course_cde}}
 Reason: Excessive absences (absences: {{item.count}}, limit: {{item.absent_limit}})
 Requested by: Dr. {{item.teacher_name}}
 Requested on: {{formatDateToDDMMYYY(item.request_date)}}
 <span *ngIf="item.wf && item.approve_date">Approved on: {{formatDateToDDMMYYY(item.approve_date)}}</span></pre>
-<span *ngIf="isAdmin">Withdrawal courses: {{getNumberOfWf(item)}}</span>
+<pre style="margin-bottom: 0;"><span *ngIf="isAdmin" style="color: gray;">Withdrawal courses: {{getNumberOfWf(item)}}</span></pre>
                     </div>
                     <div *ngIf="!item.wf && isAdmin" style="display: flex;">
                         <p-button (click)="openDialog($event, item, 0)" icon="pi pi-check" label="Approve" variant="outlined" severity="success" />
