@@ -34,6 +34,8 @@ export class AdminListComponent implements OnChanges, OnInit {
 
   selectedStudent: string = ''
 
+  loading: boolean = false
+
   ngOnInit(): void {
     this.isAdmin = this.attendanceService.getAuthRequest().email === 'Y.Akhoubi@aui.ma' || this.attendanceService.getAuthRequest().email === 'S.Ghajdaoui@aui.ma'
   }
@@ -111,6 +113,7 @@ export class AdminListComponent implements OnChanges, OnInit {
   }
 
   approve(student: WflistResponse) {
+    this.loading = true
     let request: Attendance = {
       student_sis_id: student.student_id,
       course_sis_id: student.course,
@@ -136,13 +139,22 @@ export class AdminListComponent implements OnChanges, OnInit {
           this.messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'The student has been successfully withdrawn' })
           this.approved = this.students.filter(a => a.wf === true).length
           this.pending = this.students.filter(a => a.wf === false).length
-        }
-      }
+          this.loading = false
+         } else {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'An error occurred while withdrawing the student' })
+          this.loading = false
+         }
+       },
+      error: err => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'An error occurred while withdrawing the student' })
+        this.loading = false
+       }
     })
   }
 
   refuse() {
     if (!this.studentToDecline) return
+    this.loading = true
     this.studentToDecline.excused = this.excused
     this.showDeclineDialog = false
     let request: Wflist = {
@@ -165,9 +177,11 @@ export class AdminListComponent implements OnChanges, OnInit {
         this.total = this.students.length
         this.pending = this.students.filter(a => a.wf === false).length
         this.messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'Successfully refused the request' })
+        this.loading = false
       },
       error: err => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'An error occurred while refusing the request' })
+        this.loading = false
       }
     })
   }

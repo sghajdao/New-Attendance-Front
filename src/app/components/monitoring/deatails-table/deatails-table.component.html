@@ -1,0 +1,71 @@
+<p-card >
+    <p class="title">
+        <i class="pi pi-file mr-2" style="font-size: 1.2rem"></i>
+        Student Details Table
+    </p>
+    <p class="subtitle">All student-course enrollment records with attendance information</p>
+
+    <p-table [value]="students" stripedRows [tableStyle]="{'min-width': '50rem'}">
+        <ng-template #header>
+            <tr>
+                <th>Student ID</th>
+                <th>Full Name</th>
+                <th>Entrance Year</th>
+                <th>Division</th>
+                <th>Course</th>
+                <th>Status</th>
+                <th>Seniority</th>
+                <th>Grade</th>
+                <th>Drop Date</th>
+                <th>Withdraw Date</th>
+                <th>Withdraw Reason</th>
+                <th>Schedule</th>
+                <th>Level</th>
+                <th>Attendance</th>
+                <th>Att. Date</th>
+                <th>Teacher ID</th>
+                <th>Teacher Name</th>
+                <th>Admin Meetings</th>
+            </tr>
+        </ng-template>
+
+        idNum: string;
+    firstName: string;
+    lastName: string;
+    crsCde: string;
+    yrCde: string;
+    trmCde: string;
+    crsDiv: string;
+    studentDiv: string;
+    status: string;
+    grade: string;
+    gradeChangeDate: Date;
+    schedule: string;
+    entanceYr: string;
+    entanceTrm: string;
+    visaType: string;
+    seniority: string;
+        <ng-template #body let-student>
+            <tr>
+                <td>{{student.idNum}}</td>
+                <td>{{student.firstName}} {{student.lastName}}</td>
+                <td>{{student.entranceYr}}</td>
+                <td><p-tag severity="contrast" [style]="{'border-radius': '18px'}" [value]="student.studentDiv" [rounded]="true" /></td>
+                <td>{{student.crsCde}}</td>
+                <td>{{student.attendance}}</td>
+                <td><p-tag severity="success" [style]="{'border-radius': '18px'}" [value]="student.status"  [rounded]="true" /></td>
+                <td>{{student.seniority}}</td>
+                <td>{{student.grade}}</td>
+                <td>{{student.grade === 'D'? student.gradeChangeDate : '-'}}</td>
+                <td>{{student.grade === 'WF'? student.gradeChangeDate : '-'}}</td>
+                <td>{{student.grade === 'WF'? 'Exceeding the allowed number of absences' : '-'}}</td>
+                <td>{{student.schedule}}</td>
+                <td>{{student.crsDiv}}</td>
+                <td>{{student.attendance}}</td>
+                <td>{{student.attendance}}</td>
+                <td>{{student.attendance}}</td>
+                <td><p-badge value="2" severity="danger" /></td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-card>

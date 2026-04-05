@@ -1,13 +1,13 @@
 export interface FilrterRequest {
     userId?: number,
     userEmail?: string,
-    session: string,
-    studentIds: string[],
-    courseId: string,
-    seniority: string,
-    status: string,
-    grade: string[] | null,
-    wfLevel:string | null,
-    startDate: Date,
-    endDate: Date
+    session?: string,
+    studentIds?: string[],
+    courseId?: string,
+    seniority?: string,
+    status?: string,
+    grade?: string[] | null,
+    wfLevel?:string | null,
+    startDate?: Date,
+    endDate?: Date
 }

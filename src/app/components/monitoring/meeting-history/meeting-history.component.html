@@ -1,0 +1,88 @@
+<p-card>
+    <div class="header">
+        <div>
+            <p class="title">
+                <i class="pi pi-calendar mr-2" style="font-size: 1.2rem"></i>
+                Meeting Tracking History
+            </p>
+            <p class="subtitle">
+                Records of emails, meetings, and follow-ups with students
+            </p>
+        </div>
+        
+        <p-button label="New Meeting" severity="contrast" (onClick)="showDialog(undefined)" icon="pi pi-plus" />
+    </div>
+
+    <p-table [value]="students" stripedRows [tableStyle]="{'min-width': '50rem'}">
+    <ng-template #header>
+        <tr>
+            <th>Student SIS ID</th>
+            <th>Student Name</th>
+            <th>Course SIS ID</th>
+            <th>Meeting Date</th>
+            <th>Type</th>
+            <th>Comments / Notes</th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-student>
+        <tr class="line" (click)="showDialog(student)">
+            <td>{{student.studentSisId}}</td>
+            <td>{{student.studentName}}</td>
+            <td>{{student.courseSisId}}</td>
+            <td>{{student.createdAt | date}}</td>
+            <td>{{student.type}}</td>
+            <td>{{student.comment}}</td>
+        </tr>
+    </ng-template>
+</p-table>
+</p-card>
+
+<p-dialog header="New Meeting" [modal]="true" [(visible)]="visible" [style]="{ width: '30rem' }" [formGroup]="globalFormGroup">
+    <span class="p-text-secondary block mb-8">Send a meeting invitation to the student.</span>
+
+    <div class="grid grid-cols-[100px_1fr] items-center gap-4 mb-4">
+        <label for="studentId" class="font-semibold">Student ID</label>
+        <input pInputText id="studentId" class="w-full" formControlName="studentId" />
+    </div>
+
+    <div class="grid grid-cols-[100px_1fr] items-center gap-4 mb-4">
+        <label for="date" class="font-semibold">Date</label>
+        <p-datepicker 
+            id="date"
+            [iconDisplay]="'input'"
+            [showIcon]="true"
+            appendTo="body"
+            class="w-full"
+            formControlName="date"
+        />
+    </div>
+
+    <div class="grid grid-cols-[100px_1fr] items-center gap-4 mb-4">
+        <label for="type" class="font-semibold">Type</label>
+        <p-select 
+            [options]="types"
+            placeholder="Select a Type"
+            appendTo="body"
+            class="w-full"
+            formControlName="type"
+        />
+    </div>
+
+    <div class="grid grid-cols-[100px_1fr] items-center gap-4 mb-4">
+        <label for="comment" class="font-semibold">Comment</label>
+        <textarea 
+            id="comment"
+            formControlName="comment"
+            variant="filled"
+            rows="5"
+            cols="30"
+            pTextarea
+            class="w-full"
+        ></textarea>
+    </div>
+
+    <div class="flex justify-end gap-2">
+        <p-button label="Cancel" severity="secondary" (click)="visible = false" />
+        <p-button label="Save" severity="contrast" (onClick)="onSave()" />
+    </div>
+</p-dialog>

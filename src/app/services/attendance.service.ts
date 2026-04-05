@@ -8,6 +8,9 @@ import { AuthRequest } from '../models/dto/authRequest';
 import { Wflist } from '../models/entities/wflist';
 import { BehaviorSubject } from 'rxjs';
 import { WflistResponse } from '../models/dto/wflistResponse';
+import { StudentTracking } from '../models/entities/studentTracking';
+import { SearchDto } from '../models/dto/searchDto';
+import { StudentInfo } from '../models/dto/studentInfo';
 
 @Injectable({
   providedIn: 'root'
@@ -50,6 +53,22 @@ export class AttendanceService {
 
   refuseRequest(student: Wflist) {
     return this.http.post<boolean>(environment.refuseUrl, student)
+  }
+
+  trackStudent(request: StudentTracking) {
+    return this.http.post<StudentTracking>(environment.trackingUrl + '/track', request)
+  }
+
+  getStudentsTracking(request: SearchDto) {
+    return this.http.post<StudentTracking[]>(environment.trackingUrl + '/search', request)
+  }
+
+  getStudentsInfo(request: SearchDto) {
+    return this.http.post<StudentInfo[]>(environment.jenzabarUrl + '/students-info', request)
+  }
+
+  getRedFlagStudents() {
+    return this.http.post<Attendance[]>(environment.wfUrl + '/red-flag-students', this.getAuthRequest())
   }
 
   getAuthRequest() {

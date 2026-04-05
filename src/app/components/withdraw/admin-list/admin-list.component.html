@@ -27,8 +27,8 @@ Requested on: {{formatDateToDDMMYYY(item.request_date)}}
 <pre style="margin-bottom: 0;"><span *ngIf="isAdmin" style="color: gray;">Withdrawal courses: {{getNumberOfWf(item)}}</span></pre>
                     </div>
                     <div *ngIf="!item.wf && isAdmin" style="display: flex;">
-                        <p-button (click)="openDialog($event, item, 0)" icon="pi pi-check" label="Approve" variant="outlined" severity="success" />
-                        <p-button (click)="getStudentToDecline(item)" icon="pi pi-times" label="Decline" variant="outlined" severity="danger" />
+                        <p-button (click)="openDialog($event, item, 0)" icon="pi pi-check" label="Approve" variant="outlined" severity="success" [disabled]="loading" />
+                        <p-button (click)="getStudentToDecline(item)" icon="pi pi-times" label="Decline" variant="outlined" severity="danger" [disabled]="loading" />
                     </div>
                 </div>
             </div>

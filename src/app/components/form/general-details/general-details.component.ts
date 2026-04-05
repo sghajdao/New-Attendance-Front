@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Attendance } from '../../../models/entities/attendance';
-import { IndexeddbService } from '../../../services/indexeddb.service';
 import { AttendanceService } from '../../../services/attendance.service';
 
 @Component({

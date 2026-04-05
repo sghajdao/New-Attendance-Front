@@ -8,5 +8,8 @@ export const environment = {
     addWflistUrl: 'https://attendance.aui.ma/wf/add-wflist',
     WflistUrl: 'https://attendance.aui.ma/wf/wflist',
     WithdrawUrl: 'https://attendance.aui.ma/wf/withdraw',
-    refuseUrl: 'https://attendance.aui.ma/wf/refuse'
+    refuseUrl: 'https://attendance.aui.ma/wf/refuse',
+    jenzabarUrl: 'https://attendance.aui.ma/jenzabar',
+    trackingUrl: 'https://attendance.aui.ma/api/student-tracking',
+    wfUrl: 'https://attendance.aui.ma/wf/red-flag-students',
 };
