@@ -8,11 +8,14 @@
     </p>
 
     <div class="list" *ngFor="let value of students">
-        <div class="card p-3">
+        <div *ngIf="!students.length" class="loading">
+            <p-progress-spinner ariaLabel="loading" />
+        </div>
+        <div *ngIf="students.length" class="card p-3">
             <div class="header">
                 <div>
-                    <p class="name">Bob Smith</p>
-                    <p class="course">CS201 — Data Structures</p>
+                    <p class="name">{{value.name}}</p>
+                    <p class="course">{{value.course}}</p>
                 </div>
                 <p-tag severity="warn" [style]="{'border-radius': '18px'}" value="67% reached" [rounded]="true" />
             </div>

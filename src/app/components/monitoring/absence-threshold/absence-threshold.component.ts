@@ -13,11 +13,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     private attendanceService: AttendanceService,
   ) { }
 
-  students = [
-    { label: 'Absences: 4 / 6', value: 67, color: 'black' },
-    { label: 'Absences: 4 / 6', value: 67, color: 'black' },
-    { label: 'Absences: 4 / 6', value: 67, color: 'black' },
-  ];
+  students: { label: string; value: number; color: string; name: string; course: string }[] = [];
   subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
@@ -27,7 +23,9 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         this.students = res.map((student: any) => ({
           label: `Absences: ${student.count} / ${student.absentLimit}`,
           value: (student.count / student.absentLimit) * 100,
-          color: student.count >= student.absentLimit ? 'red' : 'black'
+          color: student.count >= student.absentLimit ? 'red' : 'black',
+          name: `${student.firstName} ${student.lastName}`,
+          course: `${student.course_sis_id}`
         }));
       },
       error: (err) => {

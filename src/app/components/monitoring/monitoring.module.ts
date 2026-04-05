@@ -26,6 +26,7 @@ import { DialogModule } from 'primeng/dialog';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 
 @NgModule({
@@ -59,6 +60,7 @@ import { TextareaModule } from 'primeng/textarea';
     DatePickerModule,
     SelectModule,
     TextareaModule,
+    ProgressSpinnerModule,
   ],
   providers: [MessageService]
 })
