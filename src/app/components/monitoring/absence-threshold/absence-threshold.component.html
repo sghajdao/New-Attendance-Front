@@ -1,4 +1,4 @@
-<p-card>
+<p-card [style]="{'height': '800px', 'overflow-y': 'auto'}">
     <p class="title">
         <i class="pi pi-exclamation-triangle mr-2" style="font-size: 1.2rem"></i>
         Absence Threshold Monitoring (≥ 50%)
@@ -7,17 +7,17 @@
         Students who have reached at least 50% of the absence limit
     </p>
 
+    <div *ngIf="!students.length" class="loading-container">
+        <p-progress-spinner ariaLabel="loading" />
+    </div>
     <div class="list" *ngFor="let value of students">
-        <div *ngIf="!students.length" class="loading">
-            <p-progress-spinner ariaLabel="loading" />
-        </div>
         <div *ngIf="students.length" class="card p-3">
             <div class="header">
                 <div>
                     <p class="name">{{value.name}}</p>
                     <p class="course">{{value.course}}</p>
                 </div>
-                <p-tag severity="warn" [style]="{'border-radius': '18px'}" value="67% reached" [rounded]="true" />
+                <p-tag severity="warn" [style]="{'border-radius': '18px'}" [value]="value.value +'% reached'" [rounded]="true" />
             </div>
 
             <p-metergroup [value]="[value]" />

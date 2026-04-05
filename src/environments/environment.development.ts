@@ -10,6 +10,6 @@ export const environment = {
     WithdrawUrl: 'https://attendance.aui.ma/wf/withdraw',
     refuseUrl: 'https://attendance.aui.ma/wf/refuse',
     jenzabarUrl: 'https://attendance.aui.ma/jenzabar',
-    trackingUrl: 'https://attendance.aui.ma/api/student-tracking',
+    trackingUrl: 'https://attendance.aui.ma/monitoring',
     wfUrl: 'https://attendance.aui.ma/wf/red-flag-students',
 };

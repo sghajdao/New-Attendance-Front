@@ -11,16 +11,15 @@
 
 .list {
     width: 100%;
-    height: 800px;
-    overflow-y: auto;
     margin: 5px;
 }
 
-.loading {
+.loading-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100px;
+    min-height: 500px;
+    width: 100%;
 }
 
 .card {

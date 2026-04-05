@@ -22,7 +22,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         console.log(res);
         this.students = res.map((student: any) => ({
           label: `Absences: ${student.count} / ${student.absentLimit}`,
-          value: (student.count / student.absentLimit) * 100,
+          value: +((student.count / student.absentLimit) * 100).toFixed(2),
           color: student.count >= student.absentLimit ? 'red' : 'black',
           name: `${student.firstName} ${student.lastName}`,
           course: `${student.course_sis_id}`

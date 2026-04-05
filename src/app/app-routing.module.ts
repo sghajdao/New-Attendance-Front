@@ -15,7 +15,7 @@ const routes: Routes = [
     loadChildren:()=>import("./components/withdraw/withdraw.module").then(m=>m.WithdrawModule),
   },
   {
-    path: "monitoring",
+    path: "tracking",
     loadChildren:()=>import("./components/monitoring/monitoring.module").then(m=>m.MonitoringModule),
   },
   {
