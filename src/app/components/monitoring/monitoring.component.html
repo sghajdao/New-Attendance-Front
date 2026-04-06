@@ -1,6 +1,6 @@
 <div class="page">
     <div class="content">
-        <app-filters></app-filters>
+        <app-filters (search)="getSearchDto($event)"></app-filters>
         <div class="driver-buttons">
             <button class="driver-button" (click)="changeDriver(0)" [style]="drivers[0] ? 'background-color: white; color: black;' : 'background-color: #e5eff9; color: grey;'">
                 <i class="pi pi-file" style="font-size: 1rem"></i>
@@ -16,8 +16,8 @@
             </button>
         </div>
         <app-deatails-table *ngIf="drivers[0]"></app-deatails-table>
-        <app-absence-threshold *ngIf="drivers[1]"></app-absence-threshold>
-        <app-meeting-history *ngIf="drivers[2]"></app-meeting-history>
+        <app-absence-threshold *ngIf="drivers[1]" [searchDto]="searchDto"></app-absence-threshold>
+        <app-meeting-history *ngIf="drivers[2]" [searchDto]="searchDto"></app-meeting-history>
     </div>
     <app-navbar></app-navbar>
 </div>

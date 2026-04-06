@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { SearchDto } from '../../../models/dto/searchDto';
 
 @Component({
   selector: 'app-filters',
@@ -13,6 +14,7 @@ export class FiltersComponent implements OnInit {
   ) { }
 
   globalFormGroup!: FormGroup;
+  @Output() search = new EventEmitter<SearchDto>();
 
   students: string[] = [
     'John Doe',
@@ -40,5 +42,9 @@ export class FiltersComponent implements OnInit {
       courseIds: [[]],
       seniorities: [[]],
     });
+  }
+
+  onSearch() {
+    this.search.emit(this.globalFormGroup.value);
   }
 }

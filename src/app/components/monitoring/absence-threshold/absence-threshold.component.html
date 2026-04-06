@@ -16,6 +16,7 @@
                 <div>
                     <p class="name">{{value.name}}</p>
                     <p class="course">{{value.course}}</p>
+                    <p class="seniority">{{value.seniority === 'FR' ? 'Freshman' : value.seniority === 'SO' ? 'Sophomore' : value.seniority === 'JR' ? 'Junior' : value.seniority === 'SR' ? 'Senior' : value.seniority === 'GR' ? 'Graduate' : value.seniority}}</p>
                 </div>
                 <p-tag severity="warn" [style]="{'border-radius': '18px'}" [value]="value.value +'% reached'" [rounded]="true" />
             </div>

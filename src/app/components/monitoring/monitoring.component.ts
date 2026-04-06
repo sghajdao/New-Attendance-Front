@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SearchDto } from '../../models/dto/searchDto';
 
 @Component({
   selector: 'app-monitoring',
@@ -10,11 +11,16 @@ export class MonitoringComponent implements OnInit{
   constructor() { }
 
   drivers: boolean[] = [true, false, false];
+  searchDto?: SearchDto;
 
   ngOnInit(): void {}
 
   changeDriver(index: number): void {
     this.drivers = [false, false, false];
     this.drivers[index] = !this.drivers[index];
+  }
+
+  getSearchDto(event: SearchDto) {
+    this.searchDto = event;
   }
 }

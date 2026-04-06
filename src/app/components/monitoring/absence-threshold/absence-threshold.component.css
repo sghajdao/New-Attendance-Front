@@ -18,7 +18,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 500px;
+    min-height: 700px;
     width: 100%;
 }
 
@@ -41,5 +41,10 @@
 
 .course {
     font-size: 16px;
+    color: #a0a0a0;
+}
+
+.seniority {
+    font-size: 14px;
     color: #a0a0a0;
 }
