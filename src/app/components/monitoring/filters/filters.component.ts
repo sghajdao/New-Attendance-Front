@@ -31,7 +31,7 @@ export class FiltersComponent implements OnInit {
 
     this.globalFormGroup = this.fb.group({
       studentIds: [[]],
-      courseIds: [[]],
+      courses: [[]],
       seniorities: [[]],
     });
   }

@@ -49,6 +49,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
         this.students = this.studentsBackup.filter(student => this.searchDto?.courses?.includes(student.course))
       if (this.searchDto.seniorities?.length)
         this.students = this.studentsBackup.filter(student => this.searchDto?.seniorities?.includes(student.seniority))
+      else
+        this.students = this.studentsBackup;
       console.log(this.students);
     }
   }
