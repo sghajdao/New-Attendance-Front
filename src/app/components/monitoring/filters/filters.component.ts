@@ -1,6 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SearchDto } from '../../../models/dto/searchDto';
+import { InitData } from '../../../models/dto/initData';
 
 @Component({
   selector: 'app-filters',
@@ -23,9 +24,9 @@ export class FiltersComponent implements OnInit {
   ngOnInit(): void {
     const storage = localStorage.getItem('init');
     if (storage) {
-      const init = JSON.parse(storage);
-      this.students = init.students
-      this.courses = init.courses
+      const init: InitData[] = JSON.parse(storage);
+      this.students = init.filter(c => c.trmCde === 'SP').at(0)?.students || []
+      this.courses = init.filter(c => c.trmCde === 'SP').at(0)?.courses || []
     }
 
     this.globalFormGroup = this.fb.group({
