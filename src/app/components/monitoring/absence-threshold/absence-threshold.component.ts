@@ -43,12 +43,12 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['searchDto'] && this.searchDto && this.students.length) {
       console.log(this.searchDto);
-      this.students = this.studentsBackup.filter(student => {
-        const matchesId = this.searchDto?.studentIds && this.searchDto.studentIds.length > 0 ? this.searchDto.studentIds.some((id: string) => student.id.toLowerCase().includes(id.toLowerCase())) : true;
-        const matchesCourse = this.searchDto?.courses && this.searchDto.courses.length > 0 ? this.searchDto.courses.some((course: string) => student.course.toLowerCase().includes(course.toLowerCase())) : true;
-        const matchesSeniority = this.searchDto?.seniorities && this.searchDto.seniorities.length > 0 ? this.searchDto.seniorities.some((seniority: string) => student.seniority.toLowerCase().includes(seniority.toLowerCase())) : true;
-        return matchesId && matchesCourse && matchesSeniority;
-      });
+      if (this.searchDto.studentIds?.length)
+        this.students = this.studentsBackup.filter(student => this.searchDto?.studentIds?.includes(student.id))
+      if (this.searchDto.courses?.length)
+        this.students = this.studentsBackup.filter(student => this.searchDto?.courses?.includes(student.course))
+      if (this.searchDto.seniorities?.length)
+        this.students = this.studentsBackup.filter(student => this.searchDto?.seniorities?.includes(student.seniority))
       console.log(this.students);
     }
   }
