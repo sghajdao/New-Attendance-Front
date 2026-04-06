@@ -16,27 +16,18 @@ export class FiltersComponent implements OnInit {
   globalFormGroup!: FormGroup;
   @Output() search = new EventEmitter<SearchDto>();
 
-  students: string[] = [
-    'John Doe',
-    'Jane Smith',
-    'Alice Johnson',
-    'Bob Brown',
-    'Charlie Davis'
-  ];
-  courses: string[] = [
-    'Mathematics',
-    'Physics',
-    'Chemistry',
-    'Biology',
-    'Computer Science'
-  ];
-  seniorities: string[] = [
-    'Junior',
-    'Mid-level',
-    'Senior',
-  ];
+  students: string[] = []
+  courses: string[] = []
+  seniorities: string[] = ['FR', 'SO', 'JR', 'SR', 'GR']
 
   ngOnInit(): void {
+    const storage = localStorage.getItem('init');
+    if (storage) {
+      const init = JSON.parse(storage);
+      this.students = init.students
+      this.courses = init.courses
+    }
+
     this.globalFormGroup = this.fb.group({
       studentIds: [[]],
       courseIds: [[]],
