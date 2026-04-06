@@ -15,21 +15,23 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   ) { }
 
   @Input() searchDto?: SearchDto
-  students: { label: string; value: number; color: string; name: string; course: string, seniority: string }[] = [];
+  students: { label: string; value: number; color: string; name: string; course: string, seniority: string, id: string }[] = [];
+  studentsBackup: { label: string; value: number; color: string; name: string; course: string, seniority: string, id: string }[] = [];
   subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
     const sub = this.attendanceService.getRedFlagStudents().subscribe({
       next: (res) => {
-        console.log(res);
         this.students = res.map((student: any) => ({
           label: `Absences: ${student.count} / ${student.absentLimit}`,
           value: +((student.count / student.absentLimit) * 100).toFixed(2),
           color: student.count >= student.absentLimit ? 'red' : 'black',
           name: `${student.firstName} ${student.lastName}`,
           course: `${student.course_sis_id}`,
-          seniority: student.seniority
+          seniority: student.seniority,
+          id: student.student_sis_id
         }));
+        this.studentsBackup = [...this.students];
       },
       error: (err) => {
         console.error(err);
@@ -40,12 +42,14 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['searchDto'] && this.searchDto && this.students.length) {
-      this.students = this.students.filter(student => {
-        const matchesName = this.searchDto?.studentIds && this.searchDto.studentIds.length > 0 ? this.searchDto.studentIds.some((id: string) => student.name.toLowerCase().includes(id.toLowerCase())) : true;
+      console.log(this.searchDto);
+      this.students = this.studentsBackup.filter(student => {
+        const matchesId = this.searchDto?.studentIds && this.searchDto.studentIds.length > 0 ? this.searchDto.studentIds.some((id: string) => student.id.toLowerCase().includes(id.toLowerCase())) : true;
         const matchesCourse = this.searchDto?.courses && this.searchDto.courses.length > 0 ? this.searchDto.courses.some((course: string) => student.course.toLowerCase().includes(course.toLowerCase())) : true;
         const matchesSeniority = this.searchDto?.seniorities && this.searchDto.seniorities.length > 0 ? this.searchDto.seniorities.some((seniority: string) => student.seniority.toLowerCase().includes(seniority.toLowerCase())) : true;
-        return matchesName && matchesCourse && matchesSeniority;
+        return matchesId && matchesCourse && matchesSeniority;
       });
+      console.log(this.students);
     }
   }
 
