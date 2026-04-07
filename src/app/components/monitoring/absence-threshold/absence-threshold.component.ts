@@ -42,16 +42,14 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['searchDto'] && this.searchDto && this.students.length) {
-      console.log(this.searchDto);
       if (this.searchDto.studentIds?.length)
         this.students = this.studentsBackup.filter(student => this.searchDto?.studentIds?.includes(student.id))
       if (this.searchDto.courses?.length)
-        this.students = this.studentsBackup.filter(student => this.searchDto?.courses?.includes(student.course))
+        this.students = this.students.filter(student => this.searchDto?.courses?.includes(student.course))
       if (this.searchDto.seniorities?.length)
-        this.students = this.studentsBackup.filter(student => this.searchDto?.seniorities?.includes(student.seniority))
-      else
+        this.students = this.students.filter(student => this.searchDto?.seniorities?.includes(student.seniority))
+      else if (!this.searchDto.studentIds?.length && !this.searchDto.courses?.length && !this.searchDto.seniorities?.length)
         this.students = this.studentsBackup;
-      console.log(this.students);
     }
   }
 
