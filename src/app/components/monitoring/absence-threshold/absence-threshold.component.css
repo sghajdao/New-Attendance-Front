@@ -12,6 +12,9 @@
 .list {
     width: 100%;
     margin: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .loading-container {
@@ -24,6 +27,8 @@
 
 .card {
     border-left: 4px solid #c2420d;
+    flex: 1 1 calc(50% - 10px);
+    min-width: 330px;
 }
 
 .header {
