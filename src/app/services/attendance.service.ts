@@ -64,7 +64,7 @@ export class AttendanceService {
   }
 
   getStudentsInfo(request: SearchDto) {
-    return this.http.post<StudentInfo[]>(environment.jenzabarUrl + '/students-info', request)
+    return this.http.post<StudentInfo[]>(environment.trackingUrl + '/info', request)
   }
 
   getRedFlagStudents() {
