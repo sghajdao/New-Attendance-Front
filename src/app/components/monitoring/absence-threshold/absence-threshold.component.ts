@@ -21,6 +21,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   loading: boolean = false
 
   ngOnInit(): void {
+    this.loading = true
     const sub = this.attendanceService.getRedFlagStudents().subscribe({
       next: (res) => {
         this.students = res.map((student: any) => ({
@@ -33,9 +34,11 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
           id: student.student_sis_id
         }));
         this.studentsBackup = [...this.students];
+        this.loading = false
       },
       error: (err) => {
         console.error(err);
+        this.loading = false
       }
     });
     this.subscriptions.push(sub);

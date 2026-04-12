@@ -23,11 +23,11 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
   students: StudentAttendanceDetails[] = [];
 
   ngOnInit(): void {
-    const sub = this.attendanceService.getStudentsInfo(this.searchDto || {}).subscribe({
+    const sub = this.attendanceService.getStudentsInfo().subscribe({
       next: (res) => {
         console.log(res.length);
         this.indexeddbService.addData(res, 'info')
-        this.students = res.slice(0, 100)
+        this.students = res
       },
       error: (err) => {
         console.error(err);
@@ -38,7 +38,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['searchDto'] && this.searchDto) {
-      this.attendanceService.getStudentsInfo(this.searchDto).subscribe({
+      this.attendanceService.getStudentsInfo().subscribe({
         next: (res) => {
           console.log(res);
           this.students = res
@@ -47,7 +47,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
           console.error(err);
         }
       })
-   }
+    }
   }
 
   // Add these helper methods to your component class:

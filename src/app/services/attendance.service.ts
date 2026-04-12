@@ -63,8 +63,8 @@ export class AttendanceService {
     return this.http.post<StudentTracking[]>(environment.trackingUrl + '/search', request)
   }
 
-  getStudentsInfo(request: SearchDto) {
-    return this.http.post<StudentAttendanceDetails[]>(environment.trackingUrl + '/info', request)
+  getStudentsInfo() {
+    return this.http.get<StudentAttendanceDetails[]>(environment.trackingUrl + '/info')
   }
 
   getRedFlagStudents() {

@@ -94,14 +94,8 @@
                 <td>
                     <div class="attendance-cell">
                         <span class="attendance-value" [class.low-attendance]="student.attendance < 75">
-                            {{student.attendance}}%
+                            {{student.attendance}}
                         </span>
-                        <p-progressBar 
-                            [value]="student.attendance" 
-                            [showValue]="false"
-                            [style]="{'height': '4px', 'width': '60px', 'margin-left': '8px'}"
-                            [styleClass]="student.attendance < 75 ? 'low-progress' : ''">
-                        </p-progressBar>
                     </div>
                 </td>
                 <td>{{student.attendanceDate | date:'yyyy-MM-dd'}}</td>
