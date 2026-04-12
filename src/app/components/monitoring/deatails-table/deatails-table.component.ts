@@ -1,8 +1,9 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { AttendanceService } from '../../../services/attendance.service';
 import { SearchDto } from '../../../models/dto/searchDto';
-import { StudentInfo } from '../../../models/dto/studentInfo';
 import { mergeMap, Subscription } from 'rxjs';
+import { StudentAttendanceDetails } from '../../../models/dto/studentAttendanceDetails';
+import { IndexeddbService } from '../../../services/indexeddb.service';
 
 @Component({
   selector: 'app-deatails-table',
@@ -13,18 +14,20 @@ import { mergeMap, Subscription } from 'rxjs';
 export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private attendanceService: AttendanceService,
+    private indexeddbService: IndexeddbService,
   ) { }
 
   @Input() searchDto?: SearchDto
   subscriptions: Subscription[] = [];
 
-  students: StudentInfo[] = [];
+  students: StudentAttendanceDetails[] = [];
 
   ngOnInit(): void {
     const sub = this.attendanceService.getStudentsInfo(this.searchDto || {}).subscribe({
       next: (res) => {
-        console.log(res);
-        this.students = res
+        console.log(res.length);
+        this.indexeddbService.addData(res, 'info')
+        this.students = res.slice(0, 100)
       },
       error: (err) => {
         console.error(err);

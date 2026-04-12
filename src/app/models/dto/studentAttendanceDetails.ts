@@ -1,4 +1,4 @@
-export interface StudentInfo {
+export interface StudentAttendanceDetails {
     idNum: string;
     firstName: string;
     lastName: string;
@@ -15,4 +15,6 @@ export interface StudentInfo {
     entanceTrm: string;
     visaType: string;
     seniority: string;
+    attendance: String;
+    attendanceDate: Date;
 }

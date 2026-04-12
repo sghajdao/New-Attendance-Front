@@ -10,7 +10,7 @@ import { BehaviorSubject } from 'rxjs';
 import { WflistResponse } from '../models/dto/wflistResponse';
 import { StudentTracking } from '../models/entities/studentTracking';
 import { SearchDto } from '../models/dto/searchDto';
-import { StudentInfo } from '../models/dto/studentInfo';
+import { StudentAttendanceDetails } from '../models/dto/studentAttendanceDetails';
 
 @Injectable({
   providedIn: 'root'
@@ -64,7 +64,7 @@ export class AttendanceService {
   }
 
   getStudentsInfo(request: SearchDto) {
-    return this.http.post<StudentInfo[]>(environment.trackingUrl + '/info', request)
+    return this.http.post<StudentAttendanceDetails[]>(environment.trackingUrl + '/info', request)
   }
 
   getRedFlagStudents() {
