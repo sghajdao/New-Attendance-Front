@@ -332,6 +332,7 @@
 .stats-footer {
     margin-top: 1.5rem;
     padding-top: 1rem;
+    margin-bottom: 1.5rem;
     border-top: 2px solid #f0f2f5;
     display: flex;
     justify-content: space-around;

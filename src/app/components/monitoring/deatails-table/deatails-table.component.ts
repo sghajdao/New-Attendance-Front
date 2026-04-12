@@ -23,17 +23,28 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
   students: StudentAttendanceDetails[] = [];
 
   ngOnInit(): void {
-    const sub = this.attendanceService.getStudentsInfo().subscribe({
-      next: (res) => {
-        console.log(res.length);
-        this.indexeddbService.addData(res, 'info')
-        this.students = res
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    })
-    this.subscriptions.push(sub);
+    const lastUpdate = localStorage.getItem('lastUpdate')
+    const initData = localStorage.getItem('init')
+    if (!(lastUpdate && new Date().getDate() <= new Date(JSON.parse(lastUpdate)).getDate() && new Date().getMonth() <= new Date(JSON.parse(lastUpdate)).getMonth()) || !initData) {
+      const sub = this.attendanceService.getStudentsInfo().subscribe({
+        next: (res) => {
+          console.log(res.length);
+          this.indexeddbService.clearData('info')
+          this.indexeddbService.addData(res, 'info')
+          this.students = res
+        },
+        error: (err) => {
+          console.error(err);
+        }
+      })
+      this.subscriptions.push(sub);
+    }
+    else {
+      this.indexeddbService.getData('info').then(data => {
+        console.log(data.length);
+        this.students = data
+      })
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
