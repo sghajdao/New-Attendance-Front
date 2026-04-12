@@ -5,14 +5,19 @@
     </p>
     <p class="subtitle">All student-course enrollment records with attendance information</p>
 
-    <p-table [value]="students" stripedRows [tableStyle]="{'min-width': '50rem'}">
+    <p-table [value]="students" stripedRows [tableStyle]="{'min-width': '50rem'}"
+        [paginator]="true"
+        [rows]="10"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        [rowsPerPageOptions]="[10, 20, 30]"
+    >
         <ng-template #header>
             <tr>
                 <th>Student ID</th>
-                <th>Full Name</th>
+                <th style="width: 130px;">Full Name</th>
                 <th>Entrance Year</th>
                 <th>Division</th>
-                <th>Course</th>
+                <th style="width: 130px;">Course</th>
                 <th>Status</th>
                 <th>Seniority</th>
                 <th>Grade</th>
@@ -23,28 +28,12 @@
                 <th>Level</th>
                 <th>Attendance</th>
                 <th>Att. Date</th>
-                <th>Teacher ID</th>
+                <!-- <th>Teacher ID</th>
                 <th>Teacher Name</th>
-                <th>Admin Meetings</th>
+                <th>Admin Meetings</th> -->
             </tr>
         </ng-template>
 
-        idNum: string;
-    firstName: string;
-    lastName: string;
-    crsCde: string;
-    yrCde: string;
-    trmCde: string;
-    crsDiv: string;
-    studentDiv: string;
-    status: string;
-    grade: string;
-    gradeChangeDate: Date;
-    schedule: string;
-    entanceYr: string;
-    entanceTrm: string;
-    visaType: string;
-    seniority: string;
         <ng-template #body let-student>
             <tr>
                 <td>{{student.idNum}}</td>
@@ -62,7 +51,7 @@
                 <td>{{student.schedule}}</td>
                 <td>{{student.crsDiv}}</td>
                 <td>{{student.attendance}}</td>
-                <td>{{student.attendance}}</td>
+                <td>{{student.attendanceDate}}</td>
                 <td>{{student.attendance}}</td>
                 <td><p-badge value="2" severity="danger" /></td>
             </tr>
