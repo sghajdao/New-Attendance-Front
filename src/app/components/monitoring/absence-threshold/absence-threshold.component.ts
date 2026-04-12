@@ -18,6 +18,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   students: { label: string; value: number; color: string; name: string; course: string, seniority: string, id: string }[] = [];
   studentsBackup: { label: string; value: number; color: string; name: string; course: string, seniority: string, id: string }[] = [];
   subscriptions: Subscription[] = [];
+  loading: boolean = false
 
   ngOnInit(): void {
     const sub = this.attendanceService.getRedFlagStudents().subscribe({
@@ -51,6 +52,54 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
       else if (!this.searchDto.studentIds?.length && !this.searchDto.courses?.length && !this.searchDto.seniorities?.length)
         this.students = this.studentsBackup;
     }
+  }
+
+  getInitials(name: string): string {
+      if (!name) return '?';
+      return name.split(' ')
+          .map(part => part[0])
+          .join('')
+          .toUpperCase()
+          .slice(0, 2);
+  }
+
+  formatSeniority(seniority: string): string {
+      const seniorityMap: Record<string, string> = {
+          'FR': 'Freshman',
+          'SO': 'Sophomore', 
+          'JR': 'Junior',
+          'SR': 'Senior',
+          'GR': 'Graduate'
+      };
+      return seniorityMap[seniority] || seniority;
+  }
+
+  getThresholdSeverity(value: number): 'success' | 'warning' | 'danger' | 'info' {
+      if (value >= 75) return 'danger';
+      if (value >= 50) return 'warning';
+      return 'info';
+  }
+
+  getRiskClass(value: number): string {
+      if (value >= 75) return 'high-risk';
+      if (value >= 60) return 'medium-risk';
+      return 'low-risk';
+  }
+
+  getProgressClass(value: number): string {
+      if (value >= 75) return 'high';
+      if (value >= 50) return 'medium';
+      return 'low';
+  }
+
+  getAverageThreshold(): number {
+      if (!this.students.length) return 0;
+      const sum = this.students.reduce((acc, s) => acc + s.value, 0);
+      return Math.round(sum / this.students.length);
+  }
+
+  getCriticalCount(): number {
+      return this.students.filter(s => s.value >= 75).length;
   }
 
   ngOnDestroy(): void {

@@ -1,27 +1,104 @@
-<p-card [style]="{'height': '800px', 'overflow-y': 'auto'}">
-    <p class="title">
-        <i class="pi pi-exclamation-triangle mr-2" style="font-size: 1.2rem"></i>
-        Absence Threshold Monitoring (≥ 50%)
-    </p>
-    <p class="subtitle">
-        Students who have reached at least 50% of the absence limit
-    </p>
-
-    <div *ngIf="!students.length" class="loading-container">
-        <p-progress-spinner ariaLabel="loading" />
+<p-card [style]="{'height': '800px', 'overflow-y': 'auto'}" styleClass="threshold-card">
+    <div class="card-header">
+        <div class="title-section">
+            <i class="pi pi-exclamation-triangle mr-2 warning-icon"></i>
+            <span class="title">Absence Threshold Monitoring</span>
+            <p-tag severity="danger" [value]="'≥ 50%'" styleClass="threshold-badge"></p-tag>
+        </div>
+        <p class="subtitle">
+            Students who have reached at least 50% of the absence limit
+            <span class="student-count" *ngIf="students.length">({{students.length}} students)</span>
+        </p>
     </div>
-    <div class="list" *ngFor="let value of students">
-        <div *ngIf="students.length" class="card p-3">
-            <div class="header">
-                <div>
-                    <p class="name">{{value.name}}</p>
-                    <p class="course">{{value.course}}</p>
-                    <p class="seniority">{{value.seniority === 'FR' ? 'Freshman' : value.seniority === 'SO' ? 'Sophomore' : value.seniority === 'JR' ? 'Junior' : value.seniority === 'SR' ? 'Senior' : value.seniority === 'GR' ? 'Graduate' : value.seniority}}</p>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+        <p-progress-spinner ariaLabel="loading" strokeWidth="4" />
+        <p class="loading-text">Loading attendance data...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && !students.length" class="empty-container">
+        <i class="pi pi-check-circle empty-icon"></i>
+        <p class="empty-title">No students at threshold</p>
+        <p class="empty-subtitle">All students are below the 50% absence threshold</p>
+    </div>
+
+    <!-- Student Cards Grid -->
+    <div class="cards-grid" *ngIf="!loading && students.length">
+        <div class="student-card" *ngFor="let student of students">
+            <div class="card-header-section">
+                <div class="student-info">
+                    <div class="student-avatar" [ngClass]="getRiskClass(student.value)">
+                        {{ getInitials(student.name) }}
+                    </div>
+                    <div class="info-details">
+                        <p class="student-name">{{ student.name }}</p>
+                        <div class="student-meta">
+                            <span class="course-code">{{ student.course }}</span>
+                            <span class="divider">•</span>
+                            <span class="seniority-badge">{{ formatSeniority(student.seniority) }}</span>
+                        </div>
+                    </div>
                 </div>
-                <p-tag severity="warn" [style]="{'border-radius': '18px'}" [value]="value.value +'% reached'" [rounded]="true" />
+                <div class="risk-indicator">
+                    <p-tag 
+                        [severity]="getThresholdSeverity(student.value)" 
+                        [value]="student.value + '%'" 
+                        [rounded]="true"
+                        [style]="{'font-weight': '600', 'padding': '0.5rem 1rem'}">
+                    </p-tag>
+                </div>
             </div>
 
-            <p-metergroup [value]="[value]" />
+            <!-- Progress Section -->
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span class="progress-label">Absence Threshold Reached</span>
+                    <span class="progress-percentage" [class.critical]="student.value >= 75">
+                        {{ student.value }}%
+                    </span>
+                </div>
+                <div class="progress-bar-container">
+                    <div 
+                        class="progress-bar" 
+                        [style.width.%]="student.value"
+                        [ngClass]="getProgressClass(student.value)">
+                    </div>
+                </div>
+                <div class="progress-footer">
+                    <span class="threshold-marker" [style.left.%]="50">▼ 50% Threshold</span>
+                </div>
+            </div>
+
+            <!-- Warning Message for Critical Levels -->
+            <div class="warning-message" *ngIf="student.value >= 75">
+                <i class="pi pi-bell"></i>
+                <span>Critical: Immediate attention required!</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="card-actions">
+                <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-sm" label="View Details"></button>
+                <button pButton type="button" icon="pi pi-envelope" class="p-button-text p-button-sm" label="Contact"></button>
+                <button pButton type="button" icon="pi pi-chart-line" class="p-button-text p-button-sm" label="History"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Footer -->
+    <div class="stats-footer" *ngIf="students.length">
+        <div class="stat-item">
+            <i class="pi pi-users"></i>
+            <span>{{ students.length }} Students at Risk</span>
+        </div>
+        <div class="stat-item">
+            <i class="pi pi-chart-line"></i>
+            <span>Avg: {{ getAverageThreshold() }}%</span>
+        </div>
+        <div class="stat-item">
+            <i class="pi pi-exclamation-circle"></i>
+            <span>Critical (≥75%): {{ getCriticalCount() }}</span>
         </div>
     </div>
 </p-card>
