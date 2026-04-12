@@ -27,6 +27,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 
 @NgModule({
@@ -61,6 +62,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     SelectModule,
     TextareaModule,
     ProgressSpinnerModule,
+    ProgressBarModule,
   ],
   providers: [MessageService]
 })

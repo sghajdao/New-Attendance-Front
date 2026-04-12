@@ -1,59 +1,118 @@
-<p-card >
-    <p class="title">
-        <i class="pi pi-file mr-2" style="font-size: 1.2rem"></i>
-        Student Details Table
-    </p>
-    <p class="subtitle">All student-course enrollment records with attendance information</p>
+<p-card styleClass="student-card">
+    <div class="card-header">
+        <div class="title-section">
+            <i class="pi pi-file mr-2" style="font-size: 1.2rem"></i>
+            <span class="title">Student Details Table</span>
+        </div>
+        <p class="subtitle">All student-course enrollment records with attendance information</p>
+    </div>
 
-    <p-table [value]="students" stripedRows [tableStyle]="{'min-width': '50rem'}"
+    <p-table 
+        #dt
+        [value]="students" 
+        stripedRows 
+        [tableStyle]="{'min-width': '100%'}"
         [paginator]="true"
         [rows]="10"
-        [tableStyle]="{ 'min-width': '50rem' }"
         [rowsPerPageOptions]="[10, 20, 30]"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        styleClass="p-datatable-sm"
     >
         <ng-template #header>
             <tr>
-                <th>Student ID</th>
-                <th style="width: 130px;">Full Name</th>
-                <th>Entrance Year</th>
-                <th>Division</th>
-                <th style="width: 130px;">Course</th>
-                <th>Status</th>
-                <th>Seniority</th>
-                <th>Grade</th>
-                <th>Drop Date</th>
-                <th>Withdraw Date</th>
-                <th>Withdraw Reason</th>
-                <th>Schedule</th>
-                <th>Level</th>
-                <th>Attendance</th>
-                <th>Att. Date</th>
-                <!-- <th>Teacher ID</th>
-                <th>Teacher Name</th>
-                <th>Admin Meetings</th> -->
+                <th pSortableColumn="idNum" style="min-width: 90px; white-space: nowrap;">
+                    Student ID <p-sortIcon field="idNum"></p-sortIcon>
+                </th>
+                <th pSortableColumn="firstName" style="min-width: 140px; white-space: nowrap;">
+                    Full Name <p-sortIcon field="firstName"></p-sortIcon>
+                </th>
+                <th pSortableColumn="entranceYr" style="min-width: 100px; white-space: nowrap;">
+                    Entrance Year <p-sortIcon field="entranceYr"></p-sortIcon>
+                </th>
+                <th style="min-width: 100px; white-space: nowrap;">Division</th>
+                <th pSortableColumn="crsCde" style="min-width: 90px; white-space: nowrap;">
+                    Course <p-sortIcon field="crsCde"></p-sortIcon>
+                </th>
+                <th style="min-width: 80px; white-space: nowrap;">Status</th>
+                <th pSortableColumn="seniority" style="min-width: 90px; white-space: nowrap;">
+                    Seniority <p-sortIcon field="seniority"></p-sortIcon>
+                </th>
+                <th pSortableColumn="grade" style="min-width: 70px; white-space: nowrap;">
+                    Grade <p-sortIcon field="grade"></p-sortIcon>
+                </th>
+                <th style="min-width: 100px; white-space: nowrap;">Drop Date</th>
+                <th style="min-width: 110px; white-space: nowrap;">Withdraw Date</th>
+                <th style="min-width: 180px; white-space: normal;">Withdraw Reason</th>
+                <th style="min-width: 100px; white-space: nowrap;">Schedule</th>
+                <th pSortableColumn="crsDiv" style="min-width: 80px; white-space: nowrap;">
+                    Level <p-sortIcon field="crsDiv"></p-sortIcon>
+                </th>
+                <th pSortableColumn="attendance" style="min-width: 100px; white-space: nowrap;">
+                    Attendance <p-sortIcon field="attendance"></p-sortIcon>
+                </th>
+                <th pSortableColumn="attendanceDate" style="min-width: 110px; white-space: nowrap;">
+                    Att. Date <p-sortIcon field="attendanceDate"></p-sortIcon>
+                </th>
             </tr>
         </ng-template>
 
         <ng-template #body let-student>
-            <tr>
-                <td>{{student.idNum}}</td>
-                <td>{{student.firstName}} {{student.lastName}}</td>
+            <tr [ngClass]="{'expelled-row': student.status === 'Expelled', 'warning-row': student.attendance < 75}">
+                <td>
+                    <span class="student-id">{{student.idNum}}</span>
+                </td>
+                <td>
+                    <div class="student-name">
+                        <i class="pi pi-user mr-2" style="font-size: 0.85rem; color: #4f8aff;"></i>
+                        {{student.firstName}} {{student.lastName}}
+                    </div>
+                </td>
                 <td>{{student.entranceYr}}</td>
-                <td><p-tag severity="contrast" [style]="{'border-radius': '18px'}" [value]="student.studentDiv" [rounded]="true" /></td>
-                <td>{{student.crsCde}}</td>
-                <td>{{student.attendance}}</td>
-                <td><p-tag severity="success" [style]="{'border-radius': '18px'}" [value]="student.status"  [rounded]="true" /></td>
-                <td>{{student.seniority}}</td>
-                <td>{{student.grade}}</td>
-                <td>{{student.grade === 'D'? student.gradeChangeDate : '-'}}</td>
-                <td>{{student.grade === 'WF'? student.gradeChangeDate : '-'}}</td>
-                <td>{{student.grade === 'WF'? 'Exceeding the allowed number of absences' : '-'}}</td>
+                <td>
+                    <p-tag severity="contrast" [style]="{'border-radius': '20px', 'background': '#eef2ff', 'color': '#3b5bdb'}" [value]="student.studentDiv" [rounded]="true" />
+                </td>
+                <td>
+                    <span class="course-code">{{student.crsCde}}</span>
+                </td>
+                <td>
+                    <p-tag [severity]="getStatusSeverity(student.status)" [value]="student.status" [rounded]="true" />
+                </td>
+                <td>
+                    <span class="seniority-badge">{{student.seniority}}</span>
+                </td>
+                <td>
+                    <p-tag [severity]="getGradeSeverity(student.grade)" [value]="student.grade || '-'" [rounded]="true" />
+                </td>
+                <td>{{student.grade === 'D' ? (student.gradeChangeDate | date:'yyyy-MM-dd') : '-'}}</td>
+                <td>{{student.grade === 'WF' ? (student.gradeChangeDate | date:'yyyy-MM-dd') : '-'}}</td>
+                <td class="withdraw-reason">{{student.grade === 'WF' ? 'Exceeding the allowed number of absences' : '-'}}</td>
                 <td>{{student.schedule}}</td>
-                <td>{{student.crsDiv}}</td>
-                <td>{{student.attendance}}</td>
-                <td>{{student.attendanceDate}}</td>
-                <td>{{student.attendance}}</td>
-                <td><p-badge value="2" severity="danger" /></td>
+                <td>
+                    <p-tag severity="info" [value]="student.crsDiv" [rounded]="true" styleClass="level-tag" />
+                </td>
+                <td>
+                    <div class="attendance-cell">
+                        <span class="attendance-value" [class.low-attendance]="student.attendance < 75">
+                            {{student.attendance}}%
+                        </span>
+                        <p-progressBar 
+                            [value]="student.attendance" 
+                            [showValue]="false"
+                            [style]="{'height': '4px', 'width': '60px', 'margin-left': '8px'}"
+                            [styleClass]="student.attendance < 75 ? 'low-progress' : ''">
+                        </p-progressBar>
+                    </div>
+                </td>
+                <td>{{student.attendanceDate | date:'yyyy-MM-dd'}}</td>
+            </tr>
+        </ng-template>
+
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="15" class="empty-message">
+                    <i class="pi pi-inbox mr-2"></i> No students found.
+                </td>
             </tr>
         </ng-template>
     </p-table>

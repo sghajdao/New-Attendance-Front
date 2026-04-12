@@ -1,10 +1,204 @@
+/* Card Styling */
+:host ::ng-deep .student-card .p-card {
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+:host ::ng-deep .student-card .p-card-body {
+    padding: 1.5rem;
+}
+
+.card-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.title-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
 .title {
-    font-size: 17px;
-    font-weight: bold;
-    margin-bottom: 7px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    letter-spacing: -0.3px;
 }
 
 .subtitle {
-    font-size: 14px;
-    color: #929292;
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0;
+}
+
+/* Table Styling - Dynamic Widths */
+:host ::ng-deep .p-datatable {
+    font-size: 0.875rem;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    background-color: #f8fafc;
+    color: #1e293b;
+    font-weight: 600;
+    padding: 1rem 0.75rem;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 2px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.85rem 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+/* Make table container scrollable on small screens */
+:host ::ng-deep .p-datatable-wrapper {
+    overflow-x: auto;
+}
+
+/* Column-specific dynamic adjustments */
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td:first-child,
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th:first-child {
+    padding-left: 1rem;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td:last-child,
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th:last-child {
+    padding-right: 1rem;
+}
+
+/* Row conditional styling */
+:host ::ng-deep .expelled-row {
+    background-color: #fef2f2 !important;
+}
+
+:host ::ng-deep .warning-row {
+    background-color: #fffbeb !important;
+}
+
+/* Student ID styling */
+.student-id {
+    font-family: 'SF Mono', 'JetBrains Mono', monospace;
+    font-weight: 500;
+    color: #2563eb;
+    background: #eff6ff;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+/* Student name */
+.student-name {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    color: #0f172a;
+}
+
+/* Course code */
+.course-code {
+    font-family: monospace;
+    font-weight: 500;
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+/* Seniority badge */
+.seniority-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+}
+
+/* Attendance cell */
+.attendance-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.attendance-value {
+    font-weight: 600;
+    min-width: 42px;
+}
+
+.attendance-value.low-attendance {
+    color: #dc2626;
+}
+
+:host ::ng-deep .low-progress .p-progressbar-value {
+    background: #ef4444 !important;
+}
+
+/* Withdraw reason wrapping */
+.withdraw-reason {
+    max-width: 180px;
+    word-wrap: break-word;
+    white-space: normal;
+    line-height: 1.4;
+    color: #64748b;
+}
+
+/* Empty message */
+.empty-message {
+    text-align: center;
+    padding: 3rem !important;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* Paginator styling */
+:host ::ng-deep .p-paginator {
+    padding: 1rem 0.5rem 0.25rem;
+    background: transparent;
+    border: none;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-current {
+    color: #64748b;
+}
+
+/* Sort icons */
+:host ::ng-deep .p-sortable-column .p-sortable-column-icon {
+    color: #94a3b8;
+    margin-left: 6px;
+}
+
+:host ::ng-deep .p-sortable-column.p-highlight .p-sortable-column-icon {
+    color: #3b82f6;
+}
+
+/* Tag styling overrides */
+:host ::ng-deep .level-tag {
+    background: #e0e7ff !important;
+    color: #4338ca !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    :host ::ng-deep .student-card .p-card-body {
+        padding: 1rem;
+    }
+    
+    .title {
+        font-size: 1rem;
+    }
+    
+    :host ::ng-deep .p-datatable .p-datatable-tbody > tr > td,
+    :host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+        padding: 0.6rem 0.5rem;
+        font-size: 0.8rem;
+    }
 }

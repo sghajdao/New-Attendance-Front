@@ -50,6 +50,29 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
    }
   }
 
+  // Add these helper methods to your component class:
+  getStatusSeverity(status: string): 'success' | 'danger' | 'warning' | 'info' | 'contrast' {
+      const statusMap: Record<string, any> = {
+          'Active': 'success',
+          'Completed': 'info',
+          'Dropped': 'warning',
+          'Withdrawn': 'danger',
+          'Expelled': 'danger',
+          'Enrolled': 'contrast'
+      };
+      return statusMap[status] || 'contrast';
+  }
+
+  getGradeSeverity(grade: string): 'success' | 'danger' | 'warning' | 'info' | 'contrast' {
+      if (!grade || grade === '-') return 'contrast';
+      if (grade === 'A' || grade === 'A-') return 'success';
+      if (grade === 'B' || grade === 'B+') return 'info';
+      if (grade === 'C' || grade === 'C+') return 'warning';
+      if (grade === 'D') return 'warning';
+      if (grade === 'F' || grade === 'WF') return 'danger';
+      return 'contrast';
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
