@@ -52,7 +52,7 @@ export class AttendanceService {
   }
 
   withdrawManyStudents(students: Attendance[]) {
-    return this.http.post<boolean>(environment.WithdrawUrl, {auth: this.getAuthRequest(), attendance: students})
+    return this.http.post<boolean[]>(environment.WithdrawUrl, {auth: this.getAuthRequest(), attendance: students})
   }
 
   refuseRequest(student: Wflist) {

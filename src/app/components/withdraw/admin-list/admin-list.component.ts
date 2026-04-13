@@ -34,6 +34,7 @@ export class AdminListComponent implements OnChanges, OnInit {
 
   selectedStudent: string = ''
   selectedStudents: WflistResponse[] = []
+  selectedItemsMap: Map<string, boolean> = new Map()
 
   loading: boolean = false
 
@@ -43,10 +44,8 @@ export class AdminListComponent implements OnChanges, OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['students'] && this.students) {
-      // Add selected property to each student
       this.students = this.students.map(student => ({
-        ...student,
-        selected: false
+        ...student
       }))
       
       this.students = this.students.sort((a, b) => new Date(a.request_date).getTime() - new Date(b.request_date).getTime())
@@ -57,6 +56,9 @@ export class AdminListComponent implements OnChanges, OnInit {
 
       this.backupStudents = [...this.students]
       this.withdrawnStudents.emit(this.students.filter(a => a.wf === true))
+      
+      // Clear selection when students list changes
+      this.clearSelection()
     }
     if (changes['student'] && this.student) {
       let item: WflistResponse = {
@@ -72,7 +74,6 @@ export class AdminListComponent implements OnChanges, OnInit {
         first_name: this.student.firstName,
         last_name: this.student.lastName,
         excused: 0,
-        selected: false
       }
       this.students.push(item)
       this.total = this.students.length
@@ -81,16 +82,50 @@ export class AdminListComponent implements OnChanges, OnInit {
     }
   }
 
-  onSelectionChange() {
-    this.selectedStudents = this.students.filter(s => !s.wf && s.selected === true)
+  toggleSelection(item: WflistResponse, event: any) {
+    const key = this.getStudentKey(item)
+    if (event.target.checked) {
+      this.selectedItemsMap.set(key, true)
+      if (!this.selectedStudents.find(s => this.getStudentKey(s) === key)) {
+        this.selectedStudents.push(item)
+      }
+    } else {
+      this.selectedItemsMap.delete(key)
+      this.selectedStudents = this.selectedStudents.filter(s => this.getStudentKey(s) !== key)
+    }
+  }
+
+  isAllSelected(): boolean {
+    const pendingStudents = this.students.filter(s => !s.wf)
+    if (pendingStudents.length === 0) return false
+    return pendingStudents.every(s => this.selectedItemsMap.has(this.getStudentKey(s)))
+  }
+
+  toggleSelectAll(event: any) {
+    const pendingStudents = this.students.filter(s => !s.wf)
+    if (event.target.checked) {
+      pendingStudents.forEach(student => {
+        const key = this.getStudentKey(student)
+        if (!this.selectedItemsMap.has(key)) {
+          this.selectedItemsMap.set(key, true)
+          this.selectedStudents.push(student)
+        }
+      })
+    } else {
+      pendingStudents.forEach(student => {
+        const key = this.getStudentKey(student)
+        this.selectedItemsMap.delete(key)
+      })
+      this.selectedStudents = this.selectedStudents.filter(s => s.wf === true)
+    }
+  }
+
+  getStudentKey(student: WflistResponse): string {
+    return `${student.student_id}_${student.course}`
   }
 
   clearSelection() {
-    this.students.forEach(student => {
-      if (!student.wf) {
-        student.selected = false
-      }
-    })
+    this.selectedItemsMap.clear()
     this.selectedStudents = []
   }
 
@@ -98,7 +133,6 @@ export class AdminListComponent implements OnChanges, OnInit {
     if (this.selectedStudents.length === 0) return
 
     this.confirmationService.confirm({
-      target: event?.target as EventTarget,
       message: `Are you sure you want to approve withdrawal requests for ${this.selectedStudents.length} student(s)?`,
       header: 'Confirmation',
       closable: true,
@@ -150,21 +184,25 @@ export class AdminListComponent implements OnChanges, OnInit {
     this.messageService.add({ severity: 'warn', summary: 'Wait', detail: 'Processing batch approval...' })
     
     this.attendanceService.withdrawManyStudents(requests).subscribe({
-      next: (data: boolean) => {
-        if (data) {
-          // Update the status of all selected students to approved
-          this.selectedStudents.forEach((student) => {
-            const originalStudent = this.students.find(s => s.student_id === student.student_id && s.course === student.course)
-            if (originalStudent) {
-              originalStudent.wf = true
-              originalStudent.selected = false
+      next: (data: boolean[]) => {
+        if (data && data.length > 0) {
+          // Update the status of successfully approved students
+          this.selectedStudents.forEach((student, index) => {
+            if (data[index]) {
+              const originalStudent = this.students.find(s => 
+                s.student_id === student.student_id && s.course === student.course
+              )
+              if (originalStudent) {
+                originalStudent.wf = true
+              }
             }
           })
           
+          const successCount = data.filter(result => result === true).length
           this.messageService.add({ 
             severity: 'info', 
             summary: 'Confirmed', 
-            detail: `${this.selectedStudents.length} student(s) successfully withdrawn` 
+            detail: `${successCount} out of ${this.selectedStudents.length} student(s) successfully withdrawn` 
           })
           
           // Update counters
@@ -254,6 +292,7 @@ export class AdminListComponent implements OnChanges, OnInit {
           this.approved = this.students.filter(a => a.wf === true).length
           this.pending = this.students.filter(a => a.wf === false).length
           this.loading = false
+          this.clearSelection()
          } else {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'An error occurred while withdrawing the student' })
           this.loading = false
@@ -292,6 +331,7 @@ export class AdminListComponent implements OnChanges, OnInit {
         this.pending = this.students.filter(a => a.wf === false).length
         this.messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'Successfully refused the request' })
         this.loading = false
+        this.clearSelection()
       },
       error: err => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'An error occurred while refusing the request' })
@@ -306,6 +346,8 @@ export class AdminListComponent implements OnChanges, OnInit {
     if (!query || query.trim() === '') {
       this.students = [...this.backupStudents];
       this.total = this.students.length;
+      this.pending = this.students.filter(a => a.wf === false).length
+      this.approved = this.students.filter(a => a.wf === true).length
       return;
     }
 

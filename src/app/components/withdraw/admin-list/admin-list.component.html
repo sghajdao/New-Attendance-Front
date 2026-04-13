@@ -23,17 +23,24 @@
             </div>
         </div>
 
+        <!-- Select All Option -->
+        <div class="select-all" *ngIf="pending > 0 && isAdmin">
+            <label class="checkbox-label">
+                <input type="checkbox" [checked]="isAllSelected()" (change)="toggleSelectAll($event)" [disabled]="loading" />
+                <span>Select All Pending Requests</span>
+            </label>
+        </div>
+
         <div class="list">
             <p *ngIf="!students || !students.length" style="color: gray;">No students currently exceed the absence limit.</p>
             <div class="card" *ngFor="let item of students">
                 <div class="card-body">
-                    <div class="selection-checkbox">
-                        <p-checkbox 
-                            *ngIf="!item.wf && isAdmin" 
-                            [(ngModel)]="item.selected" 
-                            (onChange)="onSelectionChange()"
-                            [disabled]="loading">
-                        </p-checkbox>
+                    <div class="selection-checkbox" *ngIf="!item.wf && isAdmin">
+                        <input 
+                            type="checkbox" 
+                            [checked]="selectedItemsMap.get(item.student_id + '_' + item.course)" 
+                            (change)="toggleSelection(item, $event)" 
+                            [disabled]="loading" />
                     </div>
                     <div class="student-info">
                         <p *ngIf="!item.wf" class="student-name">{{item.first_name}} {{item.last_name}}&emsp;<p-tag icon="pi pi-clock" severity="warn" value="Pending" [rounded]="true" /></p>
