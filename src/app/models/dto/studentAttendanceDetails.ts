@@ -15,7 +15,7 @@ export interface StudentAttendanceDetails {
     entanceTrm: string;
     visaType: string;
     seniority: string;
-    attendance: String;
+    attendance: string;
     attendanceDate: Date;
     teacherId: string;
     teacherName: string;

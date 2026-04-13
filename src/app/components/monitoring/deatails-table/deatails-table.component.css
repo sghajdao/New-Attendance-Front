@@ -203,3 +203,12 @@
         font-size: 0.8rem;
     }
 }
+
+:host ::ng-deep .p-datatable-tbody > tr {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr:hover {
+  background-color: #f8fafc !important;
+}

@@ -11,7 +11,7 @@ const routes: Routes = [
     loadChildren:()=>import("./components/form/form.module").then(m=>m.FormModule),
   },
   {
-    path: "wf",
+    path: "withdrawals",
     loadChildren:()=>import("./components/withdraw/withdraw.module").then(m=>m.WithdrawModule),
   },
   {

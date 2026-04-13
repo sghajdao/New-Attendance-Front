@@ -14,7 +14,6 @@ import { MonitoringComponent } from './monitoring.component';
 import { MessageService } from 'primeng/api';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
-import { DeatailsTableComponent } from './deatails-table/deatails-table.component';
 import { AbsenceThresholdComponent } from './absence-threshold/absence-threshold.component';
 import { MeetingHistoryComponent } from './meeting-history/meeting-history.component';
 import { TableModule } from 'primeng/table';
@@ -28,6 +27,8 @@ import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { DropdownModule } from 'primeng/dropdown';
+import { DeatailsTableComponent } from './deatails-table/deatails-table.component';
 
 
 @NgModule({
@@ -63,6 +64,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
     TextareaModule,
     ProgressSpinnerModule,
     ProgressBarModule,
+    DropdownModule,
   ],
   providers: [MessageService]
 })
