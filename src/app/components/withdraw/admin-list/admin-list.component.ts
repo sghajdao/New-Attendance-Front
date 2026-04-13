@@ -33,6 +33,7 @@ export class AdminListComponent implements OnChanges, OnInit {
   excused: number = 0
 
   selectedStudent: string = ''
+  selectedStudents: WflistResponse[] = []
 
   loading: boolean = false
 
@@ -42,13 +43,19 @@ export class AdminListComponent implements OnChanges, OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['students'] && this.students) {
+      // Add selected property to each student
+      this.students = this.students.map(student => ({
+        ...student,
+        selected: false
+      }))
+      
       this.students = this.students.sort((a, b) => new Date(a.request_date).getTime() - new Date(b.request_date).getTime())
       this.students = this.students.sort((a, b) => (a.wf === b.wf)? 0 : a.wf? 1 : -1)
       this.total = this.students.length
       this.pending = this.students.filter(a => a.wf === false).length
       this.approved = this.students.filter(a => a.wf === true).length
 
-      this.students.forEach(a => this.backupStudents.push(a))
+      this.backupStudents = [...this.students]
       this.withdrawnStudents.emit(this.students.filter(a => a.wf === true))
     }
     if (changes['student'] && this.student) {
@@ -65,12 +72,119 @@ export class AdminListComponent implements OnChanges, OnInit {
         first_name: this.student.firstName,
         last_name: this.student.lastName,
         excused: 0,
+        selected: false
       }
       this.students.push(item)
       this.total = this.students.length
       this.pending = this.students.filter(a => a.wf === false).length
       this.approved = this.students.filter(a => a.wf === true).length
     }
+  }
+
+  onSelectionChange() {
+    this.selectedStudents = this.students.filter(s => !s.wf && s.selected === true)
+  }
+
+  clearSelection() {
+    this.students.forEach(student => {
+      if (!student.wf) {
+        student.selected = false
+      }
+    })
+    this.selectedStudents = []
+  }
+
+  approveSelected() {
+    if (this.selectedStudents.length === 0) return
+
+    this.confirmationService.confirm({
+      target: event?.target as EventTarget,
+      message: `Are you sure you want to approve withdrawal requests for ${this.selectedStudents.length} student(s)?`,
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Approve All',
+        severity: 'contrast'
+      },
+      accept: () => {
+        this.batchApprove()
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Rejected',
+          detail: 'Batch approval cancelled',
+          life: 3000,
+        });
+      },
+    });
+  }
+
+  batchApprove() {
+    this.loading = true
+    const requests: Attendance[] = this.selectedStudents.map(student => ({
+      student_sis_id: student.student_id,
+      course_sis_id: student.course,
+      attendance: '',
+      count: student.count,
+      marked_at: new Date(),
+      seniority: '',
+      marked_by_sis_id: student.teacher_id,
+      course_name: student.course_cde,
+      instructor_name: student.teacher_name,
+      status: '',
+      grade: '',
+      trmCde: '',
+      absentLimit: student.absent_limit,
+      firstName: student.first_name || '',
+      lastName: student.last_name || '',
+    }))
+
+    this.messageService.add({ severity: 'warn', summary: 'Wait', detail: 'Processing batch approval...' })
+    
+    this.attendanceService.withdrawManyStudents(requests).subscribe({
+      next: (data: boolean) => {
+        if (data) {
+          // Update the status of all selected students to approved
+          this.selectedStudents.forEach((student) => {
+            const originalStudent = this.students.find(s => s.student_id === student.student_id && s.course === student.course)
+            if (originalStudent) {
+              originalStudent.wf = true
+              originalStudent.selected = false
+            }
+          })
+          
+          this.messageService.add({ 
+            severity: 'info', 
+            summary: 'Confirmed', 
+            detail: `${this.selectedStudents.length} student(s) successfully withdrawn` 
+          })
+          
+          // Update counters
+          this.approved = this.students.filter(a => a.wf === true).length
+          this.pending = this.students.filter(a => a.wf === false).length
+          this.total = this.students.length
+          
+          // Clear selection
+          this.clearSelection()
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to process batch approval' })
+        }
+        this.loading = false
+      },
+      error: err => {
+        console.error('Batch approval error:', err)
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'An error occurred while processing batch approval' })
+        this.loading = false
+      }
+    })
   }
 
   openDialog(event: Event, student: WflistResponse, flag: number) {
@@ -190,12 +304,12 @@ export class AdminListComponent implements OnChanges, OnInit {
     let query = this.selectedStudent;
 
     if (!query || query.trim() === '') {
-      this.students = this.backupStudents;
+      this.students = [...this.backupStudents];
       this.total = this.students.length;
       return;
     }
 
-    this.students = this.backupStudents.filter(a => a.student_id.toString().startsWith(query)) || this.backupStudents;
+    this.students = this.backupStudents.filter(a => a.student_id.toString().startsWith(query)) || [...this.backupStudents];
     this.total = this.students.length;
     this.pending = this.students.filter(a => a.wf === false).length
     this.approved = this.students.filter(a => a.wf === true).length
@@ -208,7 +322,7 @@ export class AdminListComponent implements OnChanges, OnInit {
   formatDateToDDMMYYY(date: Date): string {
     date = new Date(date)
     const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
   
     return `${day}-${month}-${year}`;

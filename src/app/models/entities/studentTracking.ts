@@ -1,6 +1,6 @@
 export interface StudentTracking {
     id?: number;
-    studentSisId?: number;
+    studentSisId?: string;
     studentName?: string;
     coursSisId?: string;
     createdAt?: Date;

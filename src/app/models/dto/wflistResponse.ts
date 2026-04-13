@@ -12,5 +12,6 @@ export interface WflistResponse {
     approve_date?: Date,
     first_name?: string,
     last_name?: string,
-    excused: number
+    excused: number,
+    selected?: boolean,
 }

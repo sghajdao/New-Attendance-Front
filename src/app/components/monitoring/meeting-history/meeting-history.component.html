@@ -1,88 +1,249 @@
-<p-card>
+<p-card styleClass="meeting-card">
     <div class="header">
-        <div>
-            <p class="title">
-                <i class="pi pi-calendar mr-2" style="font-size: 1.2rem"></i>
-                Meeting Tracking History
-            </p>
+        <div class="header-left">
+            <div class="title-section">
+                <i class="pi pi-calendar mr-2 calendar-icon"></i>
+                <span class="title">Meeting Tracking History</span>
+                <p-tag *ngIf="students?.length" [value]="students.length + ' records'" severity="info" styleClass="record-badge"></p-tag>
+            </div>
             <p class="subtitle">
                 Records of emails, meetings, and follow-ups with students
             </p>
         </div>
         
-        <p-button label="New Meeting" severity="contrast" (onClick)="showDialog(undefined)" icon="pi pi-plus" />
+        <p-button label="New Meeting" severity="contrast" (onClick)="showDialog()" icon="pi pi-plus" styleClass="new-meeting-btn" />
     </div>
 
-    <p-table [value]="students" stripedRows [tableStyle]="{'min-width': '50rem'}">
-    <ng-template #header>
-        <tr>
-            <th>Student SIS ID</th>
-            <th>Student Name</th>
-            <th>Course SIS ID</th>
-            <th>Meeting Date</th>
-            <th>Type</th>
-            <th>Comments / Notes</th>
-        </tr>
-    </ng-template>
-    <ng-template #body let-student>
-        <tr class="line" (click)="showDialog(student)">
-            <td>{{student.studentSisId}}</td>
-            <td>{{student.studentName}}</td>
-            <td>{{student.courseSisId}}</td>
-            <td>{{student.createdAt | date}}</td>
-            <td>{{student.type}}</td>
-            <td>{{student.comment}}</td>
-        </tr>
-    </ng-template>
-</p-table>
+    <!-- Search and Filter Bar -->
+    <div class="filters-bar" *ngIf="students?.length">
+        <div class="search-container">
+            <i class="pi pi-search search-icon"></i>
+            <input 
+                type="text" 
+                pInputText 
+                [(ngModel)]="searchTerm" 
+                (ngModelChange)="filterMeetings()"
+                placeholder="Search by student name or ID..." 
+                class="search-input"
+            />
+            <i *ngIf="searchTerm" class="pi pi-times clear-search" (click)="clearSearch()"></i>
+        </div>
+        <div class="filter-group">
+            <p-select 
+                [(ngModel)]="selectedType" 
+                [options]="typeFilterOptions" 
+                placeholder="All Types"
+                (onChange)="filterMeetings()"
+                styleClass="type-filter"
+                appendTo="body"
+            ></p-select>
+            <p-button icon="pi pi-filter-slash" (onClick)="clearFilters()" severity="secondary" styleClass="p-button-text" pTooltip="Clear Filters"></p-button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <p-table 
+        #dt
+        [value]="filteredStudents" 
+        stripedRows 
+        [tableStyle]="{'min-width': '800px'}"
+        [paginator]="true"
+        [rows]="10"
+        [rowsPerPageOptions]="[5, 10, 20, 50]"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        styleClass="p-datatable-sm meeting-table"
+    >
+        <ng-template #header>
+            <tr>
+                <th pSortableColumn="studentSisId" style="min-width: 120px;">
+                    Student SIS ID <p-sortIcon field="studentSisId"></p-sortIcon>
+                </th>
+                <th pSortableColumn="studentName" style="min-width: 160px;">
+                    Student Name <p-sortIcon field="studentName"></p-sortIcon>
+                </th>
+                <th pSortableColumn="courseSisId" style="min-width: 120px;">
+                    Course SIS ID <p-sortIcon field="courseSisId"></p-sortIcon>
+                </th>
+                <th pSortableColumn="createdAt" style="min-width: 130px;">
+                    Meeting Date <p-sortIcon field="createdAt"></p-sortIcon>
+                </th>
+                <th style="min-width: 110px;">Type</th>
+                <th style="min-width: 250px;">Comments / Notes</th>
+                <th style="width: 80px;">Actions</th>
+            </tr>
+        </ng-template>
+
+        <ng-template #body let-student let-i="rowIndex">
+            <tr class="meeting-row" [class.highlighted]="student.isNew" (click)="showDialog(student)">
+                <td>
+                    <span class="sis-id">{{student.studentSisId}}</span>
+                </td>
+                <td>
+                    <div class="student-cell">
+                        <div class="student-avatar" [style.background-color]="getAvatarColor(student.studentName)">
+                            {{getInitials(student.studentName)}}
+                        </div>
+                        <span class="student-name">{{student.studentName || student.studentSisId}}</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="course-code">{{student.courseSisId || '-'}}</span>
+                </td>
+                <td>
+                    <div class="date-cell">
+                        <i class="pi pi-calendar"></i>
+                        <span>{{student.createdAt | date:'MMM d, yyyy'}}</span>
+                    </div>
+                </td>
+                <td>
+                    <p-tag 
+                        [severity]="getTypeSeverity(student.type)" 
+                        [value]="student.type" 
+                        [rounded]="true"
+                        [icon]="getTypeIcon(student.type)">
+                    </p-tag>
+                </td>
+                <td>
+                    <div class="comment-cell" [title]="student.comment">
+                        <i class="pi pi-comment"></i>
+                        <span class="comment-text">{{ truncateComment(student.comment) }}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="action-buttons" (click)="$event.stopPropagation()">
+                        <p-button 
+                            icon="pi pi-pencil" 
+                            (onClick)="showDialog(student)" 
+                            severity="secondary" 
+                            styleClass="p-button-rounded p-button-text p-button-sm"
+                            pTooltip="Edit Meeting"
+                        ></p-button>
+                        <p-button 
+                            icon="pi pi-trash" 
+                            (onClick)="deleteMeeting(student, i)" 
+                            severity="danger" 
+                            styleClass="p-button-rounded p-button-text p-button-sm"
+                            pTooltip="Delete Meeting"
+                        ></p-button>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="7" class="empty-table-message">
+                    <i class="pi pi-inbox"></i>
+                    <p>No meeting records found</p>
+                    <p class="empty-sub">Click "New Meeting" to schedule your first meeting</p>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
 </p-card>
 
-<p-dialog header="New Meeting" [modal]="true" [(visible)]="visible" [style]="{ width: '30rem' }" [formGroup]="globalFormGroup">
-    <span class="p-text-secondary block mb-8">Send a meeting invitation to the student.</span>
+<!-- Dialog -->
+<p-dialog 
+    [header]="selectedMeeting ? 'Edit Meeting' : 'New Meeting'" 
+    [modal]="true" 
+    [(visible)]="visible" 
+    [style]="{ width: '450px', 'max-width': '90vw' }"
+    [draggable]="false"
+    [resizable]="false"
+    styleClass="meeting-dialog"
+>
+    <div class="dialog-content">
+        <div class="dialog-info" *ngIf="!selectedMeeting">
+            <i class="pi pi-info-circle"></i>
+            <span>Schedule a new meeting or follow-up with a student.</span>
+        </div>
 
-    <div class="grid grid-cols-[100px_1fr] items-center gap-4 mb-4">
-        <label for="studentId" class="font-semibold">Student ID</label>
-        <input pInputText id="studentId" class="w-full" formControlName="studentId" />
-    </div>
+        <form [formGroup]="globalFormGroup" (ngSubmit)="onSave()">
+            <div class="form-field">
+                <label for="studentId" class="required-field">Student ID</label>
+                <input pInputText id="studentId" formControlName="studentId" placeholder="Enter student SIS ID" />
+                <small class="error-message" *ngIf="globalFormGroup.get('studentId')?.invalid && globalFormGroup.get('studentId')?.touched">
+                    Student ID is required
+                </small>
+            </div>
 
-    <div class="grid grid-cols-[100px_1fr] items-center gap-4 mb-4">
-        <label for="date" class="font-semibold">Date</label>
-        <p-datepicker 
-            id="date"
-            [iconDisplay]="'input'"
-            [showIcon]="true"
-            appendTo="body"
-            class="w-full"
-            formControlName="date"
-        />
-    </div>
+            <div class="form-field">
+                <label for="courseId" class="required-field">Course SIS ID</label>
+                <input pInputText id="courseId" formControlName="courseId" placeholder="Enter course SIS ID" />
+                <small class="error-message" *ngIf="globalFormGroup.get('courseId')?.invalid && globalFormGroup.get('courseId')?.touched">
+                    Course ID is required
+                </small>
+            </div>
 
-    <div class="grid grid-cols-[100px_1fr] items-center gap-4 mb-4">
-        <label for="type" class="font-semibold">Type</label>
-        <p-select 
-            [options]="types"
-            placeholder="Select a Type"
-            appendTo="body"
-            class="w-full"
-            formControlName="type"
-        />
-    </div>
+            <div class="form-field">
+                <label for="date" class="required-field">Meeting Date & Time</label>
+                <p-datepicker 
+                    id="date"
+                    [showTime]="true"
+                    [showIcon]="true"
+                    [iconDisplay]="'input'"
+                    appendTo="body"
+                    placeholder="Select date and time"
+                    formControlName="date"
+                    dateFormat="yy-mm-dd"
+                />
+                <small class="error-message" *ngIf="globalFormGroup.get('date')?.invalid && globalFormGroup.get('date')?.touched">
+                    Date and time are required
+                </small>
+            </div>
 
-    <div class="grid grid-cols-[100px_1fr] items-center gap-4 mb-4">
-        <label for="comment" class="font-semibold">Comment</label>
-        <textarea 
-            id="comment"
-            formControlName="comment"
-            variant="filled"
-            rows="5"
-            cols="30"
-            pTextarea
-            class="w-full"
-        ></textarea>
-    </div>
+            <div class="form-field">
+                <label for="type" class="required-field">Meeting Type</label>
+                <p-select 
+                    [options]="meetingTypes"
+                    placeholder="Select meeting type"
+                    appendTo="body"
+                    formControlName="type"
+                    optionLabel="label"
+                    optionValue="value"
+                >
+                    <ng-template pTemplate="selectedItem">
+                        <div class="type-select-item">
+                            <i [class]="getTypeIcon(globalFormGroup.get('type')?.value)"></i>
+                            <span>{{ getTypeLabel(globalFormGroup.get('type')?.value) }}</span>
+                        </div>
+                    </ng-template>
+                    <ng-template let-type pTemplate="item">
+                        <div class="type-select-item">
+                            <i [class]="getTypeIcon(type.value)"></i>
+                            <span>{{ type.label }}</span>
+                        </div>
+                    </ng-template>
+                </p-select>
+                <small class="error-message" *ngIf="globalFormGroup.get('type')?.invalid && globalFormGroup.get('type')?.touched">
+                    Please select a meeting type
+                </small>
+            </div>
 
-    <div class="flex justify-end gap-2">
-        <p-button label="Cancel" severity="secondary" (click)="visible = false" />
-        <p-button label="Save" severity="contrast" (onClick)="onSave()" />
+            <div class="form-field">
+                <label for="comment">Comments / Notes</label>
+                <textarea 
+                    id="comment"
+                    formControlName="comment"
+                    rows="4"
+                    pTextarea
+                    placeholder="Add meeting notes, discussion points, or follow-up items..."
+                ></textarea>
+            </div>
+
+            <div class="dialog-actions">
+                <p-button label="Cancel" severity="secondary" (click)="cancelDialog()" />
+                <p-button 
+                    label="Save Meeting" 
+                    severity="contrast" 
+                    type="submit" 
+                    [disabled]="globalFormGroup.invalid"
+                    [loading]="isSaving"
+                />
+            </div>
+        </form>
     </div>
 </p-dialog>
+
+<p-toast position="bottom-right"></p-toast>

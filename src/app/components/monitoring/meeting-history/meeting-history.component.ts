@@ -3,7 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AttendanceService } from '../../../services/attendance.service';
 import { SearchDto } from '../../../models/dto/searchDto';
 import { StudentTracking } from '../../../models/entities/studentTracking';
-import { Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-meeting-history',
@@ -11,57 +12,83 @@ import { Subscription } from 'rxjs';
   templateUrl: './meeting-history.component.html',
   styleUrl: './meeting-history.component.css'
 })
-export class MeetingHistoryComponent implements OnInit, OnChanges, OnDestroy {
+export class MeetingHistoryComponent implements OnInit, OnDestroy {
  constructor(
-  private fb: FormBuilder,
-  private attendanceService: AttendanceService,
- ) { }
+    private fb: FormBuilder,
+    private attendanceService: AttendanceService,
+    private messageService: MessageService
+  ) { }
 
-  @Input() searchDto?: SearchDto
+  @Input() searchDto?: SearchDto;
   globalFormGroup!: FormGroup;
 
   students: StudentTracking[] = [];
-
+  filteredStudents: StudentTracking[] = [];
   visible: boolean = false;
-  date?: Date
-  selectedType?: string;
-  types: string[] = [
-    'Warning',
-    'Follow-up',
-    'Final Notice'
+  selectedMeeting?: StudentTracking;
+  isSaving: boolean = false;
+  
+  // Search and filter
+  searchTerm: string = '';
+  selectedType: string | null = null;
+  
+  // Meeting types with display labels
+  meetingTypes = [
+    { label: '📧 Warning', value: 'Warning', icon: 'pi pi-exclamation-triangle' },
+    { label: '📝 Follow-up', value: 'Follow-up', icon: 'pi pi-refresh' },
+    { label: '⚠️ Final Notice', value: 'Final Notice', icon: 'pi pi-bell' }
   ];
+  
+  typeFilterOptions = [
+    { label: 'All Types', value: null },
+    ...this.meetingTypes
+  ];
+  
   subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
+    this.initForm();
+    this.loadTrackingData();
+  }
+
+  initForm(): void {
     this.globalFormGroup = this.fb.group({
       studentId: [null, Validators.required],
+      courseId: [null, Validators.required],
       date: [null, Validators.required],
       type: [null, Validators.required],
-      comment: [null, Validators.required],
+      comment: [null, Validators.required]
     });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['searchDto'] && this.searchDto) {
-      const sub = this.attendanceService.getStudentsTracking(this.searchDto).subscribe({
-        next: (res) => {
-          console.log(res);
-          this.students = res
-        },
-        error: (err) => {
-          console.error(err);
-        }
-      });
-      this.subscriptions.push(sub);
-    }
+  loadTrackingData(): void {
+    const sub = this.attendanceService.getTracking().subscribe({
+      next: (data: StudentTracking[]) => {
+        this.students = data;
+        this.filteredStudents = [...data];
+      },
+      error: (err) => {
+        console.error('Error loading tracking data:', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load meeting records',
+          life: 3000
+        });
+      }
+    });
+    this.subscriptions.push(sub);
   }
 
-  showDialog(student?: StudentTracking) {
+  showDialog(student?: StudentTracking): void {
     this.globalFormGroup.reset();
+    this.selectedMeeting = student;
+    
     if (student) {
       this.globalFormGroup.patchValue({
         studentId: student.studentSisId,
-        date: student.createdAt,
+        courseId: student.coursSisId || '',
+        date: student.createdAt ? new Date(student.createdAt) : new Date(),
         type: student.type,
         comment: student.comment
       });
@@ -69,28 +96,210 @@ export class MeetingHistoryComponent implements OnInit, OnChanges, OnDestroy {
     this.visible = true;
   }
 
-  onSave() {
-    if (this.globalFormGroup.valid) {
-      const formData: StudentTracking = {
-        studentSisId: this.globalFormGroup.value.studentId,
-        createdAt: this.globalFormGroup.value.date,
-        type: this.globalFormGroup.value.type,
-        comment: this.globalFormGroup.value.comment
-      }; 
-      const sub = this.attendanceService.trackStudent(formData).subscribe({
-        next: (res) => {
-          console.log(res);
-          this.visible = false;
-          this.globalFormGroup.reset();
-        },
-        error: (err) => {
-          console.error(err);
-        }
+  cancelDialog(): void {
+    this.visible = false;
+    this.selectedMeeting = undefined;
+    this.globalFormGroup.reset();
+  }
+
+  onSave(): void {
+    if (this.globalFormGroup.invalid) {
+      // Mark all fields as touched to show validation errors
+      Object.keys(this.globalFormGroup.controls).forEach(key => {
+        this.globalFormGroup.get(key)?.markAsTouched();
       });
-      this.subscriptions.push(sub);
-    } else {
-      console.log('Form is invalid');
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Validation Error',
+        detail: 'Please fill in all required fields',
+        life: 3000
+      });
+      return;
     }
+
+    this.isSaving = true;
+    const formValue = this.globalFormGroup.value;
+    
+    const formData: StudentTracking = {
+      studentSisId: formValue.studentId,
+      coursSisId: formValue.courseId,
+      createdAt: formValue.date,
+      type: formValue.type,
+      comment: formValue.comment,
+      studentName: `Student ${formValue.studentId}` // You can enhance this with actual student lookup
+    };
+    
+    const sub = this.attendanceService.trackStudent(formData).pipe(
+      finalize(() => {
+        this.isSaving = false;
+      })
+    ).subscribe({
+      next: (res: StudentTracking) => {
+        console.log('Save successful:', res);
+        
+        if (this.selectedMeeting) {
+          // Update existing record
+          const index = this.students.findIndex(s => s.id === this.selectedMeeting?.id);
+          if (index !== -1) {
+            this.students[index] = { ...res, id: this.selectedMeeting.id };
+          }
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Meeting Updated',
+            detail: 'Meeting record has been updated successfully',
+            life: 3000
+          });
+        } else {
+          // Add new record with highlight
+          const newMeeting = { ...res, isNew: true };
+          this.students.unshift(newMeeting);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Meeting Scheduled',
+            detail: 'New meeting record has been created',
+            life: 3000
+          });
+          
+          // Remove highlight after 2 seconds
+          setTimeout(() => {
+            const meeting = this.students.find(s => s.id === newMeeting.id);
+            if (meeting) {
+              // meeting.isNew = false;
+            }
+            this.filterMeetings();
+          }, 2000);
+        }
+        
+        this.filterMeetings();
+        this.cancelDialog();
+      },
+      error: (err) => {
+        console.error('Error saving meeting:', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: err.message || 'Failed to save meeting record',
+          life: 4000
+        });
+      }
+    });
+    
+    this.subscriptions.push(sub);
+  }
+
+  filterMeetings(): void {
+    this.filteredStudents = this.students.filter(student => {
+      const matchesSearch = !this.searchTerm || 
+        student.studentName?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        student.studentSisId?.toLowerCase().includes(this.searchTerm.toLowerCase());
+      
+      const matchesType = !this.selectedType || student.type === this.selectedType;
+      
+      return matchesSearch && matchesType;
+    });
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.filterMeetings();
+  }
+
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.selectedType = null;
+    this.filterMeetings();
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Filters Cleared',
+      detail: 'All filters have been reset',
+      life: 2000
+    });
+  }
+
+  deleteMeeting(meeting: StudentTracking, index: number): void {
+    // Implement delete logic based on your service
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Confirm Delete',
+      detail: `Delete meeting with ${meeting.studentSisId}?`,
+      sticky: true,
+      life: 5000
+    });
+    
+    // Example delete implementation:
+    // const sub = this.attendanceService.deleteTracking(meeting.id).subscribe({
+    //   next: () => {
+    //     this.students = this.students.filter(s => s.id !== meeting.id);
+    //     this.filterMeetings();
+    //     this.messageService.add({
+    //       severity: 'success',
+    //       summary: 'Deleted',
+    //       detail: 'Meeting record deleted successfully',
+    //       life: 3000
+    //     });
+    //   },
+    //   error: (err) => {
+    //     console.error('Error deleting meeting:', err);
+    //     this.messageService.add({
+    //       severity: 'error',
+    //       summary: 'Error',
+    //       detail: 'Failed to delete meeting record',
+    //       life: 3000
+    //     });
+    //   }
+    // });
+    // this.subscriptions.push(sub);
+  }
+
+  // Helper methods for UI
+  getInitials(name?: string): string {
+    if (!name) return '?';
+    return name.split(' ')
+      .map(part => part[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  }
+
+  getAvatarColor(name?: string): string {
+    const colors = [
+      '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', 
+      '#ef4444', '#f59e0b', '#10b981', '#06b6d4'
+    ];
+    if (!name) return colors[0];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  }
+
+  getTypeSeverity(type: string): 'info' | 'success' | 'warning' | 'danger' | 'contrast' {
+    const severityMap: Record<string, any> = {
+      'Warning': 'warning',
+      'Follow-up': 'info',
+      'Final Notice': 'danger'
+    };
+    return severityMap[type] || 'info';
+  }
+
+  getTypeIcon(type: string): string {
+    const iconMap: Record<string, string> = {
+      'Warning': 'pi pi-exclamation-triangle',
+      'Follow-up': 'pi pi-refresh',
+      'Final Notice': 'pi pi-bell'
+    };
+    return iconMap[type] || 'pi pi-calendar';
+  }
+
+  getTypeLabel(type: string): string {
+    const found = this.meetingTypes.find(t => t.value === type);
+    return found ? found.label.replace(/^[^a-zA-Z]+/, '') : type;
+  }
+
+  truncateComment(comment: string, maxLength: number = 50): string {
+    if (!comment) return 'No comments';
+    return comment.length > maxLength ? comment.substring(0, maxLength) + '...' : comment;
   }
 
   ngOnDestroy(): void {

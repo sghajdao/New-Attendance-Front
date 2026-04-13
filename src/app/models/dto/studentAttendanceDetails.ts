@@ -17,4 +17,6 @@ export interface StudentAttendanceDetails {
     seniority: string;
     attendance: String;
     attendanceDate: Date;
+    teacherId: string;
+    teacherName: string;
 }

@@ -51,12 +51,20 @@ export class AttendanceService {
     return this.http.post<boolean>(environment.WithdrawUrl, {auth: this.getAuthRequest(), attendance: student})
   }
 
+  withdrawManyStudents(students: Attendance[]) {
+    return this.http.post<boolean>(environment.WithdrawUrl, {auth: this.getAuthRequest(), attendance: students})
+  }
+
   refuseRequest(student: Wflist) {
     return this.http.post<boolean>(environment.refuseUrl, student)
   }
 
   trackStudent(request: StudentTracking) {
     return this.http.post<StudentTracking>(environment.trackingUrl + '/track', request)
+  }
+
+  getTracking() {
+    return this.http.get<StudentTracking[]>(environment.trackingUrl + '/get')
   }
 
   getStudentsTracking(request: SearchDto) {

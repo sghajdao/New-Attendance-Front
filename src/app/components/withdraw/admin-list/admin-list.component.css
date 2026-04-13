@@ -29,6 +29,17 @@
 .card-body {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.selection-checkbox {
+    margin-top: 5px;
+    min-width: 30px;
+}
+
+.student-info {
+    flex: 1;
 }
 
 p-button {
@@ -41,4 +52,32 @@ input {
     border-radius: 6px;
     text-indent: 10px;
     height: 40px;
+}
+
+.batch-actions {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.selection-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    color: #2196f3;
+}
+
+.selection-info i {
+    font-size: 20px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
 }

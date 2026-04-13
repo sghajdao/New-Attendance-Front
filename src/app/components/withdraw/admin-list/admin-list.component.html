@@ -10,11 +10,32 @@
             <p-tag icon="pi pi-clock" severity="warn" value="Pending: {{pending}}" />
             <p-tag icon="pi pi-check" severity="success" value="Approved: {{approved}}" />
         </div>
+        
+        <!-- Batch Actions Bar -->
+        <div class="batch-actions" *ngIf="selectedStudents.length > 0">
+            <div class="selection-info">
+                <i class="pi pi-check-circle"></i>
+                <span>{{selectedStudents.length}} student(s) selected</span>
+            </div>
+            <div class="action-buttons">
+                <p-button (click)="approveSelected()" icon="pi pi-check" label="Approve Selected" severity="success" [disabled]="loading" />
+                <p-button (click)="clearSelection()" icon="pi pi-times" label="Clear Selection" severity="secondary" [disabled]="loading" />
+            </div>
+        </div>
+
         <div class="list">
             <p *ngIf="!students || !students.length" style="color: gray;">No students currently exceed the absence limit.</p>
             <div class="card" *ngFor="let item of students">
                 <div class="card-body">
-                    <div>
+                    <div class="selection-checkbox">
+                        <p-checkbox 
+                            *ngIf="!item.wf && isAdmin" 
+                            [(ngModel)]="item.selected" 
+                            (onChange)="onSelectionChange()"
+                            [disabled]="loading">
+                        </p-checkbox>
+                    </div>
+                    <div class="student-info">
                         <p *ngIf="!item.wf" class="student-name">{{item.first_name}} {{item.last_name}}&emsp;<p-tag icon="pi pi-clock" severity="warn" value="Pending" [rounded]="true" /></p>
                         <p *ngIf="item.wf" class="student-name">{{item.first_name}} {{item.last_name}}&emsp;<p-tag icon="pi pi-check" severity="success" value="Approved" [rounded]="true" /></p>
                         <pre style="color: gray;margin-bottom: 0;">
@@ -24,7 +45,7 @@ Reason: Excessive absences (absences: {{item.count}}, limit: {{item.absent_limit
 Requested by: Dr. {{item.teacher_name}}
 Requested on: {{formatDateToDDMMYYY(item.request_date)}}
 <span *ngIf="item.wf && item.approve_date">Approved on: {{formatDateToDDMMYYY(item.approve_date)}}</span></pre>
-<pre style="margin-bottom: 0;"><span *ngIf="isAdmin" style="color: gray;">Withdrawal courses: {{getNumberOfWf(item)}}</span></pre>
+                        <pre style="margin-bottom: 0;"><span *ngIf="isAdmin" style="color: gray;">Withdrawal courses: {{getNumberOfWf(item)}}</span></pre>
                     </div>
                     <div *ngIf="!item.wf && isAdmin" style="display: flex;">
                         <p-button (click)="openDialog($event, item, 0)" icon="pi pi-check" label="Approve" variant="outlined" severity="success" [disabled]="loading" />
@@ -39,7 +60,6 @@ Requested on: {{formatDateToDDMMYYY(item.request_date)}}
         <div class="flex items-center gap-4 mb-4">
             <p class="font-semibold w-50 m-0">Excused absences</p>
             <p-inputnumber [(ngModel)]="excused" mode="decimal" [showButtons]="true" inputId="minmax-buttons" [min]="0" [max]="10" />
-            <!-- <input [(ngModel)]="excused" type="number" class="flex-auto" autocomplete="off" min="1" /> -->
         </div>
         <div class="flex justify-end gap-1">
             <p-button label="Cancel" severity="secondary" (click)="showDeclineDialog = false" />
