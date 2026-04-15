@@ -126,9 +126,9 @@ export class TableComponent implements OnInit {
   formatTime(date: Date): string {
     const pad = (num: number) => num.toString().padStart(2, '0');
 
-    const hours = pad(date.getHours());
-    const minutes = pad(date.getMinutes());
-    const seconds = pad(date.getSeconds());
+    const hours = pad(new Date(date).getHours());
+    const minutes = pad(new Date(date).getMinutes());
+    const seconds = pad(new Date(date).getSeconds());
 
     return `${hours}:${minutes}:${seconds}`;
   }

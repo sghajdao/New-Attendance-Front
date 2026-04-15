@@ -401,7 +401,7 @@
         align-self: flex-start;
     }
 
-    .stats-footer {
+    .stats-header {
         flex-direction: column;
         gap: 8px;
     }

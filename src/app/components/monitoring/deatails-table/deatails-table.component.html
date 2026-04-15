@@ -31,6 +31,9 @@
         <th pSortableColumn="entanceYr" style="min-width: 100px; white-space: nowrap;">
           Entrance Year <p-sortIcon field="entanceYr"></p-sortIcon>
         </th>
+        <th style="min-width: 50px; white-space: nowrap;">
+          Entrance Term
+        </th>
         <th style="min-width: 100px; white-space: nowrap;">Division</th>
         <th pSortableColumn="crsCde" style="min-width: 90px; white-space: nowrap;">
           Course <p-sortIcon field="crsCde"></p-sortIcon>
@@ -78,6 +81,7 @@
           </div>
         </td>
         <td>{{ student.entanceYr }}</td>
+        <td>{{ student.entanceTrm }}</td>
         <td>
           <p-tag
             severity="contrast"

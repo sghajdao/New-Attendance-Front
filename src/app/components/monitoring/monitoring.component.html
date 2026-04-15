@@ -15,7 +15,7 @@
                 Meetings
             </button>
         </div>
-        <app-deatails-table *ngIf="drivers[0]"></app-deatails-table>
+        <app-deatails-table *ngIf="drivers[0]" [searchDto]="searchDto"></app-deatails-table>
         <app-absence-threshold *ngIf="drivers[1]" [searchDto]="searchDto"></app-absence-threshold>
         <app-meeting-history *ngIf="drivers[2]" [searchDto]="searchDto"></app-meeting-history>
     </div>

@@ -1,33 +1,10 @@
 // deatails-table.component.ts
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AttendanceService } from '../../../services/attendance.service';
 import { IndexeddbService } from '../../../services/indexeddb.service';
 import { StudentAttendanceDetails } from '../../../models/dto/studentAttendanceDetails';
-
-// Raw attendance record from API
-interface RawAttendanceRecord {
-  idNum: string;
-  firstName: string;
-  lastName: string;
-  crsCde: string;
-  yrCde: string;
-  trmCde: string;
-  crsDiv: string;
-  studentDiv: string;
-  status: string;
-  grade: string | null;
-  gradeChangeDate: string | null;
-  schedule: string | null;
-  entanceYr: string;
-  entanceTrm: string;
-  visaType: string;
-  seniority: string;
-  attendance: 'present' | 'absent' | 'late';
-  attendanceDate: string;
-  teacherId: string;
-  teacherName: string;
-}
+import { SearchDto } from '../../../models/dto/searchDto';
 
 // Aggregated row per student + course
 export interface StudentCourseAggregate {
@@ -35,8 +12,10 @@ export interface StudentCourseAggregate {
   firstName: string;
   lastName: string;
   entanceYr: string;
+  entanceTrm: string;
   studentDiv: string;
   crsCde: string;
+  courseSisId: string;
   crsDiv: string;
   status: string;
   grade: string | null;
@@ -56,12 +35,13 @@ export interface StudentCourseAggregate {
   templateUrl: './deatails-table.component.html',
   styleUrl: './deatails-table.component.css'
 })
-export class DeatailsTableComponent implements OnInit, OnDestroy {
-  @Input() searchDto?: any; // kept for future filtering
+export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() searchDto?: SearchDto;
   subscriptions: Subscription[] = [];
 
   // Raw attendance data from API/IndexedDB
   rawAttendanceData: StudentAttendanceDetails[] = [];
+  backup: StudentAttendanceDetails[] = [];
   // Aggregated data for table display
   students: StudentCourseAggregate[] = [];
 
@@ -87,6 +67,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
           this.indexeddbService.clearData('info');
           this.indexeddbService.addData(res, 'info');
           this.rawAttendanceData = res;
+          this.backup = res;
           this.students = this.buildAggregatedData(res);
         },
         error: (err) => {
@@ -100,6 +81,27 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
         this.rawAttendanceData = data;
         this.students = this.buildAggregatedData(data);
       });
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['searchDto'] && this.searchDto) {
+      if (this.searchDto.courses && this.searchDto.courses.length) {
+        this.students = this.students.filter(i => this.searchDto?.courses?.includes(i.courseSisId))
+        this.rawAttendanceData = this.rawAttendanceData.filter(i => this.searchDto?.courses?.includes(i.courseSisId))
+      }
+      if (this.searchDto.seniorities && this.searchDto.seniorities.length) {
+        this.students = this.students.filter(i => this.searchDto?.seniorities?.includes(i.seniority))
+        this.rawAttendanceData = this.rawAttendanceData.filter(i => this.searchDto?.seniorities?.includes(i.seniority))
+      }
+      if (this.searchDto.studentIds && this.searchDto.studentIds.length) {
+        this.students = this.students.filter(i => this.searchDto?.studentIds?.includes(i.idNum))
+        this.rawAttendanceData = this.rawAttendanceData.filter(i => this.searchDto?.studentIds?.includes(i.idNum))
+      }
+      else if (!this.searchDto.studentIds?.length && !this.searchDto.courses?.length && !this.searchDto.seniorities?.length) {
+        this.students = this.buildAggregatedData(this.backup)
+        this.rawAttendanceData = this.backup
+      }
     }
   }
 
@@ -119,8 +121,10 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
           firstName: record.firstName,
           lastName: record.lastName,
           entanceYr: record.entanceYr,
+          entanceTrm: record.entanceTrm,
           studentDiv: record.studentDiv,
           crsCde: record.crsCde,
+          courseSisId: record.courseSisId,
           crsDiv: record.crsDiv,
           status: record.status,
           grade: record.grade,
