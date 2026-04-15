@@ -72,13 +72,23 @@ export class TableComponent implements OnInit {
 
   exportReport() {
     if (this.filteredData) {
-      const csvData = this.convertToCsv(this.filteredData)
+      const csvData = this.convertToCsv(
+        this.filteredData
+          .map(({ count, ...item }) => item)
+          .map(({ marked_at, ...item }) => ({
+            ...item,
+            marked_at: this.formatTime(new Date(marked_at))
+          }))
+      );
+    
       const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
+    
       const a = document.createElement('a');
       a.href = url;
       a.download = 'attendanceReport.csv';
       a.click();
+    
       window.URL.revokeObjectURL(url);
     }
   }
@@ -111,5 +121,15 @@ export class TableComponent implements OnInit {
       year: 'numeric',  // '2024'
     };
     return new Intl.DateTimeFormat('en-US', options).format(parsedDate);
+  }
+
+  formatTime(date: Date): string {
+    const pad = (num: number) => num.toString().padStart(2, '0');
+
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+
+    return `${hours}:${minutes}:${seconds}`;
   }
 }
