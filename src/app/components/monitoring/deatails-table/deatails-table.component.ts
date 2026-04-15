@@ -43,6 +43,8 @@ export interface StudentCourseAggregate {
   gradeChangeDate: string | null;
   schedule: string | null;
   seniority: string;
+  teacherId: string;
+  teacherName: string;
   totalPresences: number;
   totalAbsences: number;
   totalLatenesses: number;
@@ -128,7 +130,9 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
           totalAbsences: 0,
           totalLatenesses: 0,
           tempGrade: record.grade,
-          gradeChangeDate: this.formatDateToDDMMYYY(record.gradeChangeDate)
+          gradeChangeDate: this.formatDateToDDMMYYY(record.gradeChangeDate),
+          teacherId: record.teacherId,
+          teacherName: record.teacherName
         });
       }
 

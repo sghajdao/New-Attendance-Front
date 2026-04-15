@@ -49,6 +49,12 @@
         <th pSortableColumn="crsDiv" style="min-width: 80px; white-space: nowrap;">
           Level <p-sortIcon field="crsDiv"></p-sortIcon>
         </th>
+        <th pSortableColumn="idNum" style="min-width: 90px; white-space: nowrap;">
+          Professor ID <p-sortIcon field="idNum"></p-sortIcon>
+        </th>
+        <th pSortableColumn="firstName" style="min-width: 140px; white-space: nowrap;">
+          Professor Name <p-sortIcon field="firstName"></p-sortIcon>
+        </th>
         <!-- New aggregated attendance columns -->
         <th style="min-width: 100px; white-space: nowrap;">Total Presences</th>
         <th style="min-width: 100px; white-space: nowrap;">Total Absences</th>
@@ -98,6 +104,15 @@
         <td>{{ student.schedule }}</td>
         <td>
           <p-tag severity="info" [value]="student.crsDiv" [rounded]="true" styleClass="level-tag" />
+        </td>
+        <td>
+          <span class="student-id">{{ student.teacherId }}</span>
+        </td>
+        <td>
+          <div class="student-name">
+            <i class="pi pi-user mr-2" style="font-size: 0.85rem; color: #4f8aff;"></i>
+            {{ student.teacherName }}
+          </div>
         </td>
         <!-- Aggregated values -->
         <td><strong>{{ student.totalPresences }}</strong></td>
