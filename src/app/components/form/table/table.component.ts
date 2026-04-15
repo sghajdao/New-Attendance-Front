@@ -28,6 +28,8 @@ export class TableComponent implements OnInit {
     })
   }
 
+  private worker: Worker | undefined;
+
   attendance?: Attendance[]
   filteredData?: Attendance[]
   students: string[] = []
@@ -66,6 +68,32 @@ export class TableComponent implements OnInit {
     this.present = data.filter(a => a.attendance === 'present').length
     this.absent = data.filter(a => a.attendance === 'absent').length
     this.late = data.filter(a => a.attendance === 'late').length
+  }
+
+  exportReport() {
+    if (this.filteredData) {
+      const csvData = this.convertToCsv(this.filteredData)
+      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'attendanceReport.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+  }
+
+  convertToCsv(data: any[]): string {
+    if (!data || !data.length) {
+      return '';
+    }
+
+    const keys = Object.keys(data[0]);
+    const csvContent = data.map(row => {
+      return keys.map(key => row[key]).join(',');
+    });
+
+    return [keys.join(','), ...csvContent].join('\n');
   }
 
   formatDate(date: string): string {

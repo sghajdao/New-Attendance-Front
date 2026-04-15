@@ -1,5 +1,8 @@
 <p-card *ngIf="attendance && filteredData && filteredData.length">
-    <p class="title"><i class="pi pi-table" style="font-size: 25px;color: #2563EB;margin-right: 15px;"></i>Detailed Records</p>
+    <div class="header">
+        <p class="title"><i class="pi pi-table" style="font-size: 25px;color: #2563EB;margin-right: 15px;"></i>Detailed Records</p>
+        <p-button label="Export" severity="contrast" (onClick)="exportReport()" />
+    </div>
     <div class="tags">
         <p-tag icon="pi pi-check" severity="success" value="Presences: {{present}}" />
         <p-tag icon="pi pi-clock" severity="warn" value="Latenesses: {{late}}" />
