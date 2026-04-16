@@ -54,6 +54,8 @@
                             <span class="course-code">{{ student.course }}</span>
                             <span class="divider">•</span>
                             <span class="seniority-badge">{{ formatSeniority(student.seniority) }}</span>
+                            <span class="divider">•</span>
+                            <span class="meetings-count">📅 Meetings: {{ student.meetings?.length || 0 }}</span>
                         </div>
                     </div>
                 </div>

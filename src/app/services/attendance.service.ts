@@ -11,6 +11,7 @@ import { WflistResponse } from '../models/dto/wflistResponse';
 import { StudentTracking } from '../models/entities/studentTracking';
 import { SearchDto } from '../models/dto/searchDto';
 import { StudentAttendanceDetails } from '../models/dto/studentAttendanceDetails';
+import { RedFlagStudents } from '../models/dto/reFlagStudent';
 
 @Injectable({
   providedIn: 'root'
@@ -76,7 +77,7 @@ export class AttendanceService {
   }
 
   getRedFlagStudents() {
-    return this.http.post<Attendance[]>(environment.wfUrl + '/red-flag-students', this.getAuthRequest())
+    return this.http.get<RedFlagStudents[]>(environment.trackingUrl + '/red-flag')
   }
 
   getAuthRequest() {

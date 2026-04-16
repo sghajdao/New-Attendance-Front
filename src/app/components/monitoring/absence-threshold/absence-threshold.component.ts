@@ -2,6 +2,8 @@ import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@
 import { AttendanceService } from '../../../services/attendance.service';
 import { Subscription } from 'rxjs';
 import { SearchDto } from '../../../models/dto/searchDto';
+import { StudentTracking } from '../../../models/entities/studentTracking';
+import { RedFlagStudents } from '../../../models/dto/reFlagStudent';
 
 @Component({
   selector: 'app-absence-threshold',
@@ -15,8 +17,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   ) { }
 
   @Input() searchDto?: SearchDto
-  students: { label: string; value: number; color: string; name: string; course: string, seniority: string, id: string }[] = [];
-  studentsBackup: { label: string; value: number; color: string; name: string; course: string, seniority: string, id: string }[] = [];
+  students: { label: string; value: number; color: string; name: string; course: string, seniority: string, id: string, meetings: StudentTracking[] }[] = [];
+  studentsBackup: { label: string; value: number; color: string; name: string; course: string, seniority: string, id: string, meetings: StudentTracking[] }[] = [];
   subscriptions: Subscription[] = [];
   loading: boolean = false
 
@@ -24,14 +26,15 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
     this.loading = true
     const sub = this.attendanceService.getRedFlagStudents().subscribe({
       next: (res) => {
-        this.students = res.map((student: any) => ({
+        this.students = res.map((student: RedFlagStudents) => ({
           label: `Absences: ${student.count} / ${student.absentLimit}`,
           value: +((student.count / student.absentLimit) * 100).toFixed(2),
           color: student.count >= student.absentLimit ? 'red' : 'black',
           name: `${student.firstName} ${student.lastName}`,
           course: `${student.course_sis_id}`,
           seniority: student.seniority,
-          id: student.student_sis_id
+          id: student.student_sis_id,
+          meetings: student.meetings
         }));
         this.studentsBackup = [...this.students];
         this.loading = false

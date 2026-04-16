@@ -201,6 +201,15 @@
     color: #dee2e6;
 }
 
+.meetings-count {
+    background: #f0f2f5;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #2c3e66;
+}
+
 .seniority-badge {
     background: #f8f9fa;
     padding: 2px 8px;
@@ -402,8 +411,9 @@
     }
 
     .stats-header {
-        flex-direction: column;
-        gap: 8px;
+        display: flex;
+        justify-content: space-evenly;
+        margin: 10px;
     }
 
     .stat-item {
