@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { IDBPDatabase, openDB } from 'idb';
 import { StudentAttendanceDetails } from '../models/dto/studentAttendanceDetails';
+import { AttendanceService } from './attendance.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,9 @@ export class IndexeddbService {
 
   private dbPromise: Promise<IDBPDatabase>;
 
-  constructor() {
+  constructor(
+    private attendanceService: AttendanceService,
+  ) {
     this.dbPromise = this.initDB()
   }
 
@@ -55,5 +58,10 @@ export class IndexeddbService {
     const tx = db.transaction(storeName, 'readwrite');
     await tx.store.clear();
     await tx.done;
+  }
+
+  async isDbExists() {
+    const db = await this.dbPromise;
+    return db.objectStoreNames.contains('info')
   }
 }

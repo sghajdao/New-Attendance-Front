@@ -58,7 +58,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit(): void {
     const lastUpdate = localStorage.getItem('lastUpdate');
     const initData = localStorage.getItem('init');
-    const shouldFetch = !(lastUpdate && new Date().getDate() <= new Date(JSON.parse(lastUpdate)).getDate() && new Date().getMonth() <= new Date(JSON.parse(lastUpdate)).getMonth()) || !initData;
+    const shouldFetch = !(lastUpdate && new Date().getDate() <= new Date(JSON.parse(lastUpdate)).getDate() && new Date().getMonth() <= new Date(JSON.parse(lastUpdate)).getMonth()) || !initData || !this.indexeddbService.isDbExists();
 
     if (shouldFetch) {
       const sub = this.attendanceService.getStudentsInfo().subscribe({
