@@ -4,7 +4,6 @@ import { Subscription } from 'rxjs';
 import { SearchDto } from '../../../models/dto/searchDto';
 import { StudentTracking } from '../../../models/entities/studentTracking';
 import { RedFlagStudents } from '../../../models/dto/reFlagStudent';
-import { StudentAttendanceDetails } from '../../../models/dto/studentAttendanceDetails';
 
 export interface Student {
   label: string; value: number; color: string; name: string; course: string, seniority: string, id: string, meetings: StudentTracking[]
@@ -26,6 +25,9 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   studentsBackup: Student[] = [];
   subscriptions: Subscription[] = [];
   loading: boolean = false
+
+  displayHistoryDialog: boolean = false;
+  selectedStudentForHistory: Student | null = null;
 
   // Pagination properties
   currentPage: number = 1;
@@ -149,6 +151,16 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
         return true;
     }
     return false
+  }
+
+  showHistory(student: Student): void {
+    this.selectedStudentForHistory = student;
+    this.displayHistoryDialog = true;
+  }
+  
+  formatMeetingDate(date?: Date): string {
+    if (!date) return 'No date';
+    return new Date(date).toLocaleString();
   }
 
   ngOnDestroy(): void {

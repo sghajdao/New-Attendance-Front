@@ -79,7 +79,7 @@
             <div class="card-actions">
                 <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-sm" label="View Details"></button>
                 <button pButton type="button" icon="pi pi-envelope" class="p-button-text p-button-sm" label="Contact"></button>
-                <button pButton type="button" icon="pi pi-chart-line" class="p-button-text p-button-sm" label="History"></button>
+                <button pButton (click)="showHistory(student)" type="button" icon="pi pi-chart-line" class="p-button-text p-button-sm" label="History"></button>
             </div>
         </div>
     </div>
@@ -113,3 +113,36 @@
         </p-paginator>
     </div>
 </p-card>
+
+<p-dialog header="Meeting History" [(visible)]="displayHistoryDialog" 
+          [modal]="true" [style]="{width: '550px'}" [draggable]="false" [resizable]="false">
+  <ng-container *ngIf="selectedStudentForHistory">
+    <div class="history-header">
+      <h3>{{ selectedStudentForHistory.name }}</h3>
+      <p><strong>Course:</strong> {{ selectedStudentForHistory.course }}</p>
+      <p><strong>Absence rate:</strong> {{ selectedStudentForHistory.value }}%</p>
+    </div>
+    <div class="meetings-list" *ngIf="selectedStudentForHistory.meetings?.length; else noMeetings">
+      <div class="meeting-item" *ngFor="let meeting of selectedStudentForHistory.meetings">
+        <div class="meeting-date">
+          <i class="pi pi-calendar"></i> {{ formatMeetingDate(meeting.createdAt) }}
+        </div>
+        <div class="meeting-type" *ngIf="meeting.type">
+          <i class="pi pi-tag"></i> {{ meeting.type }}
+        </div>
+        <div class="meeting-comment" *ngIf="meeting.comment">
+          <i class="pi pi-comment"></i> {{ meeting.comment }}
+        </div>
+        <div class="meeting-comment" *ngIf="!meeting.comment">
+          <i class="pi pi-info-circle"></i> No comment provided
+        </div>
+      </div>
+    </div>
+    <ng-template #noMeetings>
+      <div class="no-meetings">
+        <i class="pi pi-info-circle"></i>
+        <p>No meeting records found for this student.</p>
+      </div>
+    </ng-template>
+  </ng-container>
+</p-dialog>
