@@ -261,6 +261,14 @@
     position: relative;
 }
 
+.live-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(179, 185, 16, 0.4);
+    box-shadow: 0 0 0 0 rgba(179, 185, 16, 0.4);
+    animation: pulseGlow 2s infinite;
+}
+
 .progress-bar.low {
     background: linear-gradient(90deg, #f59e0b, #f97316);
 }
@@ -431,4 +439,8 @@
     .stat-item {
         justify-content: center;
     }
+}
+
+@keyframes pulseGlow {
+    0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); } 50% { box-shadow: 0 0 0 12px rgba(16,185,129,0); } 
 }

@@ -55,9 +55,7 @@
             <div class="progress-section">
                 <div class="progress-header">
                     <span class="progress-label">Absence Threshold Reached</span>
-                    <span class="progress-percentage" [class.critical]="student.value >= 75">
-                        {{ student.value }}%
-                    </span>
+                    <span *ngIf="hasPendingMeeting(student)" class="live-dot"></span>
                 </div>
                 <div class="progress-bar-container">
                     <div 

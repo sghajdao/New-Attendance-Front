@@ -4,6 +4,11 @@ import { Subscription } from 'rxjs';
 import { SearchDto } from '../../../models/dto/searchDto';
 import { StudentTracking } from '../../../models/entities/studentTracking';
 import { RedFlagStudents } from '../../../models/dto/reFlagStudent';
+import { StudentAttendanceDetails } from '../../../models/dto/studentAttendanceDetails';
+
+export interface Student {
+  label: string; value: number; color: string; name: string; course: string, seniority: string, id: string, meetings: StudentTracking[]
+}
 
 @Component({
   selector: 'app-absence-threshold',
@@ -17,8 +22,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   ) { }
 
   @Input() searchDto?: SearchDto
-  students: { label: string; value: number; color: string; name: string; course: string, seniority: string, id: string, meetings: StudentTracking[] }[] = [];
-  studentsBackup: { label: string; value: number; color: string; name: string; course: string, seniority: string, id: string, meetings: StudentTracking[] }[] = [];
+  students: Student[] = [];
+  studentsBackup: Student[] = [];
   subscriptions: Subscription[] = [];
   loading: boolean = false
 
@@ -136,6 +141,14 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
 
   getCriticalCount(): number {
       return this.students.filter(s => s.value >= 75).length;
+  }
+
+  hasPendingMeeting(student: Student) {
+    for (let item of student.meetings) {
+      if (!item.comment || !item.comment.trim.length)
+        return true;
+    }
+    return false
   }
 
   ngOnDestroy(): void {
