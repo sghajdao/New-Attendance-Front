@@ -77,7 +77,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
         }
       });
       this.subscriptions.push(sub);
-    } else if (!shouldFetch || ! dataExists) {
+    } if (!shouldFetch || ! dataExists) {
       this.indexeddbService.getData('info').then((data: StudentAttendanceDetails[]) => {
         console.log('Loaded from IndexedDB:', data.length);
         this.rawAttendanceData = data;
