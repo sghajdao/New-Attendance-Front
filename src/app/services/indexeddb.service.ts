@@ -59,9 +59,4 @@ export class IndexeddbService {
     await tx.store.clear();
     await tx.done;
   }
-
-  async isDbExists() {
-    const db = await this.dbPromise;
-    return db.objectStoreNames.contains('info')
-  }
 }
