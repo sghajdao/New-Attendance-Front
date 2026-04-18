@@ -39,4 +39,9 @@ export class FiltersComponent implements OnInit {
   onSearch() {
     this.search.emit(this.globalFormGroup.value);
   }
+
+  onClear() {
+    this.globalFormGroup.reset()
+    this.search.emit(this.globalFormGroup.value);
+  }
 }

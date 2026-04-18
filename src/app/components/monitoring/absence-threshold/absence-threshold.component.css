@@ -201,15 +201,6 @@
     color: #dee2e6;
 }
 
-.meetings-count {
-    background: #f0f2f5;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: #2c3e66;
-}
-
 .seniority-badge {
     background: #f8f9fa;
     padding: 2px 8px;
@@ -338,7 +329,7 @@
 }
 
 /* Stats Footer */
-.stats-footer {
+.stats-header {
     margin-top: 1.5rem;
     padding-top: 1rem;
     margin-bottom: 1.5rem;
@@ -386,6 +377,33 @@
     background: #94a3b8;
 }
 
+.paginator-container {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f2f5;
+    flex-shrink: 0;
+}
+
+/* Ensure the card body uses flex layout correctly */
+:host ::ng-deep .threshold-card .p-card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.cards-grid {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Adjust responsive behavior */
+@media (max-width: 768px) {
+    .paginator-container {
+        margin-top: 1rem;
+        padding-top: 0.75rem;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     :host ::ng-deep .threshold-card .p-card-body {
@@ -408,12 +426,6 @@
 
     .risk-indicator {
         align-self: flex-start;
-    }
-
-    .stats-header {
-        display: flex;
-        justify-content: space-evenly;
-        margin: 10px;
     }
 
     .stat-item {

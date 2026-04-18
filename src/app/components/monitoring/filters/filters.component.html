@@ -8,7 +8,10 @@
             
             <p-multiselect [options]="seniorities" formControlName="seniorities" placeholder="Select Seniorities" [maxSelectedLabels]="3" display="chip" class="w-full" />
 
-            <p-button (onClick)="onSearch()" label="Search" severity="secondary" />
+        </div>
+        <div class="buttons">
+            <p-button (onClick)="onSearch()" label="Search" severity="contrast" />
+            <p-button (onClick)="onClear()" label="Clear" severity="secondary" />
         </div>
     </p-card>
 </div>

@@ -22,6 +22,18 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   subscriptions: Subscription[] = [];
   loading: boolean = false
 
+  // Pagination properties
+  currentPage: number = 1;
+  pageSize: number = 6;
+  totalPages: number = 0;
+  pageSizeOptions: number[] = [6, 12, 18];
+
+  get paginatedStudents(): typeof this.students {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    return this.students.slice(start, end);
+  }
+
   ngOnInit(): void {
     this.loading = true
     const sub = this.attendanceService.getRedFlagStudents().subscribe({
@@ -37,6 +49,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
           meetings: student.meetings
         }));
         this.studentsBackup = [...this.students];
+        this.updatePagination();
         this.loading = false
       },
       error: (err) => {
@@ -57,7 +70,24 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
         this.students = this.students.filter(student => this.searchDto?.seniorities?.includes(student.seniority))
       else if (!this.searchDto.studentIds?.length && !this.searchDto.courses?.length && !this.searchDto.seniorities?.length)
         this.students = this.studentsBackup;
+      
+      // Reset to first page whenever filters change
+      this.currentPage = 1;
+      this.updatePagination();
     }
+  }
+
+  updatePagination(): void {
+    this.totalPages = Math.ceil(this.students.length / this.pageSize);
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = this.totalPages;
+    }
+  }
+
+  onPageChange(event: any): void {
+    this.currentPage = (event.first / event.rows) + 1;
+    this.pageSize = event.rows;
+    // No need to slice manually – paginatedStudents getter will recompute
   }
 
   getInitials(name: string): string {
