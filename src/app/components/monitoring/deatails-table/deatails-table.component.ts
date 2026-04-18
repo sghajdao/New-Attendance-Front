@@ -61,10 +61,17 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
     const shouldFetch = !(lastUpdate && new Date().getDate() <= new Date(JSON.parse(lastUpdate)).getDate() && new Date().getMonth() <= new Date(JSON.parse(lastUpdate)).getMonth()) || !initData;
 
     let dataExists: boolean = false
-    if (shouldFetch) {
+    if (!shouldFetch) {
+      this.indexeddbService.getData('info').then((data: StudentAttendanceDetails[]) => {
+        dataExists = data && data.length? true : false
+        console.log('Loaded from IndexedDB:', data.length);
+        this.rawAttendanceData = data;
+        this.students = this.buildAggregatedData(data);
+      });
+    }
+    if (shouldFetch || ! dataExists) {
       const sub = this.attendanceService.getStudentsInfo().subscribe({
         next: (res: StudentAttendanceDetails[]) => {
-          dataExists = res.length? true : false
           console.log('Fetched raw records:', res.length);
           this.indexeddbService.clearData('info');
           this.indexeddbService.addData(res, 'info');
@@ -77,12 +84,6 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
         }
       });
       this.subscriptions.push(sub);
-    } if (!shouldFetch || ! dataExists) {
-      this.indexeddbService.getData('info').then((data: StudentAttendanceDetails[]) => {
-        console.log('Loaded from IndexedDB:', data.length);
-        this.rawAttendanceData = data;
-        this.students = this.buildAggregatedData(data);
-      });
     }
   }
 
