@@ -49,13 +49,13 @@
              *ngFor="let student of paginatedStudents" 
              [class.selected]="isSelected(student)"
              (click)="toggleSelection($event, student)">
-            <div class="selection-checkbox" (click)="$event.stopPropagation()">
+            <!-- <div class="selection-checkbox" (click)="$event.stopPropagation()">
                 <p-checkbox
                     [binary]="true"
                     [(ngModel)]="student._selected"
                     (onChange)="toggleSelection($event, student)">
                 </p-checkbox>
-            </div>
+            </div> -->
             <div class="card-header-section">
                 <div class="student-info">
                     <div class="student-avatar" [ngClass]="getRiskClass(student.value)">
