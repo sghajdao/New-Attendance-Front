@@ -220,13 +220,13 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     if (this.selectedMeeting && this.selectedMeeting.id) {
       this.selectedMeeting.type = this.globalFormGroup.value.type? this.globalFormGroup.value.type : this.selectedMeeting.type
       this.selectedMeeting.comment = this.globalFormGroup.value.comment? this.globalFormGroup.value.comment : this.selectedMeeting.comment
-      console.log(this.selectedMeeting)
 
       // Example delete implementation:
       const sub = this.attendanceService.updateTracking(this.selectedMeeting).subscribe({
         next: (res) => {
           this.students = this.students.filter(s => s.id !== this.selectedMeeting?.id);
           this.students.push(res)
+          this.cancelDialog()
           this.messageService.add({
             severity: 'success',
             summary: 'Updated',
@@ -236,6 +236,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error('Error updating meeting:', err);
+          this.cancelDialog()
           this.messageService.add({
             severity: 'error',
             summary: 'Error',

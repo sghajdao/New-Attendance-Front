@@ -7,15 +7,15 @@
             <p-tag severity="danger" [value]="'≥ 50%'" styleClass="threshold-badge"></p-tag>
             <div class="contact-header-actions" *ngIf="students.length">
                 <p-button 
-                    *ngIf="selectedStudentIds.size > 0" 
-                    label="Contact Selected ({{selectedStudentIds.size}})" 
+                    *ngIf="selectedStudents.size > 0" 
+                    label="Contact Selected ({{selectedStudents.size}})" 
                     severity="contrast" 
                     icon="pi pi-envelope" 
                     (onClick)="openContactDialog(getSelectedStudents())"
                     styleClass="p-button-sm">
                 </p-button>
                 <p-button 
-                    *ngIf="selectedStudentIds.size > 0" 
+                    *ngIf="selectedStudents.size > 0" 
                     label="Clear Selection" 
                     severity="secondary" 
                     icon="pi pi-times" 

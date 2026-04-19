@@ -50,7 +50,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   isContactSaving: boolean = false;
 
   // Selection tracking
-  selectedStudentIds: Set<string> = new Set();
+  selectedStudents: Set<Student> = new Set();
 
   // Meeting types (same as meeting-history)
   meetingTypes = [
@@ -153,25 +153,25 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   // Selection methods
   toggleSelection(event: any, student: Student): void {
     event.stopPropagation();
-    if (this.selectedStudentIds.has(student.id)) {
-      this.selectedStudentIds.delete(student.id);
+    if (this.selectedStudents.has(student)) {
+      this.selectedStudents.delete(student);
       student._selected = false;
     } else {
-      this.selectedStudentIds.add(student.id);
+      this.selectedStudents.add(student);
       student._selected = true;
     }
   }
 
   isSelected(student: Student): boolean {
-    return this.selectedStudentIds.has(student.id);
+    return this.selectedStudents.has(student);
   }
 
   getSelectedStudents(): Student[] {
-    return this.students.filter(s => this.selectedStudentIds.has(s.id));
+    return this.students.filter(s => this.selectedStudents.has(s));
   }
 
   clearSelection(): void {
-    this.selectedStudentIds.clear();
+    this.selectedStudents.clear();
     this.students.forEach(s => s._selected = false);
   }
 
