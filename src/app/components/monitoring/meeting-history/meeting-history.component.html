@@ -239,14 +239,14 @@
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
-                    [disabled]="globalFormGroup.invalid"
+                    [disabled]="this.globalFormGroup.value.studentId && this.globalFormGroup.value.courseId && this.globalFormGroup.value.date && this.globalFormGroup.value.type"
                     [loading]="isSaving"
                 />
                 <p-button 
                     *ngIf="selectedMeeting"
                     label="Save Meeting" 
                     severity="contrast" 
-                    [disabled]="globalFormGroup.invalid"
+                    [disabled]="this.globalFormGroup.value.studentId && this.globalFormGroup.value.courseId && this.globalFormGroup.value.date && this.globalFormGroup.value.type"
                     [loading]="isSaving"
                     (click)="updateMeeting()"
                 />
@@ -254,5 +254,3 @@
         </form>
     </div>
 </p-dialog>
-
-<p-toast position="bottom-right"></p-toast>

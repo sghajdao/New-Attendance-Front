@@ -218,6 +218,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
 
   updateMeeting() {
     if (this.selectedMeeting && this.selectedMeeting.id) {
+      console.log(this.selectedMeeting)
       this.messageService.add({
         severity: 'warn',
         summary: 'Confirm Update',
