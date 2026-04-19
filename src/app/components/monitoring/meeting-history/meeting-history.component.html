@@ -239,14 +239,14 @@
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
-                    [disabled]="this.globalFormGroup.value.studentId && this.globalFormGroup.value.courseId && this.globalFormGroup.value.date && this.globalFormGroup.value.type"
+                    [disabled]="!(this.globalFormGroup.value.studentId && this.globalFormGroup.value.courseId && this.globalFormGroup.value.date && this.globalFormGroup.value.type)"
                     [loading]="isSaving"
                 />
                 <p-button 
                     *ngIf="selectedMeeting"
                     label="Save Meeting" 
                     severity="contrast" 
-                    [disabled]="this.globalFormGroup.value.studentId && this.globalFormGroup.value.courseId && this.globalFormGroup.value.date && this.globalFormGroup.value.type"
+                    [disabled]="!selectedMeeting"
                     [loading]="isSaving"
                     (click)="updateMeeting()"
                 />
