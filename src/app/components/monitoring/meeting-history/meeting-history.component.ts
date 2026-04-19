@@ -103,7 +103,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   }
 
   onSave(): void {
-    if (this.globalFormGroup.invalid) {
+    if (this.globalFormGroup.value.studentId && this.globalFormGroup.value.courseId && this.globalFormGroup.value.date && this.globalFormGroup.value.type) {
       // Mark all fields as touched to show validation errors
       Object.keys(this.globalFormGroup.controls).forEach(key => {
         this.globalFormGroup.get(key)?.markAsTouched();
@@ -216,39 +216,75 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     });
   }
 
+  updateMeeting() {
+    if (this.selectedMeeting && this.selectedMeeting.id) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Confirm Update',
+        detail: `Update meeting with ${this.selectedMeeting.studentName}?`,
+        sticky: true,
+        life: 5000
+      });
+
+      // Example delete implementation:
+      const sub = this.attendanceService.updateTracking(this.selectedMeeting).subscribe({
+        next: (res) => {
+          this.students = this.students.filter(s => s.id !== this.selectedMeeting?.id);
+          this.students.push(res)
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Updated',
+            detail: 'Meeting record updated successfully',
+            life: 3000
+          });
+        },
+        error: (err) => {
+          console.error('Error updating meeting:', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to update meeting record',
+            life: 3000
+          });
+        }
+      });
+      this.subscriptions.push(sub);
+    }
+  }
+
   deleteMeeting(meeting: StudentTracking, index: number): void {
     // Implement delete logic based on your service
     this.messageService.add({
       severity: 'warn',
       summary: 'Confirm Delete',
-      detail: `Delete meeting with ${meeting.studentSisId}?`,
+      detail: `Delete meeting with ${meeting.studentName}?`,
       sticky: true,
       life: 5000
     });
     
     // Example delete implementation:
-    // const sub = this.attendanceService.deleteTracking(meeting.id).subscribe({
-    //   next: () => {
-    //     this.students = this.students.filter(s => s.id !== meeting.id);
-    //     this.filterMeetings();
-    //     this.messageService.add({
-    //       severity: 'success',
-    //       summary: 'Deleted',
-    //       detail: 'Meeting record deleted successfully',
-    //       life: 3000
-    //     });
-    //   },
-    //   error: (err) => {
-    //     console.error('Error deleting meeting:', err);
-    //     this.messageService.add({
-    //       severity: 'error',
-    //       summary: 'Error',
-    //       detail: 'Failed to delete meeting record',
-    //       life: 3000
-    //     });
-    //   }
-    // });
-    // this.subscriptions.push(sub);
+    const sub = this.attendanceService.deleteTracking(meeting.id || 0).subscribe({
+      next: () => {
+        this.students = this.students.filter(s => s.id !== meeting.id);
+        this.filterMeetings();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Deleted',
+          detail: 'Meeting record deleted successfully',
+          life: 3000
+        });
+      },
+      error: (err) => {
+        console.error('Error deleting meeting:', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to delete meeting record',
+          life: 3000
+        });
+      }
+    });
+    this.subscriptions.push(sub);
   }
 
   // Helper methods for UI

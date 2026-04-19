@@ -88,7 +88,7 @@
                     </div>
                 </td>
                 <td>
-                    <span class="course-code">{{student.courseSisId || '-'}}</span>
+                    <span class="course-code">{{student.coursSisId || '-'}}</span>
                 </td>
                 <td>
                     <div class="date-cell">
@@ -235,11 +235,20 @@
             <div class="dialog-actions">
                 <p-button label="Cancel" severity="secondary" (click)="cancelDialog()" />
                 <p-button 
+                    *ngIf="!selectedMeeting"
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
                     [disabled]="globalFormGroup.invalid"
                     [loading]="isSaving"
+                />
+                <p-button 
+                    *ngIf="selectedMeeting"
+                    label="Save Meeting" 
+                    severity="contrast" 
+                    [disabled]="globalFormGroup.invalid"
+                    [loading]="isSaving"
+                    (click)="updateMeeting()"
                 />
             </div>
         </form>

@@ -68,8 +68,12 @@ export class AttendanceService {
     return this.http.get<StudentTracking[]>(environment.trackingUrl + '/get')
   }
 
-  getStudentsTracking(request: SearchDto) {
-    return this.http.post<StudentTracking[]>(environment.trackingUrl + '/search', request)
+  updateTracking(request: StudentTracking) {
+    return this.http.put<StudentTracking>(environment.trackingUrl + '/update', request)
+  }
+
+  deleteTracking(id: number) {
+    return this.http.delete<boolean>(environment.trackingUrl + '/delete/{id}')
   }
 
   getStudentsInfo() {
