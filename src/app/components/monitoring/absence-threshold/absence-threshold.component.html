@@ -1,9 +1,28 @@
+<!-- absence-threshold.component.html - Updated with multi-select and contact dialog -->
 <p-card [style]="{'height': '800px', 'overflow-y': 'auto'}" styleClass="threshold-card">
     <div class="card-header">
         <div class="title-section">
             <i class="pi pi-exclamation-triangle mr-2 warning-icon"></i>
             <span class="title">Absence Threshold Monitoring</span>
             <p-tag severity="danger" [value]="'≥ 50%'" styleClass="threshold-badge"></p-tag>
+            <div class="contact-header-actions" *ngIf="students.length">
+                <p-button 
+                    *ngIf="selectedStudentIds.size > 0" 
+                    label="Contact Selected ({{selectedStudentIds.size}})" 
+                    severity="contrast" 
+                    icon="pi pi-envelope" 
+                    (onClick)="openContactDialog(getSelectedStudents())"
+                    styleClass="p-button-sm">
+                </p-button>
+                <p-button 
+                    *ngIf="selectedStudentIds.size > 0" 
+                    label="Clear Selection" 
+                    severity="secondary" 
+                    icon="pi pi-times" 
+                    (onClick)="clearSelection()"
+                    styleClass="p-button-text p-button-sm">
+                </p-button>
+            </div>
         </div>
         <p class="subtitle">
             Students who have reached at least 50% of the absence limit
@@ -26,7 +45,17 @@
 
     <!-- Student Cards Grid -->
     <div class="cards-grid" *ngIf="!loading && students.length">
-        <div class="student-card" *ngFor="let student of paginatedStudents">
+        <div class="student-card" 
+             *ngFor="let student of paginatedStudents" 
+             [class.selected]="isSelected(student)"
+             (click)="toggleSelection($event, student)">
+            <div class="selection-checkbox" (click)="$event.stopPropagation()">
+                <p-checkbox
+                    [binary]="true"
+                    [(ngModel)]="student._selected"
+                    (onChange)="toggleSelection($event, student)">
+                </p-checkbox>
+            </div>
             <div class="card-header-section">
                 <div class="student-info">
                     <div class="student-avatar" [ngClass]="getRiskClass(student.value)">
@@ -76,9 +105,9 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="card-actions">
+            <div class="card-actions" (click)="$event.stopPropagation()">
                 <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-sm" label="View Details"></button>
-                <button pButton type="button" icon="pi pi-envelope" class="p-button-text p-button-sm" label="Contact"></button>
+                <button pButton (click)="contactStudent(student)" type="button" icon="pi pi-envelope" class="p-button-text p-button-sm" label="Contact"></button>
                 <button pButton (click)="showHistory(student)" type="button" icon="pi pi-chart-line" class="p-button-text p-button-sm" label="History"></button>
             </div>
         </div>
@@ -114,6 +143,7 @@
     </div>
 </p-card>
 
+<!-- History Dialog -->
 <p-dialog header="Meeting History" [(visible)]="displayHistoryDialog" 
           [modal]="true" [style]="{width: '550px'}" [draggable]="false" [resizable]="false">
   <ng-container *ngIf="selectedStudentForHistory">
@@ -146,3 +176,106 @@
     </ng-template>
   </ng-container>
 </p-dialog>
+
+<!-- Contact Dialog -->
+<p-dialog 
+    [header]="contactSelectedStudents.length === 1 ? 'Contact Student' : 'Contact Selected Students (' + contactSelectedStudents.length + ')'" 
+    [modal]="true" 
+    [(visible)]="displayContactDialog" 
+    [style]="{ width: '500px', 'max-width': '90vw' }"
+    [draggable]="false"
+    [resizable]="false"
+    styleClass="meeting-dialog"
+    (onHide)="resetContactForm()">
+    <div class="dialog-content">
+        <div class="dialog-info" *ngIf="contactSelectedStudents.length > 1">
+            <i class="pi pi-info-circle"></i>
+            <span>The meeting details below will be applied to all selected students.</span>
+        </div>
+
+        <!-- Selected Students List -->
+        <div class="selected-students-list">
+            <h4>Selected Students ({{ contactSelectedStudents.length }})</h4>
+            <ul>
+                <li *ngFor="let student of contactSelectedStudents">
+                    {{ student.name }} 
+                    <span class="course-code">{{ student.course }}</span>
+                </li>
+            </ul>
+        </div>
+
+        <form [formGroup]="contactForm" (ngSubmit)="submitContact()">
+            <div class="form-field">
+                <label for="contactType" class="required-field">Meeting Type</label>
+                <p-select 
+                    [options]="meetingTypes"
+                    placeholder="Select meeting type"
+                    appendTo="body"
+                    formControlName="type"
+                    optionLabel="label"
+                    optionValue="value"
+                >
+                    <ng-template pTemplate="selectedItem">
+                        <div class="type-select-item">
+                            <i [class]="getContactTypeIcon(contactForm.get('type')?.value)"></i>
+                            <span>{{ getContactTypeLabel(contactForm.get('type')?.value) }}</span>
+                        </div>
+                    </ng-template>
+                    <ng-template let-type pTemplate="item">
+                        <div class="type-select-item">
+                            <i [class]="getContactTypeIcon(type.value)"></i>
+                            <span>{{ type.label }}</span>
+                        </div>
+                    </ng-template>
+                </p-select>
+                <small class="error-message" *ngIf="contactForm.get('type')?.invalid && contactForm.get('type')?.touched">
+                    Please select a meeting type
+                </small>
+            </div>
+
+            <div class="form-field">
+                <label for="contactDate" class="required-field">Meeting Date & Time</label>
+                <p-datepicker 
+                    id="contactDate"
+                    [showTime]="true"
+                    [showIcon]="true"
+                    [iconDisplay]="'input'"
+                    appendTo="body"
+                    placeholder="Select date and time"
+                    formControlName="date"
+                    dateFormat="yy-mm-dd"
+                />
+                <small class="error-message" *ngIf="contactForm.get('date')?.invalid && contactForm.get('date')?.touched">
+                    Date and time are required
+                </small>
+            </div>
+
+            <div class="form-field">
+                <label for="contactComment" class="required-field">Comments / Notes</label>
+                <textarea 
+                    id="contactComment"
+                    formControlName="comment"
+                    rows="4"
+                    pTextarea
+                    placeholder="Add meeting notes, discussion points, or follow-up items..."
+                ></textarea>
+                <small class="error-message" *ngIf="contactForm.get('comment')?.invalid && contactForm.get('comment')?.touched">
+                    Comments are required
+                </small>
+            </div>
+
+            <div class="dialog-actions">
+                <p-button label="Cancel" severity="secondary" (click)="cancelContactDialog()" />
+                <p-button 
+                    label="Save Meeting" 
+                    severity="contrast" 
+                    type="submit" 
+                    [disabled]="contactForm.invalid || isContactSaving"
+                    [loading]="isContactSaving"
+                />
+            </div>
+        </form>
+    </div>
+</p-dialog>
+
+<p-toast position="bottom-right"></p-toast>

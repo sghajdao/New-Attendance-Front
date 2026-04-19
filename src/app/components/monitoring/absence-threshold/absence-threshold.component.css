@@ -1,3 +1,4 @@
+/* absence-threshold.component.css - Updated with selection styles */
 /* Card Container */
 :host ::ng-deep .threshold-card .p-card {
     border-radius: 20px;
@@ -120,6 +121,8 @@
     transition: all 0.3s ease;
     border: 1px solid #e9ecef;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    position: relative;
 }
 
 .student-card:hover {
@@ -128,12 +131,33 @@
     border-color: transparent;
 }
 
+/* Selected card styling */
+.student-card.selected {
+    background: #eff6ff;
+    border: 2px solid #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+/* Selection checkbox */
+.selection-checkbox {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1;
+}
+
+.selection-checkbox .p-checkbox {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
 /* Card Header Section */
 .card-header-section {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 1.25rem;
+    padding-right: 28px; /* Make room for checkbox */
 }
 
 .student-info {
@@ -472,6 +496,100 @@
   color: #adb5bd;
 }
 
+/* Contact Dialog Styles */
+.selected-students-list {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.selected-students-list h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.875rem;
+    color: #1e293b;
+}
+
+.selected-students-list ul {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.selected-students-list li {
+    font-size: 0.813rem;
+    margin-bottom: 0.25rem;
+    color: #334155;
+}
+
+.selected-students-list .course-code {
+    font-family: monospace;
+    background: #e2e8f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-left: 6px;
+}
+
+.form-field {
+    margin-bottom: 1.25rem;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.813rem;
+    color: #1e293b;
+}
+
+.required-field::after {
+    content: '*';
+    color: #ef4444;
+    margin-left: 4px;
+}
+
+.form-field input,
+.form-field textarea,
+.form-field ::ng-deep .p-datepicker,
+.form-field ::ng-deep .p-select {
+    width: 100%;
+}
+
+.error-message {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: #ef4444;
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.type-select-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.type-select-item i {
+    font-size: 0.875rem;
+}
+
+.contact-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
 /* Adjust responsive behavior */
 @media (max-width: 768px) {
     .paginator-container {
@@ -506,6 +624,12 @@
 
     .stat-item {
         justify-content: center;
+    }
+
+    .contact-header-actions {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 0.5rem;
     }
 }
 

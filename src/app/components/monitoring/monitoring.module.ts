@@ -30,6 +30,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { DropdownModule } from 'primeng/dropdown';
 import { DeatailsTableComponent } from './deatails-table/deatails-table.component';
 import { PaginatorModule } from 'primeng/paginator';
+import { CheckboxModule } from 'primeng/checkbox';
 
 
 @NgModule({
@@ -67,6 +68,7 @@ import { PaginatorModule } from 'primeng/paginator';
     ProgressBarModule,
     DropdownModule,
     PaginatorModule,
+    CheckboxModule,
   ],
   providers: [MessageService]
 })
