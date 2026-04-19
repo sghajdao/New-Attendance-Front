@@ -218,6 +218,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
 
   updateMeeting() {
     if (this.selectedMeeting && this.selectedMeeting.id) {
+      this.selectedMeeting.type = this.globalFormGroup.value.type? this.globalFormGroup.value.type : this.selectedMeeting.type
+      this.selectedMeeting.comment = this.globalFormGroup.value.comment? this.selectedMeeting.comment : this.selectedMeeting.comment
       console.log(this.selectedMeeting)
       this.messageService.add({
         severity: 'warn',
