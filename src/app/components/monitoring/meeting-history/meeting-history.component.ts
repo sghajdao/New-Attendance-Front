@@ -219,15 +219,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   updateMeeting() {
     if (this.selectedMeeting && this.selectedMeeting.id) {
       this.selectedMeeting.type = this.globalFormGroup.value.type? this.globalFormGroup.value.type : this.selectedMeeting.type
-      this.selectedMeeting.comment = this.globalFormGroup.value.comment? this.selectedMeeting.comment : this.selectedMeeting.comment
+      this.selectedMeeting.comment = this.globalFormGroup.value.comment? this.globalFormGroup.value.comment : this.selectedMeeting.comment
       console.log(this.selectedMeeting)
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Confirm Update',
-        detail: `Update meeting with ${this.selectedMeeting.studentName}?`,
-        sticky: true,
-        life: 5000
-      });
 
       // Example delete implementation:
       const sub = this.attendanceService.updateTracking(this.selectedMeeting).subscribe({
@@ -255,16 +248,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     }
   }
 
-  deleteMeeting(meeting: StudentTracking, index: number): void {
-    // Implement delete logic based on your service
-    this.messageService.add({
-      severity: 'warn',
-      summary: 'Confirm Delete',
-      detail: `Delete meeting with ${meeting.studentName}?`,
-      sticky: true,
-      life: 5000
-    });
-    
+  deleteMeeting(meeting: StudentTracking, index: number): void {    
     // Example delete implementation:
     const sub = this.attendanceService.deleteTracking(meeting.id || 0).subscribe({
       next: () => {
