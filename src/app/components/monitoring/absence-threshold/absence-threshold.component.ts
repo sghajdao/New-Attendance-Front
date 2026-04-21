@@ -333,12 +333,13 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
       return this.students.filter(s => s.value >= 75).length;
   }
 
-  hasPendingMeeting(student: Student): boolean {
+  hasPendingMeeting(student: Student): number {
+    let count = 0
     for (let item of student.meetings) {
       if (!item.comment || !item.comment.trim().length)
-        return true;
+        count++;
     }
-    return false;
+    return count;
   }
 
   showHistory(student: Student): void {

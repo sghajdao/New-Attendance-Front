@@ -13,6 +13,7 @@ export interface StudentCourseAggregate {
   lastName: string;
   entanceYr: string;
   entanceTrm: string;
+  visaType: string;
   studentDiv: string;
   crsCde: string;
   courseSisId: string;
@@ -27,6 +28,7 @@ export interface StudentCourseAggregate {
   totalPresences: number;
   totalAbsences: number;
   totalLatenesses: number;
+  absentLimit: number;
 }
 
 @Component({
@@ -139,7 +141,9 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
           tempGrade: record.grade,
           gradeChangeDate: this.formatDateToDDMMYYY(record.gradeChangeDate),
           teacherId: record.teacherId,
-          teacherName: record.teacherName
+          teacherName: record.teacherName,
+          absentLimit: record.absentLimit,
+          visaType: record.visaType,
         });
       }
 

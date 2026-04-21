@@ -35,6 +35,7 @@
           Entrance Term
         </th>
         <th style="min-width: 100px; white-space: nowrap;">Division</th>
+        <th style="min-width: 100px; white-space: nowrap;">Visa Type</th>
         <th pSortableColumn="crsCde" style="min-width: 90px; white-space: nowrap;">
           Course <p-sortIcon field="crsCde"></p-sortIcon>
         </th>
@@ -47,7 +48,6 @@
         </th>
         <th style="min-width: 100px; white-space: nowrap;">Drop Date</th>
         <th style="min-width: 110px; white-space: nowrap;">Withdraw Date</th>
-        <th style="min-width: 180px; white-space: normal;">Withdraw Reason</th>
         <th style="min-width: 100px; white-space: nowrap;">Schedule</th>
         <th pSortableColumn="crsDiv" style="min-width: 80px; white-space: nowrap;">
           Level <p-sortIcon field="crsDiv"></p-sortIcon>
@@ -62,6 +62,7 @@
         <th style="min-width: 100px; white-space: nowrap;">Total Presences</th>
         <th style="min-width: 100px; white-space: nowrap;">Total Absences</th>
         <th style="min-width: 100px; white-space: nowrap;">Total Latenesses</th>
+        <th style="min-width: 100px; white-space: nowrap;">Absence Limit</th>
       </tr>
     </ng-template>
 
@@ -91,6 +92,14 @@
           />
         </td>
         <td>
+          <p-tag
+            severity="contrast"
+            [style]="{'border-radius': '20px', 'background': '#eef2ff', 'color': '#3b5bdb'}"
+            [value]="student.visaType"
+            [rounded]="true"
+          />
+        </td>
+        <td>
           <span class="course-code">{{ student.crsCde }}</span>
         </td>
         <td>
@@ -104,7 +113,6 @@
         </td>
         <td>{{ student.grade === 'D' ? (student.gradeChangeDate | date:'yyyy-MM-dd') : '-' }}</td>
         <td>{{ student.grade === 'WF' ? (student.gradeChangeDate | date:'yyyy-MM-dd') : '-' }}</td>
-        <td class="withdraw-reason">{{ student.grade === 'WF' ? 'Exceeding the allowed number of absences' : '-' }}</td>
         <td>{{ student.schedule }}</td>
         <td>
           <p-tag severity="info" [value]="student.crsDiv" [rounded]="true" styleClass="level-tag" />
@@ -122,6 +130,7 @@
         <td><strong>{{ student.totalPresences }}</strong></td>
         <td><strong>{{ student.totalAbsences }}</strong></td>
         <td><strong>{{ student.totalLatenesses }}</strong></td>
+        <td><strong>{{ student.absentLimit }}</strong></td>
       </tr>
     </ng-template>
 

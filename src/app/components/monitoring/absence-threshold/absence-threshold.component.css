@@ -284,11 +284,27 @@
     position: relative;
 }
 
-.live-dot {
+.yellow-live-dot {
     width: 8px; height: 8px;
     border-radius: 50%;
-    background: rgba(179, 185, 16, 0.581);
-    box-shadow: 0 0 0 0 rgba(179, 185, 16, 0.581);
+    background: rgb(199, 205, 13);
+    box-shadow: 0 0 0 0 rgba(231, 239, 14, 0.375);
+    animation: pulseGlow 2s infinite;
+}
+
+.green-live-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+    animation: pulseGlow 2s infinite;
+}
+
+.red-live-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #b91010;
+    box-shadow: 0 0 0 0 #b910107a;
     animation: pulseGlow 2s infinite;
 }
 

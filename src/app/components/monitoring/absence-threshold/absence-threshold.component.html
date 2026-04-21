@@ -49,13 +49,6 @@
              *ngFor="let student of paginatedStudents" 
              [class.selected]="isSelected(student)"
              (click)="toggleSelection($event, student)">
-            <!-- <div class="selection-checkbox" (click)="$event.stopPropagation()">
-                <p-checkbox
-                    [binary]="true"
-                    [(ngModel)]="student._selected"
-                    (onChange)="toggleSelection($event, student)">
-                </p-checkbox>
-            </div> -->
             <div class="card-header-section">
                 <div class="student-info">
                     <div class="student-avatar" [ngClass]="getRiskClass(student.value)">
@@ -84,7 +77,9 @@
             <div class="progress-section">
                 <div class="progress-header">
                     <span class="progress-label">Absence Threshold Reached</span>
-                    <span *ngIf="hasPendingMeeting(student)" class="live-dot"></span>
+                    <span *ngIf="hasPendingMeeting(student) === 0" class="green-live-dot"></span>
+                    <span *ngIf="hasPendingMeeting(student) === 1" class="yellow-live-dot"></span>
+                    <span *ngIf="hasPendingMeeting(student) > 1" class="red-live-dot"></span>
                 </div>
                 <div class="progress-bar-container">
                     <div 
