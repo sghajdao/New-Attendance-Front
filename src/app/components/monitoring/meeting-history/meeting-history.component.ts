@@ -5,6 +5,7 @@ import { SearchDto } from '../../../models/dto/searchDto';
 import { StudentTracking } from '../../../models/entities/studentTracking';
 import { finalize, Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
+import { IndexeddbService } from '../../../services/indexeddb.service';
 
 @Component({
   selector: 'app-meeting-history',
@@ -16,7 +17,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
  constructor(
     private fb: FormBuilder,
     private attendanceService: AttendanceService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private indexedDbService: IndexeddbService,
   ) { }
 
   @Input() searchDto?: SearchDto;
@@ -106,7 +108,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     if (this.globalFormGroup.value.studentId && this.globalFormGroup.value.courseId && this.globalFormGroup.value.date && this.globalFormGroup.value.type) {
       // Mark all fields as touched to show validation errors
       Object.keys(this.globalFormGroup.controls).forEach(key => {
-        this.globalFormGroup.get(key)?.markAsTouched();
+        key === 'comment'? null : this.globalFormGroup.get(key)?.markAsTouched();
       });
       this.messageService.add({
         severity: 'warn',

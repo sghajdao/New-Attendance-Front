@@ -46,6 +46,12 @@ export class IndexeddbService {
     return db.getAll(storeName);
   }
 
+  async updateItem(item: StudentAttendanceDetails) {
+    const db = await this.dbPromise;
+    const tx = db.transaction('info', 'readwrite');
+    tx.store.put(item)
+  }
+
   async deleteByKey(key: number) {
     const db = await this.dbPromise;
     const tx = db.transaction('info', 'readwrite');

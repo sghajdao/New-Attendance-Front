@@ -265,7 +265,7 @@
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
-                    [disabled]="contactForm.invalid || isContactSaving"
+                    [disabled]="!contactForm.value.type || !contactForm.value.date || isContactSaving"
                     [loading]="isContactSaving"
                 />
             </div>

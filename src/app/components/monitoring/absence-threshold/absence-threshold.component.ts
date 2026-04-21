@@ -339,6 +339,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
       if (!item.comment || !item.comment.trim().length)
         count++;
     }
+    if (count === 0 && student.meetings.length !== 0)
+      return -1
     return count;
   }
 
