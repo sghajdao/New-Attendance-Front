@@ -5,6 +5,7 @@ export interface Attendance {
     attendance: string;
     count: number;
     marked_at: Date;
+    marked_time?: Date;
     seniority: string;
     marked_by_sis_id: string;
     course_name: string;
