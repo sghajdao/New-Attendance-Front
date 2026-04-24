@@ -232,6 +232,56 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
     return 'contrast';
   }
 
+  exportModalToCSV(): void {
+    if (!this.modalRecords.length) {
+      // Optionally show a brief notification or silently ignore
+      return;
+    }
+
+    // Define CSV headers and field mappings
+    const headers = ['Attendance Status', 'Attendance Date', 'Attendance Time'];
+    const rows = this.modalRecords.map(record => [
+      record.attendance?.toUpperCase() || '',
+      this.formatDateToYYYYMMDD(record.attendanceDate),
+      this.formatTimeToHHMM(record.attendanceTime)
+    ]);
+
+    // Build CSV content
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    // Create a blob and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute('download', `${this.modalTitle.replace(/\s+/g, '_')}_attendance.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  // Helper methods for consistent date/time formatting
+  private formatDateToYYYYMMDD(date: any): string {
+    if (!date) return '';
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private formatTimeToHHMM(time: any): string {
+    if (!time) return '';
+    const d = new Date(time);
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }

@@ -160,6 +160,7 @@
           <tr>
             <th>Attendance Status</th>
             <th>Attendance Date</th>
+            <th>Attendance Time</th>
           </tr>
         </ng-template>
         <ng-template #body let-record>
@@ -172,6 +173,7 @@
               />
             </td>
             <td>{{ record.attendanceDate | date:'yyyy-MM-dd' }}</td>
+            <td>{{ record.attendanceTime | date:'HH:mm' }}</td>
           </tr>
         </ng-template>
       </p-table>
@@ -181,6 +183,9 @@
     </ng-template>
   </ng-template>
   <ng-template pTemplate="footer">
-    <button pButton type="button" label="Close" icon="pi pi-times" (click)="closeModal()" class="p-button-text"></button>
+    <button pButton type="button" label="Export CSV" icon="pi pi-download"
+          (click)="exportModalToCSV()" class="p-button-outlined"></button>
+    <button pButton type="button" label="Close" icon="pi pi-times"
+          (click)="closeModal()" class="p-button-text"></button>
   </ng-template>
 </p-dialog>
