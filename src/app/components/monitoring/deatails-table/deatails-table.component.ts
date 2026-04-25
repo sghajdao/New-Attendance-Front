@@ -66,7 +66,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
     if (!shouldFetch) {
       this.indexeddbService.getData('info').then((data: StudentAttendanceDetails[]) => {
         dataExists = data && data.length? true : false
-        console.log('Loaded from IndexedDB:', data.length);
+        console.log('Loaded from IndexedDB:', data);
         this.rawAttendanceData = data;
         this.students = this.buildAggregatedData(data);
       });
@@ -243,7 +243,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
     const rows = this.modalRecords.map(record => [
       record.attendance?.toUpperCase() || '',
       this.formatDateToYYYYMMDD(record.attendanceDate),
-      this.formatTimeToHHMM(record.attendanceTime)
+      record.attendanceTime || ''
     ]);
 
     // Build CSV content
@@ -272,14 +272,6 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
-  }
-
-  private formatTimeToHHMM(time: any): string {
-    if (!time) return '';
-    const d = new Date(time);
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
   }
 
   ngOnDestroy(): void {

@@ -77,7 +77,7 @@ export class TableComponent implements OnInit {
           .map(({ count, ...item }) => item)
           .map(({ marked_time, ...item }) => ({
             ...item,
-            marked_at: this.formatTime(new Date(marked_time? marked_time : new Date()))
+            marked_at: marked_time || ''
           }))
       );
     
@@ -121,16 +121,5 @@ export class TableComponent implements OnInit {
       year: 'numeric',  // '2024'
     };
     return new Intl.DateTimeFormat('en-US', options).format(parsedDate);
-  }
-
-  formatTime(date: Date): string {
-    console.log(date)
-    const pad = (num: number) => num.toString().padStart(2, '0');
-
-    const hours = pad(new Date(date).getHours());
-    const minutes = pad(new Date(date).getMinutes());
-    const seconds = pad(new Date(date).getSeconds());
-
-    return `${hours}:${minutes}:${seconds}`;
   }
 }
