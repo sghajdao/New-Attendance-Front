@@ -5,6 +5,7 @@ import { AttendanceService } from '../../../services/attendance.service';
 import { IndexeddbService } from '../../../services/indexeddb.service';
 import { StudentAttendanceDetails } from '../../../models/dto/studentAttendanceDetails';
 import { SearchDto } from '../../../models/dto/searchDto';
+import { StudentTracking } from '../../../models/entities/studentTracking';
 
 // Aggregated row per student + course
 export interface StudentCourseAggregate {
@@ -29,6 +30,7 @@ export interface StudentCourseAggregate {
   totalAbsences: number;
   totalLatenesses: number;
   absentLimit: number;
+  meetings: StudentTracking[];
 }
 
 @Component({
@@ -144,6 +146,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
           teacherName: record.teacherName,
           absentLimit: record.absentLimit,
           visaType: record.visaType,
+          meetings: record.meetings || []
         });
       }
 
@@ -272,6 +275,10 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  getDoneMeetings(student: StudentCourseAggregate) {
+    return student.meetings.filter(m => m.comment && m.comment.trim() !== '').length;
   }
 
   ngOnDestroy(): void {

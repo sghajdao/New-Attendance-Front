@@ -1,3 +1,5 @@
+import { StudentTracking } from "../entities/studentTracking";
+
 export interface StudentAttendanceDetails {
     idNum: string;
     firstName: string;
@@ -22,4 +24,5 @@ export interface StudentAttendanceDetails {
     absentLimit: number;
     teacherId: string;
     teacherName: string;
+    meetings: StudentTracking[];
 }

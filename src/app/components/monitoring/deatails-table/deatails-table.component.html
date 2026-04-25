@@ -63,6 +63,8 @@
         <th style="min-width: 100px; white-space: nowrap;">Total Absences</th>
         <th style="min-width: 100px; white-space: nowrap;">Total Latenesses</th>
         <th style="min-width: 100px; white-space: nowrap;">Absence Limit</th>
+        <th style="min-width: 100px; white-space: nowrap;">Meeting Requests</th>
+        <th style="min-width: 100px; white-space: nowrap;">Meetings</th>
       </tr>
     </ng-template>
 
@@ -130,7 +132,9 @@
         <td><strong>{{ student.totalPresences }}</strong></td>
         <td><strong>{{ student.totalAbsences }}</strong></td>
         <td><strong>{{ student.totalLatenesses }}</strong></td>
-        <td><strong>{{ student.absentLimit }}</strong></td>
+        <td><p-badge severity="danger" [value]="student.absentLimit" /></td>
+        <td><strong>{{ student.totalLatenesses }}</strong></td>
+        <td><strong>{{ getDoneMeetings(student) }}</strong></td>
       </tr>
     </ng-template>
 
