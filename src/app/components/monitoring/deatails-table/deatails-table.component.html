@@ -46,6 +46,9 @@
         <th pSortableColumn="grade" style="min-width: 70px; white-space: nowrap;">
           Grade <p-sortIcon field="grade"></p-sortIcon>
         </th>
+        <th pSortableColumn="midtermGrade" style="min-width: 70px; white-space: nowrap;">
+          Midterm Grade <p-sortIcon field="midtermGrade"></p-sortIcon>
+        </th>
         <th style="min-width: 100px; white-space: nowrap;">Drop Date</th>
         <th style="min-width: 110px; white-space: nowrap;">Withdraw Date</th>
         <th style="min-width: 100px; white-space: nowrap;">Schedule</th>
@@ -113,6 +116,7 @@
         <td>
           <p-tag [severity]="getGradeSeverity(student.grade)" [value]="student.grade || '-'" [rounded]="true" />
         </td>
+        <td>{{ student.midtermGrade }}</td>
         <td>{{ student.grade === 'D' ? (student.gradeChangeDate | date:'yyyy-MM-dd') : '-' }}</td>
         <td>{{ student.grade === 'WF' ? (student.gradeChangeDate | date:'yyyy-MM-dd') : '-' }}</td>
         <td>{{ student.schedule }}</td>
@@ -133,7 +137,7 @@
         <td><strong>{{ student.totalAbsences }}</strong></td>
         <td><strong>{{ student.totalLatenesses }}</strong></td>
         <td><p-badge severity="danger" [value]="student.absentLimit" /></td>
-        <td><strong>{{ student.totalLatenesses }}</strong></td>
+        <td><strong>{{ student.meetings.length }}</strong></td>
         <td><strong>{{ getDoneMeetings(student) }}</strong></td>
       </tr>
     </ng-template>
@@ -186,7 +190,7 @@
       <div class="p-3 text-center text-gray-500">No attendance records found for this student and course.</div>
     </ng-template>
   </ng-template>
-  <ng-template pTemplate="footer">
+  <ng-template pTemplate="footer" style="margin-top: 15px">
     <button pButton type="button" label="Export CSV" icon="pi pi-download"
           (click)="exportModalToCSV()" class="p-button-outlined"></button>
     <button pButton type="button" label="Close" icon="pi pi-times"

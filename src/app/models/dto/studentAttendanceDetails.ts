@@ -24,5 +24,6 @@ export interface StudentAttendanceDetails {
     absentLimit: number;
     teacherId: string;
     teacherName: string;
+    midtermGrade: string;
     meetings: StudentTracking[];
 }

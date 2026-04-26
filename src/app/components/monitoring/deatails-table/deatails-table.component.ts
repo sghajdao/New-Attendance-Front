@@ -30,6 +30,7 @@ export interface StudentCourseAggregate {
   totalAbsences: number;
   totalLatenesses: number;
   absentLimit: number;
+  midtermGrade: string;
   meetings: StudentTracking[];
 }
 
@@ -146,6 +147,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
           teacherName: record.teacherName,
           absentLimit: record.absentLimit,
           visaType: record.visaType,
+          midtermGrade: record.midtermGrade,
           meetings: record.meetings || []
         });
       }
