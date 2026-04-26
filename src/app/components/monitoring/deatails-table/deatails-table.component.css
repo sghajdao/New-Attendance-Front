@@ -1,8 +1,15 @@
 /* Card Styling */
 :host ::ng-deep .student-card .p-card {
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.02);
     overflow: hidden;
+    transition: box-shadow 0.3s ease;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+:host ::ng-deep .student-card .p-card:hover {
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
 }
 
 :host ::ng-deep .student-card .p-card-body {
@@ -10,117 +17,197 @@
 }
 
 .card-header {
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eef2f6;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header-left {
+    flex: 1;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.student-count-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8fafc;
+    padding: 0.5rem 1rem;
+    border-radius: 40px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+}
+
+.student-count-badge i {
+    color: #3b82f6;
+    font-size: 0.9rem;
+}
+
+.export-btn {
+    border-radius: 40px !important;
+    padding: 0.5rem 1.2rem !important;
+    transition: all 0.2s ease;
+    background: white;
+    border-color: #cbd5e1;
+    color: #1e293b;
+}
+
+.export-btn:hover {
+    background: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+    transform: translateY(-1px);
 }
 
 .title-section {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     margin-bottom: 6px;
 }
 
 .title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1e293b;
+    font-size: 1.35rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #1e293b 0%, #2d3a4b 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     letter-spacing: -0.3px;
 }
 
 .subtitle {
-    font-size: 0.875rem;
-    color: #64748b;
+    font-size: 0.85rem;
+    color: #5b6e8c;
     margin: 0;
+    font-weight: 400;
 }
 
-/* Table Styling - Dynamic Widths */
+/* Table Styling - Enhanced */
 :host ::ng-deep .p-datatable {
     font-size: 0.875rem;
+    border-radius: 16px;
+    overflow: hidden;
 }
 
 :host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
-    background-color: #f8fafc;
-    color: #1e293b;
+    background: linear-gradient(180deg, #f9fbfd 0%, #f3f6fa 100%);
+    color: #1a2634;
     font-weight: 600;
-    padding: 1rem 0.75rem;
-    border-top: 1px solid #e2e8f0;
-    border-bottom: 2px solid #e2e8f0;
+    padding: 1rem 0.85rem;
+    border-top: none;
+    border-bottom: 2px solid #e4e9f0;
     white-space: nowrap;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 :host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
-    padding: 0.85rem 0.75rem;
-    border-bottom: 1px solid #f1f5f9;
+    padding: 0.9rem 0.85rem;
+    border-bottom: 1px solid #f0f2f5;
     vertical-align: middle;
+    color: #1e2a3a;
+    font-size: 0.85rem;
+}
+
+/* Alternating row stripes - more subtle */
+:host ::ng-deep .p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
+    background-color: #fafcff;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr {
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+:host ::ng-deep .p-datatable-tbody > tr:hover {
+    background-color: #f1f5f9 !important;
+    transform: scale(1);
+    box-shadow: inset 0 1px 0 rgba(0,0,0,0.02);
 }
 
 /* Make table container scrollable on small screens */
 :host ::ng-deep .p-datatable-wrapper {
     overflow-x: auto;
+    border-radius: 12px;
 }
 
-/* Column-specific dynamic adjustments */
+/* Column-specific adjustments */
 :host ::ng-deep .p-datatable .p-datatable-tbody > tr > td:first-child,
 :host ::ng-deep .p-datatable .p-datatable-thead > tr > th:first-child {
-    padding-left: 1rem;
+    padding-left: 1.2rem;
 }
 
 :host ::ng-deep .p-datatable .p-datatable-tbody > tr > td:last-child,
 :host ::ng-deep .p-datatable .p-datatable-thead > tr > th:last-child {
-    padding-right: 1rem;
+    padding-right: 1.2rem;
 }
 
-/* Row conditional styling */
+/* Row conditional styling - refined */
 :host ::ng-deep .expelled-row {
     background-color: #fef2f2 !important;
+    border-left: 3px solid #ef4444;
 }
 
 :host ::ng-deep .warning-row {
     background-color: #fffbeb !important;
+    border-left: 3px solid #f59e0b;
 }
 
 /* Student ID styling */
 .student-id {
-    font-family: 'SF Mono', 'JetBrains Mono', monospace;
+    font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
     font-weight: 500;
     color: #2563eb;
-    background: #eff6ff;
-    padding: 4px 8px;
-    border-radius: 8px;
-    font-size: 0.8rem;
+    background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 100%);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
     display: inline-block;
+    letter-spacing: 0.2px;
 }
 
 /* Student name */
 .student-name {
     display: flex;
     align-items: center;
+    gap: 6px;
     font-weight: 500;
     color: #0f172a;
-    width: 150px;
 }
 
 /* Course code */
 .course-code {
-    font-family: monospace;
+    font-family: 'SF Mono', monospace;
     font-weight: 500;
-    background: #f1f5f9;
+    background: #f0f4f9;
     padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.8rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    color: #1e40af;
 }
 
-/* Seniority badge */
+/* Seniority badge - refined gradient */
 .seniority-badge {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     color: white;
-    padding: 4px 10px;
-    border-radius: 20px;
+    padding: 4px 12px;
+    border-radius: 24px;
     font-size: 0.75rem;
     font-weight: 500;
     display: inline-block;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 /* Attendance cell */
@@ -158,33 +245,60 @@
     padding: 3rem !important;
     color: #94a3b8;
     font-style: italic;
+    font-size: 0.9rem;
 }
 
-/* Paginator styling */
+/* Paginator styling - modern */
 :host ::ng-deep .p-paginator {
-    padding: 1rem 0.5rem 0.25rem;
+    padding: 1rem 0.5rem 0.5rem;
     background: transparent;
     border: none;
+    margin-top: 0.5rem;
 }
 
 :host ::ng-deep .p-paginator .p-paginator-current {
-    color: #64748b;
+    color: #5b6e8c;
+    font-size: 0.85rem;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page {
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 2px 4px rgba(59,130,246,0.3);
 }
 
 /* Sort icons */
 :host ::ng-deep .p-sortable-column .p-sortable-column-icon {
     color: #94a3b8;
     margin-left: 6px;
+    transition: color 0.2s;
 }
 
 :host ::ng-deep .p-sortable-column.p-highlight .p-sortable-column-icon {
     color: #3b82f6;
 }
 
+:host ::ng-deep .p-sortable-column:hover {
+    background: #eef2ff !important;
+}
+
 /* Tag styling overrides */
 :host ::ng-deep .level-tag {
-    background: #e0e7ff !important;
-    color: #4338ca !important;
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%) !important;
+    color: #3730a3 !important;
+    font-weight: 500;
+}
+
+/* Badge styling */
+:host ::ng-deep .p-badge {
+    border-radius: 40px;
+    padding: 0.25rem 0.6rem;
+    font-weight: 500;
 }
 
 /* Responsive adjustments */
@@ -194,21 +308,47 @@
     }
     
     .title {
-        font-size: 1rem;
+        font-size: 1.1rem;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
     }
     
     :host ::ng-deep .p-datatable .p-datatable-tbody > tr > td,
     :host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
         padding: 0.6rem 0.5rem;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
     }
 }
 
 :host ::ng-deep .p-datatable-tbody > tr {
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-:host ::ng-deep .p-datatable-tbody > tr:hover {
-  background-color: #f8fafc !important;
+/* Custom scrollbar for table wrapper */
+:host ::ng-deep .p-datatable-wrapper::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+:host ::ng-deep .p-datatable-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+:host ::ng-deep .p-datatable-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+:host ::ng-deep .p-datatable-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }

@@ -1,11 +1,20 @@
 <!-- deatails-table.component.html -->
 <p-card styleClass="student-card">
   <div class="card-header">
-    <div class="title-section">
-      <i class="pi pi-file mr-2" style="font-size: 1.2rem"></i>
-      <span class="title">Student Details Table</span>
+    <div class="header-left">
+      <div class="title-section">
+        <i class="pi pi-file mr-2" style="font-size: 1.2rem"></i>
+        <span class="title">Student Details Table</span>
+      </div>
+      <p class="subtitle">Attendance summary per student per course (click any row for detailed records)</p>
     </div>
-    <p class="subtitle">Attendance summary per student per course (click any row for detailed records)</p>
+    <div class="header-actions">
+      <div class="student-count-badge">
+        <i class="pi pi-users"></i>
+        <span>{{ students.length }} students</span>
+      </div>
+      <button pButton type="button" label="Export CSV" icon="pi pi-download" class="p-button-outlined export-btn" (click)="exportToCSV()"></button>
+    </div>
   </div>
 
   <p-table
@@ -18,56 +27,56 @@
     [rowsPerPageOptions]="[10, 20, 30]"
     [showCurrentPageReport]="true"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-    styleClass="p-datatable-sm"
+    styleClass="p-datatable-sm custom-datatable"
   >
     <ng-template #header>
       <tr>
-        <th pSortableColumn="idNum" style="min-width: 90px; white-space: nowrap;">
+        <th pSortableColumn="idNum" style="min-width: 90px;">
           Student ID <p-sortIcon field="idNum"></p-sortIcon>
         </th>
-        <th pSortableColumn="firstName" style="min-width: 140px; white-space: nowrap;">
+        <th pSortableColumn="firstName" style="min-width: 140px;">
           Full Name <p-sortIcon field="firstName"></p-sortIcon>
         </th>
-        <th pSortableColumn="entanceYr" style="min-width: 100px; white-space: nowrap;">
+        <th pSortableColumn="entanceYr" style="min-width: 100px;">
           Entrance Year <p-sortIcon field="entanceYr"></p-sortIcon>
         </th>
-        <th style="min-width: 50px; white-space: nowrap;">
+        <th style="min-width: 70px;">
           Entrance Term
         </th>
-        <th style="min-width: 100px; white-space: nowrap;">Division</th>
-        <th style="min-width: 100px; white-space: nowrap;">Visa Type</th>
-        <th pSortableColumn="crsCde" style="min-width: 90px; white-space: nowrap;">
+        <th style="min-width: 90px;">Division</th>
+        <th style="min-width: 100px;">Visa Type</th>
+        <th pSortableColumn="crsCde" style="min-width: 90px;">
           Course <p-sortIcon field="crsCde"></p-sortIcon>
         </th>
-        <th style="min-width: 80px; white-space: nowrap;">Status</th>
-        <th pSortableColumn="seniority" style="min-width: 90px; white-space: nowrap;">
+        <th style="min-width: 90px;">Status</th>
+        <th pSortableColumn="seniority" style="min-width: 90px;">
           Seniority <p-sortIcon field="seniority"></p-sortIcon>
         </th>
-        <th pSortableColumn="grade" style="min-width: 70px; white-space: nowrap;">
+        <th pSortableColumn="grade" style="min-width: 70px;">
           Grade <p-sortIcon field="grade"></p-sortIcon>
         </th>
-        <th pSortableColumn="midtermGrade" style="min-width: 70px; white-space: nowrap;">
+        <th pSortableColumn="midtermGrade" style="min-width: 90px;">
           Midterm Grade <p-sortIcon field="midtermGrade"></p-sortIcon>
         </th>
-        <th style="min-width: 100px; white-space: nowrap;">Drop Date</th>
-        <th style="min-width: 110px; white-space: nowrap;">Withdraw Date</th>
-        <th style="min-width: 100px; white-space: nowrap;">Schedule</th>
-        <th pSortableColumn="crsDiv" style="min-width: 80px; white-space: nowrap;">
+        <th style="min-width: 100px;">Drop Date</th>
+        <th style="min-width: 110px;">Withdraw Date</th>
+        <th style="min-width: 100px;">Schedule</th>
+        <th pSortableColumn="crsDiv" style="min-width: 70px;">
           Level <p-sortIcon field="crsDiv"></p-sortIcon>
         </th>
-        <th pSortableColumn="idNum" style="min-width: 90px; white-space: nowrap;">
-          Professor ID <p-sortIcon field="idNum"></p-sortIcon>
+        <th pSortableColumn="teacherId" style="min-width: 100px;">
+          Professor ID <p-sortIcon field="teacherId"></p-sortIcon>
         </th>
-        <th pSortableColumn="firstName" style="min-width: 140px; white-space: nowrap;">
-          Professor Name <p-sortIcon field="firstName"></p-sortIcon>
+        <th pSortableColumn="teacherName" style="min-width: 140px;">
+          Professor Name <p-sortIcon field="teacherName"></p-sortIcon>
         </th>
-        <!-- New aggregated attendance columns -->
-        <th style="min-width: 100px; white-space: nowrap;">Total Presences</th>
-        <th style="min-width: 100px; white-space: nowrap;">Total Absences</th>
-        <th style="min-width: 100px; white-space: nowrap;">Total Latenesses</th>
-        <th style="min-width: 100px; white-space: nowrap;">Absence Limit</th>
-        <th style="min-width: 100px; white-space: nowrap;">Meeting Requests</th>
-        <th style="min-width: 100px; white-space: nowrap;">Meetings</th>
+        <!-- Aggregated attendance columns -->
+        <th style="min-width: 100px;">Total Presences</th>
+        <th style="min-width: 100px;">Total Absences</th>
+        <th style="min-width: 100px;">Total Latenesses</th>
+        <th style="min-width: 100px;">Absence Limit</th>
+        <th style="min-width: 120px;">Meeting Requests</th>
+        <th style="min-width: 90px;">Meetings</th>
       </tr>
     </ng-template>
 
@@ -116,10 +125,10 @@
         <td>
           <p-tag [severity]="getGradeSeverity(student.grade)" [value]="student.grade || '-'" [rounded]="true" />
         </td>
-        <td>{{ student.midtermGrade }}</td>
+        <td>{{ student.midtermGrade || '-' }}</td>
         <td>{{ student.grade === 'D' ? (student.gradeChangeDate | date:'yyyy-MM-dd') : '-' }}</td>
         <td>{{ student.grade === 'WF' ? (student.gradeChangeDate | date:'yyyy-MM-dd') : '-' }}</td>
-        <td>{{ student.schedule }}</td>
+        <td>{{ student.schedule || '-' }}</td>
         <td>
           <p-tag severity="info" [value]="student.crsDiv" [rounded]="true" styleClass="level-tag" />
         </td>
@@ -132,7 +141,6 @@
             {{ student.teacherName }}
           </div>
         </td>
-        <!-- Aggregated values -->
         <td><strong>{{ student.totalPresences }}</strong></td>
         <td><strong>{{ student.totalAbsences }}</strong></td>
         <td><strong>{{ student.totalLatenesses }}</strong></td>
@@ -144,7 +152,7 @@
 
     <ng-template #emptymessage>
       <tr>
-        <td colspan="16" class="empty-message">
+        <td colspan="24" class="empty-message">
           <i class="pi pi-inbox mr-2"></i> No students found.
         </td>
       </tr>

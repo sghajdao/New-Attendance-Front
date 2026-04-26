@@ -95,8 +95,8 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['searchDto'] && this.searchDto) {
       if (this.searchDto.courses && this.searchDto.courses.length) {
-        this.students = this.students.filter(i => this.searchDto?.courses?.includes(i.courseSisId))
-        this.rawAttendanceData = this.rawAttendanceData.filter(i => this.searchDto?.courses?.includes(i.courseSisId))
+        this.students = this.students.filter(i => this.searchDto?.courses?.includes('SP26-' + i.courseSisId.replaceAll("\\s+", "")))
+        this.rawAttendanceData = this.rawAttendanceData.filter(i => this.searchDto?.courses?.includes('SP26-' + i.courseSisId.replaceAll("\\s+", "")))
       }
       if (this.searchDto.seniorities && this.searchDto.seniorities.length) {
         this.students = this.students.filter(i => this.searchDto?.seniorities?.includes(i.seniority))
@@ -182,11 +182,11 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   formatDateToDDMMYYY(date: Date): string {
-    date = new Date(date)
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-  
+    if (!date) return '';
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
     return `${day}-${month}-${year}`;
   }
 
@@ -213,7 +213,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
     this.modalRecords = [];
   }
 
-  // Helper methods for severity styling (unchanged from original)
+  // Helper methods for severity styling
   getStatusSeverity(status: string): 'success' | 'danger' | 'warning' | 'info' | 'contrast' {
     const statusMap: Record<string, any> = {
       'Active': 'success',
@@ -222,7 +222,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
       'Withdrawn': 'danger',
       'Expelled': 'danger',
       'Enrolled': 'contrast',
-      'C': 'info' // map 'C' (completed) to info
+      'C': 'info'
     };
     return statusMap[status] || 'contrast';
   }
@@ -239,11 +239,9 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
 
   exportModalToCSV(): void {
     if (!this.modalRecords.length) {
-      // Optionally show a brief notification or silently ignore
       return;
     }
 
-    // Define CSV headers and field mappings
     const headers = ['Attendance Status', 'Attendance Date', 'Attendance Time'];
     const rows = this.modalRecords.map(record => [
       record.attendance?.toUpperCase() || '',
@@ -251,13 +249,11 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
       record.attendanceTime || ''
     ]);
 
-    // Build CSV content
     const csvContent = [
       headers.join(','),
       ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
     ].join('\n');
 
-    // Create a blob and trigger download
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
@@ -269,7 +265,6 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
     URL.revokeObjectURL(url);
   }
 
-  // Helper methods for consistent date/time formatting
   private formatDateToYYYYMMDD(date: any): string {
     if (!date) return '';
     const d = new Date(date);
@@ -281,6 +276,90 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
 
   getDoneMeetings(student: StudentCourseAggregate) {
     return student.meetings.filter(m => m.comment && m.comment.trim() !== '').length;
+  }
+
+  /**
+   * Exports the currently displayed table data (filtered students) to a CSV file.
+   */
+  exportToCSV(): void {
+    if (!this.students.length) {
+      return;
+    }
+
+    // Define headers exactly as displayed in the table (order matters)
+    const headers = [
+      'Student ID', 'Full Name', 'Entrance Year', 'Entrance Term',
+      'Division', 'Visa Type', 'Course', 'Status', 'Seniority', 'Grade',
+      'Midterm Grade', 'Drop Date', 'Withdraw Date', 'Schedule', 'Level',
+      'Professor ID', 'Professor Name', 'Total Presences', 'Total Absences',
+      'Total Latenesses', 'Absence Limit', 'Meeting Requests', 'Meetings'
+    ];
+
+    // Build rows from the current students array (already filtered)
+    const rows = this.students.map(student => {
+      // Compute conditional dates based on grade (same logic as in template)
+      let dropDate = '-';
+      let withdrawDate = '-';
+      if (student.grade === 'D' && student.gradeChangeDate) {
+        dropDate = this.formatDateToYYYYMMDD(student.gradeChangeDate);
+      } else if (student.grade === 'WF' && student.gradeChangeDate) {
+        withdrawDate = this.formatDateToYYYYMMDD(student.gradeChangeDate);
+      }
+
+      // Escape function for CSV fields
+      const escape = (value: any): string => {
+        if (value === null || value === undefined) return '""';
+        const str = String(value);
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return `"${str}"`;
+      };
+
+      return [
+        escape(student.idNum),
+        escape(`${student.firstName} ${student.lastName}`),
+        escape(student.entanceYr),
+        escape(student.entanceTrm),
+        escape(student.studentDiv),
+        escape(student.visaType),
+        escape(student.crsCde),
+        escape(student.status),
+        escape(student.seniority),
+        escape(student.grade || '-'),
+        escape(student.midtermGrade || '-'),
+        escape(dropDate),
+        escape(withdrawDate),
+        escape(student.schedule || '-'),
+        escape(student.crsDiv),
+        escape(student.teacherId),
+        escape(student.teacherName),
+        escape(student.totalPresences),
+        escape(student.totalAbsences),
+        escape(student.totalLatenesses),
+        escape(student.absentLimit),
+        escape(student.meetings.length),
+        escape(this.getDoneMeetings(student))
+      ];
+    });
+
+    // Build CSV content
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+
+    // Add BOM for UTF-8 encoding to support special characters
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    const filename = `student_details_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.csv`;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   }
 
   ngOnDestroy(): void {
