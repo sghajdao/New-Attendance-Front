@@ -7,6 +7,8 @@ import { SearchDto } from '../../../models/dto/searchDto';
 import { StudentTracking } from '../../../models/entities/studentTracking';
 import { RedFlagStudents } from '../../../models/dto/reFlagStudent';
 import { MessageService } from 'primeng/api';
+import { StudentAttendanceDetails } from '../../../models/dto/studentAttendanceDetails';
+import { IndexeddbService } from '../../../services/indexeddb.service';
 
 export interface Student {
   label: string; 
@@ -30,7 +32,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   constructor(
     private attendanceService: AttendanceService,
     private fb: FormBuilder,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private indexeddbService: IndexeddbService,
   ) { }
 
   @Input() searchDto?: SearchDto;
@@ -41,7 +44,9 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
 
   // History dialog
   displayHistoryDialog: boolean = false;
+  attendanceModal: boolean = false;
   selectedStudentForHistory: Student | null = null;
+  modalRecords: StudentAttendanceDetails[] = [];
 
   // Contact dialog
   displayContactDialog: boolean = false;
@@ -185,6 +190,13 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
     this.contactSelectedStudents = students;
     this.resetContactForm();
     this.displayContactDialog = true;
+  }
+
+  openAttendanceModal(student: Student) {
+    this.indexeddbService.getByStudentId(student.id).then(records => {
+      this.modalRecords = records;
+      this.attendanceModal = true;
+    });
   }
 
   resetContactForm(): void {
@@ -352,6 +364,53 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   formatMeetingDate(date?: Date): string {
     if (!date) return 'No date';
     return new Date(date).toLocaleString();
+  }
+
+  closeModal(): void {
+    this.attendanceModal = false;
+    this.modalRecords = [];
+  }
+
+  exportModalToCSV(): void {
+    if (!this.modalRecords.length) {
+      // Optionally show a brief notification or silently ignore
+      return;
+    }
+
+    // Define CSV headers and field mappings
+    const headers = ['Attendance Status', 'Attendance Date', 'Attendance Time'];
+    const rows = this.modalRecords.map(record => [
+      record.attendance?.toUpperCase() || '',
+      this.formatDateToYYYYMMDD(record.attendanceDate),
+      record.attendanceTime || ''
+    ]);
+
+    // Build CSV content
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    // Create a blob and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute('download', 'attendance_history.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  // Helper methods for consistent date/time formatting
+  private formatDateToYYYYMMDD(date: any): string {
+    if (!date) return '';
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   ngOnDestroy(): void {

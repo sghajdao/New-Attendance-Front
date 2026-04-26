@@ -46,6 +46,12 @@ export class IndexeddbService {
     return db.getAll(storeName);
   }
 
+  async getByStudentId(studentId: string): Promise<StudentAttendanceDetails[]> {
+    const db = await this.dbPromise;
+    const allRecords = await db.getAll('info');
+    return allRecords.filter(record => record.idNum === studentId);
+  }
+
   async updateItem(item: StudentAttendanceDetails) {
     const db = await this.dbPromise;
     const tx = db.transaction('info', 'readwrite');

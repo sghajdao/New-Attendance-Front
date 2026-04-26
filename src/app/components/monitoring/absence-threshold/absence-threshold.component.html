@@ -101,7 +101,7 @@
 
             <!-- Action Buttons -->
             <div class="card-actions" (click)="$event.stopPropagation()">
-                <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-sm" label="View Details"></button>
+                <button pButton (click)="openAttendanceModal(student)" type="button" icon="pi pi-eye" class="p-button-text p-button-sm" label="View Details"></button>
                 <button pButton (click)="contactStudent(student)" type="button" icon="pi pi-envelope" class="p-button-text p-button-sm" label="Contact"></button>
                 <button pButton (click)="showHistory(student)" type="button" icon="pi pi-chart-line" class="p-button-text p-button-sm" label="History"></button>
             </div>
@@ -271,4 +271,49 @@
             </div>
         </form>
     </div>
+</p-dialog>
+
+<p-dialog
+  header="Attendance Details"
+  [(visible)]="attendanceModal"
+  [modal]="true"
+  [style]="{ width: '60vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <ng-template pTemplate="content">
+    <div *ngIf="modalRecords.length > 0; else noRecords">
+      <p-table [value]="modalRecords" [tableStyle]="{ 'min-width': '100%' }" styleClass="p-datatable-sm">
+        <ng-template #header>
+          <tr>
+            <th>Attendance Status</th>
+            <th>Attendance Date</th>
+            <th>Attendance Time</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-record>
+          <tr>
+            <td>
+              <p-tag
+                [severity]="record.attendance === 'present' ? 'success' : (record.attendance === 'absent' ? 'danger' : 'warning')"
+                [value]="record.attendance | uppercase"
+                [rounded]="true"
+              />
+            </td>
+            <td>{{ record.attendanceDate | date:'yyyy-MM-dd' }}</td>
+            <td>{{ record.attendanceTime }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+    <ng-template #noRecords>
+      <div class="p-3 text-center text-gray-500">No attendance records found for this student and course.</div>
+    </ng-template>
+  </ng-template>
+  <ng-template pTemplate="footer" style="margin-top: 15px">
+    <button pButton type="button" label="Export CSV" icon="pi pi-download"
+          (click)="exportModalToCSV()" class="p-button-outlined"></button>
+    <button pButton type="button" label="Close" icon="pi pi-times"
+          (click)="closeModal()" class="p-button-text"></button>
+  </ng-template>
 </p-dialog>
