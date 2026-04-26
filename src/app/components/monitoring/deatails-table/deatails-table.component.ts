@@ -17,7 +17,6 @@ export interface StudentCourseAggregate {
   visaType: string;
   studentDiv: string;
   crsCde: string;
-  courseSisId: string;
   crsDiv: string;
   status: string;
   grade: string | null;
@@ -95,8 +94,8 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['searchDto'] && this.searchDto) {
       if (this.searchDto.courses && this.searchDto.courses.length) {
-        this.students = this.students.filter(i => this.searchDto?.courses?.includes('SP26-' + i.courseSisId.replaceAll("\\s+", "")))
-        this.rawAttendanceData = this.rawAttendanceData.filter(i => this.searchDto?.courses?.includes('SP26-' + i.courseSisId.replaceAll("\\s+", "")))
+        this.students = this.students.filter(i => this.searchDto?.courses?.includes('SP26-' + i.crsCde.replaceAll("\\s+", "")))
+        this.rawAttendanceData = this.rawAttendanceData.filter(i => this.searchDto?.courses?.includes('SP26-' + i.crsCde.replaceAll("\\s+", "")))
       }
       if (this.searchDto.seniorities && this.searchDto.seniorities.length) {
         this.students = this.students.filter(i => this.searchDto?.seniorities?.includes(i.seniority))
@@ -132,7 +131,6 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
           entanceTrm: record.entanceTrm,
           studentDiv: record.studentDiv,
           crsCde: record.crsCde,
-          courseSisId: record.courseSisId,
           crsDiv: record.crsDiv,
           status: record.status,
           grade: record.grade,

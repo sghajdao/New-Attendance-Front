@@ -21,6 +21,31 @@
     flex-shrink: 0;
 }
 
+.filter-controls {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-option i {
+  font-size: 0.75rem;
+}
+
+.filter-badge {
+  font-size: 0.7rem;
+  color: #6c757d;
+  font-weight: normal;
+  background: #f1f3f5;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
 .title-section {
     display: flex;
     align-items: center;
@@ -438,6 +463,15 @@
     height: 100%;
 }
 
+:host ::ng-deep .p-dropdown {
+  height: 32px;
+  font-size: 0.75rem;
+}
+
+:host ::ng-deep .p-dropdown .p-dropdown-label {
+  padding: 0.25rem 1rem;
+}
+
 .cards-grid {
     flex: 1;
     overflow-y: auto;
@@ -610,6 +644,21 @@
     .paginator-container {
         margin-top: 1rem;
         padding-top: 0.75rem;
+    }
+    .title-section {
+      flex-wrap: wrap;
+    }
+    .filter-controls {
+      order: 2;
+      margin-left: 0;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .contact-header-actions {
+      order: 3;
+      width: 100%;
+      justify-content: space-between;
+      margin-top: 8px;
     }
 }
 

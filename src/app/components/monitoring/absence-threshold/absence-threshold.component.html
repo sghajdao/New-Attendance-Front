@@ -1,33 +1,70 @@
 <!-- absence-threshold.component.html - Updated with multi-select and contact dialog -->
 <p-card [style]="{'height': '800px', 'overflow-y': 'auto'}" styleClass="threshold-card">
     <div class="card-header">
-        <div class="title-section">
-            <i class="pi pi-exclamation-triangle mr-2 warning-icon"></i>
-            <span class="title">Absence Threshold Monitoring</span>
-            <p-tag severity="danger" [value]="'≥ 50%'" styleClass="threshold-badge"></p-tag>
-            <div class="contact-header-actions" *ngIf="students.length">
-                <p-button 
-                    *ngIf="selectedStudents.size > 0" 
-                    label="Contact Selected ({{selectedStudents.size}})" 
-                    severity="contrast" 
-                    icon="pi pi-envelope" 
-                    (onClick)="openContactDialog(getSelectedStudents())"
-                    styleClass="p-button-sm">
-                </p-button>
-                <p-button 
-                    *ngIf="selectedStudents.size > 0" 
-                    label="Clear Selection" 
-                    severity="secondary" 
-                    icon="pi pi-times" 
-                    (onClick)="clearSelection()"
-                    styleClass="p-button-text p-button-sm">
-                </p-button>
-            </div>
+      <div class="title-section">
+        <i class="pi pi-exclamation-triangle mr-2 warning-icon"></i>
+        <span class="title">Absence Threshold Monitoring</span>
+        <p-tag severity="danger" [value]="'≥ 50%'" styleClass="threshold-badge"></p-tag>
+
+        <!-- NEW: Dot color filter dropdown -->
+        <div class="filter-controls" *ngIf="students.length">
+          <p-dropdown
+            [options]="dotFilterOptions"
+            [(ngModel)]="dotColorFilter"
+            (onChange)="setDotColorFilter($event.value)"
+            placeholder="Filter by status"
+            styleClass="p-button-sm"
+            [showClear]="true">
+            <ng-template let-option pTemplate="selectedItem">
+              <div class="filter-option">
+                <i [class]="getDotColorIcon(option.value)"></i>
+                <span>{{ option.label }}</span>
+              </div>
+            </ng-template>
+            <ng-template let-option pTemplate="item">
+              <div class="filter-option">
+                <i [class]="getDotColorIcon(option.value)"></i>
+                <span>{{ option.label }}</span>
+              </div>
+            </ng-template>
+          </p-dropdown>
         </div>
-        <p class="subtitle">
-            Students who have reached at least 50% of the absence limit
-            <span class="student-count" *ngIf="students.length">({{students.length}} students)</span>
-        </p>
+
+        <div class="contact-header-actions" *ngIf="students.length">
+          <!-- NEW: Select All button -->
+          <p-button
+            *ngIf="displayedStudents.length > 0"
+            label="Select All"
+            severity="secondary"
+            icon="pi pi-check-square"
+            (onClick)="selectAll()"
+            styleClass="p-button-sm p-button-outlined">
+          </p-button>
+
+          <p-button
+            *ngIf="selectedStudents.size > 0"
+            label="Contact Selected ({{selectedStudents.size}})"
+            severity="contrast"
+            icon="pi pi-envelope"
+            (onClick)="openContactDialog(getSelectedStudents())"
+            styleClass="p-button-sm">
+          </p-button>
+
+          <p-button
+            *ngIf="selectedStudents.size > 0"
+            label="Clear Selection"
+            severity="secondary"
+            icon="pi pi-times"
+            (onClick)="clearSelection()"
+            styleClass="p-button-text p-button-sm">
+          </p-button>
+        </div>
+      </div>
+      <p class="subtitle">
+        Students who have reached at least 50% of the absence limit
+        <span class="student-count" *ngIf="displayedStudents.length">({{displayedStudents.length}} students)</span>
+        <span *ngIf="dotColorFilter" class="filter-badge"> · Filtered by {{dotColorFilter}} dot</span>
+      </p>
     </div>
 
     <!-- Loading State -->
@@ -44,7 +81,7 @@
     </div>
 
     <!-- Student Cards Grid -->
-    <div class="cards-grid" *ngIf="!loading && students.length">
+    <div class="cards-grid" *ngIf="!loading && displayedStudents.length">
         <div class="student-card" 
              *ngFor="let student of paginatedStudents" 
              [class.selected]="isSelected(student)"
@@ -112,7 +149,7 @@
     <div class="stats-footer" *ngIf="students.length">
         <div class="stat-item">
             <i class="pi pi-users"></i>
-            <span>{{ students.length }} Students at Risk</span>
+            <span>{{ displayedStudents.length }} Students at Risk</span>
         </div>
         <div class="stat-item">
             <i class="pi pi-chart-line"></i>
@@ -125,10 +162,10 @@
     </div>
 
     <!-- Paginator -->
-    <div class="paginator-container" *ngIf="!loading && students.length">
+    <div class="paginator-container" *ngIf="!loading && displayedStudents.length">
         <p-paginator
             [rows]="pageSize"
-            [totalRecords]="students.length"
+            [totalRecords]="displayedStudents.length"
             [first]="(currentPage - 1) * pageSize"
             [rowsPerPageOptions]="pageSizeOptions"
             (onPageChange)="onPageChange($event)"

@@ -54,6 +54,13 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   contactForm!: FormGroup;
   isContactSaving: boolean = false;
 
+  dotColorFilter: string | null = null;
+  dotFilterOptions = [
+    { label: '🟢 No pending meetings', value: 'green' },
+    { label: '🟡 One pending meeting', value: 'yellow' },
+    { label: '🔴 Multiple pending meetings', value: 'red' }
+  ];
+
   // Selection tracking
   selectedStudents: Set<Student> = new Set();
 
@@ -143,6 +150,46 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  // Getter for students after applying dot color filter
+  get displayedStudents(): Student[] {
+    if (!this.dotColorFilter) return this.students;
+    return this.students.filter(student => {
+      const count = this.hasPendingMeeting(student);
+      if (this.dotColorFilter === 'green') return count === 0;
+      if (this.dotColorFilter === 'yellow') return count === 1;
+      if (this.dotColorFilter === 'red') return count > 1;
+      return true;
+    });
+  }
+
+  // New: Select all currently displayed students
+  selectAll(): void {
+    this.displayedStudents.forEach(student => {
+      if (!this.selectedStudents.has(student)) {
+        this.selectedStudents.add(student);
+        student._selected = true;
+      }
+    });
+  }
+
+  // New: set dot filter and clear selection
+  setDotColorFilter(color: string | null): void {
+    this.dotColorFilter = color;
+    this.currentPage = 1;               // reset to first page
+    this.updatePagination();
+    this.clearSelection();              // avoid confusion with hidden selections
+  }
+
+  // Optional: helper for the filter dropdown to get icon class
+  getDotColorIcon(color: string): string {
+    switch(color) {
+      case 'green': return 'pi pi-circle-fill green-live-dot';
+      case 'yellow': return 'pi pi-circle-fill yellow-live-dot';
+      case 'red': return 'pi pi-circle-fill red-live-dot';
+      default: return 'pi pi-circle-fill';
+    }
+  }
+
   updatePagination(): void {
     this.totalPages = Math.ceil(this.students.length / this.pageSize);
     if (this.currentPage > this.totalPages && this.totalPages > 0) {
@@ -193,7 +240,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   openAttendanceModal(student: Student) {
-    this.indexeddbService.getByStudentId(student.id).then(records => {
+    this.indexeddbService.getByStudentId(student.id, student.course).then(records => {
       this.modalRecords = records;
       this.attendanceModal = true;
     });
