@@ -165,11 +165,6 @@
     border-left: 3px solid #f59e0b;
 }
 
-td {
-    display: flex;
-    justify-content: center;
-}
-
 /* Student ID styling */
 .student-id {
     font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
