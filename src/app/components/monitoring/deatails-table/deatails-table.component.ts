@@ -48,6 +48,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
   backup: StudentAttendanceDetails[] = [];
   // Aggregated data for table display
   students: StudentCourseAggregate[] = [];
+  numberOfStudents: number = 0;
 
   // Modal properties
   showModal = false;
@@ -71,6 +72,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
         console.log('Loaded from IndexedDB:', data);
         this.rawAttendanceData = data;
         this.students = this.buildAggregatedData(data);
+        this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
       });
     }
     if (shouldFetch || ! dataExists) {

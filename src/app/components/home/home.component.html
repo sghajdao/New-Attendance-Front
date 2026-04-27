@@ -8,7 +8,8 @@
       </div>
     </div>
     <div style="display: flex;justify-content: center;margin-top: 20px;">
-      <button style="width: 250px;height: 50px;" routerLink="/form" class="filter-button"><i class="pi pi-filter" style="font-size: 15px"></i>&emsp;Start Filtering Data</button>
+      <button *ngIf="!accessMonitoring" style="width: 250px;height: 50px;" routerLink="/form" class="filter-button"><i class="pi pi-filter" style="font-size: 15px"></i>&emsp;Start Filtering Data</button>
+      <button *ngIf="accessMonitoring" style="width: 250px;height: 50px;" routerLink="/tracking" class="filter-button"><i class="pi pi-filter" style="font-size: 15px"></i>&emsp;Track student status</button>
     </div>
     
     <app-filtering-details></app-filtering-details>
