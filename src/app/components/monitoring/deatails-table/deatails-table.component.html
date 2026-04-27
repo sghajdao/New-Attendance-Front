@@ -119,15 +119,15 @@
         <td>
           <p-tag [severity]="getStatusSeverity(student.status)" [value]="student.status" [rounded]="true" />
         </td>
-        <td>
+        <td> 
           <span class="seniority-badge">{{ student.seniority }}</span>
         </td>
         <td>
           <p-tag [severity]="getGradeSeverity(student.grade)" [value]="student.grade || '-'" [rounded]="true" />
         </td>
         <td>{{ student.midtermGrade || '-' }}</td>
-        <td>{{ student.grade === 'D' ? (student.gradeChangeDate | date:'yyyy-MM-dd') : '-' }}</td>
-        <td>{{ student.grade === 'WF' ? (student.gradeChangeDate | date:'yyyy-MM-dd') : '-' }}</td>
+        <td>{{ student.gradeChangeDate ? (student.gradeChangeDate | date:'yyyy-MM-dd') : '-' }}</td>
+        <td>{{ student.gradeChangeDate ? (student.gradeChangeDate | date:'yyyy-MM-dd') : '-' }}</td>
         <td>{{ student.schedule || '-' }}</td>
         <td>
           <p-tag severity="info" [value]="student.crsDiv" [rounded]="true" styleClass="level-tag" />
