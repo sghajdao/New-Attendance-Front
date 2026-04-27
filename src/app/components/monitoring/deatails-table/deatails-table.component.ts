@@ -85,6 +85,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
           this.rawAttendanceData = res;
           this.backup = res;
           this.students = this.buildAggregatedData(res);
+          this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
         },
         error: (err) => {
           console.error(err);
@@ -112,6 +113,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
         this.students = this.buildAggregatedData(this.backup)
         this.rawAttendanceData = this.backup
       }
+      this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
     }
   }
 
@@ -143,7 +145,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
           totalAbsences: 0,
           totalLatenesses: 0,
           tempGrade: record.grade,
-          gradeChangeDate: this.formatDateToYYYYMMDD(record.gradeChangeDate),
+          gradeChangeDate: record.gradeChangeDate? record.gradeChangeDate.toString().slice(0, 10) : null,
           teacherId: record.teacherId,
           teacherName: record.teacherName,
           absentLimit: record.absentLimit,
