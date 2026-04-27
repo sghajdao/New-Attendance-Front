@@ -49,7 +49,7 @@ export class IndexeddbService {
   async getByStudentId(studentId: string, courseSisId: string): Promise<StudentAttendanceDetails[]> {
     const db = await this.dbPromise;
     const allRecords = await db.getAll('info');
-    return allRecords.filter(record => record.idNum === studentId && record.crsCde === courseSisId);
+    return allRecords.filter(record => record.idNum === studentId && 'SP26-' + record.crsCde.replaceAll(" ", "") === courseSisId);
   }
 
   async updateItem(item: StudentAttendanceDetails) {

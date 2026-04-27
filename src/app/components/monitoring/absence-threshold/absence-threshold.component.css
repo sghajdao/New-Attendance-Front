@@ -464,7 +464,7 @@
 }
 
 :host ::ng-deep .p-dropdown {
-  height: 32px;
+  height: 45px;
   font-size: 0.75rem;
 }
 
