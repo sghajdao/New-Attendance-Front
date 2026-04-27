@@ -24,5 +24,6 @@ export interface StudentAttendanceDetails {
     teacherId: string;
     teacherName: string;
     midtermGrade: string;
+    major: string;
     meetings: StudentTracking[];
 }

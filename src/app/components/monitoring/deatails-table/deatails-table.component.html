@@ -70,6 +70,7 @@
         <th pSortableColumn="teacherName" style="min-width: 140px;">
           Professor Name <p-sortIcon field="teacherName"></p-sortIcon>
         </th>
+        <th style="min-width: 100px;">Major</th>
         <!-- Aggregated attendance columns -->
         <th style="min-width: 100px;">Total Presences</th>
         <th style="min-width: 100px;">Total Absences</th>
@@ -126,8 +127,8 @@
           <p-tag [severity]="getGradeSeverity(student.grade)" [value]="student.grade || '-'" [rounded]="true" />
         </td>
         <td>{{ student.midtermGrade || '-' }}</td>
-        <td>{{ (student.gradeChangeDate | date:'yyyy-MM-dd') || '-' }}</td>
-        <td>{{ (student.gradeChangeDate | date:'yyyy-MM-dd') || '-' }}</td>
+        <td>{{ formatDateToYYYYMMDD(student.gradeChangeDate) || '-' }}</td>
+        <td>{{ formatDateToYYYYMMDD(student.gradeChangeDate) || '-' }}</td>
         <td>{{ student.schedule || '-' }}</td>
         <td>
           <p-tag severity="info" [value]="student.crsDiv" [rounded]="true" styleClass="level-tag" />
@@ -140,6 +141,9 @@
             <i class="pi pi-user mr-2" style="font-size: 0.85rem; color: #4f8aff;"></i>
             {{ student.teacherName }}
           </div>
+        </td>
+        <td> 
+          <span class="seniority-badge">{{ student.major }}</span>
         </td>
         <td><strong>{{ student.totalPresences }}</strong></td>
         <td><strong>{{ student.totalAbsences }}</strong></td>

@@ -30,6 +30,7 @@ export interface StudentCourseAggregate {
   totalLatenesses: number;
   absentLimit: number;
   midtermGrade: string;
+  major: string;
   meetings: StudentTracking[];
 }
 
@@ -142,12 +143,13 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
           totalAbsences: 0,
           totalLatenesses: 0,
           tempGrade: record.grade,
-          gradeChangeDate: this.formatDateToDDMMYYY(record.gradeChangeDate),
+          gradeChangeDate: this.formatDateToYYYYMMDD(record.gradeChangeDate),
           teacherId: record.teacherId,
           teacherName: record.teacherName,
           absentLimit: record.absentLimit,
           visaType: record.visaType,
           midtermGrade: record.midtermGrade,
+          major: record.major,
           meetings: record.meetings || []
         });
       }
@@ -265,7 +267,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
     URL.revokeObjectURL(url);
   }
 
-  private formatDateToYYYYMMDD(date: any): string {
+  formatDateToYYYYMMDD(date: any): string {
     if (!date) return '';
     const d = new Date(date);
     const year = d.getFullYear();
