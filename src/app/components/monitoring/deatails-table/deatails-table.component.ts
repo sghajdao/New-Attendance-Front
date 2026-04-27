@@ -229,11 +229,11 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
 
   getGradeSeverity(grade: string | null): 'success' | 'danger' | 'warning' | 'info' | 'contrast' {
     if (!grade || grade === '-') return 'contrast';
-    if (grade === 'A' || grade === 'A-') return 'success';
-    if (grade === 'B' || grade === 'B+') return 'info';
-    if (grade === 'C' || grade === 'C+') return 'warning';
-    if (grade === 'D') return 'warning';
-    if (grade === 'F' || grade === 'WF') return 'danger';
+    if (grade.trim() === 'A' || grade.trim() === 'A-') return 'success';
+    if (grade.trim() === 'B' || grade.trim() === 'B+') return 'info';
+    if (grade.trim() === 'C' || grade.trim() === 'C+') return 'warning';
+    if (grade.trim() === 'D') return 'warning';
+    if (grade.trim() === 'F' || grade.trim() === 'WF') return 'danger';
     return 'contrast';
   }
 
