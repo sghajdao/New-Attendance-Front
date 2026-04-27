@@ -145,7 +145,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
           totalAbsences: 0,
           totalLatenesses: 0,
           tempGrade: record.grade,
-          gradeChangeDate: record.gradeChangeDate? record.gradeChangeDate.toString().slice(0, 10) : null,
+          gradeChangeDate: record.gradeChangeDate? this.formatDateToYYYYMMDD(record.gradeChangeDate): null,
           teacherId: record.teacherId,
           teacherName: record.teacherName,
           absentLimit: record.absentLimit,
@@ -176,22 +176,13 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
         group.grade = record.grade;
       }
       if (record.gradeChangeDate && !group.tempGradeChangeDate) {
-        group.tempGradeChangeDate = this.formatDateToDDMMYYY(record.gradeChangeDate);
-        group.gradeChangeDate = this.formatDateToDDMMYYY(record.gradeChangeDate);
+        group.tempGradeChangeDate = this.formatDateToYYYYMMDD(record.gradeChangeDate);
+        group.gradeChangeDate = this.formatDateToYYYYMMDD(record.gradeChangeDate);
       }
     }
 
     // Clean up temporary fields and return array
     return Array.from(groupMap.values()).map(({ tempGrade, tempGradeChangeDate, ...rest }) => rest);
-  }
-
-  formatDateToDDMMYYY(date: Date): string {
-    if (!date) return '';
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${day}-${month}-${year}`;
   }
 
   /**
