@@ -98,8 +98,9 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['searchDto'] && this.searchDto) {
       if (this.searchDto.courses && this.searchDto.courses.length) {
-        this.students = this.buildAggregatedData(this.backup).filter(i => this.searchDto?.courses?.includes('SP26-' + i.crsCde.replaceAll("\\s+", "")))
-        this.rawAttendanceData = this.backup.filter(i => this.searchDto?.courses?.includes('SP26-' + i.crsCde.replaceAll("\\s+", "")))
+        console.log('SP26-' + this.students[0].crsCde.replaceAll("\\s+", ""))
+        this.students = this.students.filter(i => this.searchDto?.courses?.includes('SP26-' + i.crsCde.replaceAll("\\s+", "")))
+        this.rawAttendanceData = this.rawAttendanceData.filter(i => this.searchDto?.courses?.includes('SP26-' + i.crsCde.replaceAll("\\s+", "")))
       }
       if (this.searchDto.seniorities && this.searchDto.seniorities.length) {
         this.students = this.students.filter(i => this.searchDto?.seniorities?.includes(i.seniority))
