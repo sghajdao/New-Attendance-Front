@@ -56,9 +56,10 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
 
   dotColorFilter: string | null = null;
   dotFilterOptions = [
-    { label: '🟢 No pending meetings', value: 'green' },
-    { label: '🟡 One pending meeting', value: 'yellow' },
-    { label: '🔴 Multiple pending meetings', value: 'red' }
+    { label: '🟢 No contact yet', value: 'green' },
+    { label: '🟡 Emailed (1st time)', value: 'yellow' },
+    { label: '🟠 Emailed (2nd time)', value: 'orange' },
+    { label: '🔴 Emailed (3rd time)', value: 'red' }
   ];
 
   // Selection tracking
