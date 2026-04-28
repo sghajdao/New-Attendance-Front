@@ -142,7 +142,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
       if (this.searchDto.seniorities?.length)
         this.students = this.students.filter(student => this.searchDto?.seniorities?.includes(student.seniority))
       else if (!this.searchDto.studentIds?.length && !this.searchDto.courses?.length && !this.searchDto.seniorities?.length)
-        this.students = this.studentsBackup;
+        this.students = [...this.studentsBackup];
       
       // Reset to first page whenever filters change
       this.currentPage = 1;
