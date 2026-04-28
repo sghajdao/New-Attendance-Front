@@ -66,9 +66,11 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
 
   // Meeting types (same as meeting-history)
   meetingTypes = [
-    { label: '📧 Warning', value: 'Warning', icon: 'pi pi-exclamation-triangle' },
-    { label: '📝 Follow-up', value: 'Follow-up', icon: 'pi pi-refresh' },
-    { label: '⚠️ Final Notice', value: 'Final Notice', icon: 'pi pi-bell' }
+    { label: '👤 Face to Face', value: 'face to face' },
+    { label: '📞 Team Call', value: 'team call' },
+    { label: '✉️ By Email', value: 'by email' },
+    { label: '🔔 First Reminder', value: 'first reminder' },
+    { label: '⚠️ Last Reminder', value: 'last reminder' }
   ];
 
   // Pagination properties
@@ -77,10 +79,10 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   totalPages: number = 0;
   pageSizeOptions: number[] = [6, 12, 18];
 
-  get paginatedStudents(): typeof this.students {
+  get paginatedStudents(): typeof this.displayedStudents {
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
-    return this.students.slice(start, end);
+    return this.displayedStudents.slice(start, end);
   }
 
   ngOnInit(): void {
@@ -90,7 +92,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
 
   initContactForm(): void {
     this.contactForm = this.fb.group({
-      type: [null, Validators.required],
+      type: [[], Validators.required],
       date: [new Date(), Validators.required],
       comment: [null, Validators.required]
     });
@@ -248,7 +250,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
 
   resetContactForm(): void {
     this.contactForm.reset({
-      type: null,
+      type: [],
       date: new Date(),
       comment: null
     });

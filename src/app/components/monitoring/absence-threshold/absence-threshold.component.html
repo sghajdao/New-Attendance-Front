@@ -238,33 +238,25 @@
 
         <form [formGroup]="contactForm" (ngSubmit)="submitContact()">
             <div class="form-field">
-                <label for="contactType" class="required-field">Meeting Type</label>
-                <p-select 
+                <label for="contactType" class="required-field">Meeting Types (select one or more)</label>
+                <p-multiSelect
                     [options]="meetingTypes"
-                    placeholder="Select meeting type"
-                    appendTo="body"
-                    formControlName="type"
                     optionLabel="label"
                     optionValue="value"
-                >
-                    <ng-template pTemplate="selectedItem">
-                        <div class="type-select-item">
-                            <i [class]="getContactTypeIcon(contactForm.get('type')?.value)"></i>
-                            <span>{{ getContactTypeLabel(contactForm.get('type')?.value) }}</span>
-                        </div>
-                    </ng-template>
-                    <ng-template let-type pTemplate="item">
-                        <div class="type-select-item">
-                            <i [class]="getContactTypeIcon(type.value)"></i>
-                            <span>{{ type.label }}</span>
-                        </div>
-                    </ng-template>
-                </p-select>
+                    placeholder="Select meeting types"
+                    formControlName="type"
+                    [showToggleAll]="true"
+                    [filter]="true"
+                    filterPlaceholder="Search types"
+                    appendTo="body"
+                    display="chip"
+                ></p-multiSelect>
                 <small class="error-message" *ngIf="contactForm.get('type')?.invalid && contactForm.get('type')?.touched">
-                    Please select a meeting type
+                    Please select at least one meeting type
                 </small>
             </div>
 
+            <!-- rest of the form (date, comment) unchanged -->
             <div class="form-field">
                 <label for="contactDate" class="required-field">Meeting Date & Time</label>
                 <p-datepicker 
@@ -302,7 +294,7 @@
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
-                    [disabled]="!contactForm.value.type || !contactForm.value.date || isContactSaving"
+                    [disabled]="contactForm.invalid || isContactSaving"
                     [loading]="isContactSaving"
                 />
             </div>
