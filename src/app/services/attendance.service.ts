@@ -73,7 +73,7 @@ export class AttendanceService {
   }
 
   deleteTracking(id: number) {
-    return this.http.delete<boolean>(environment.trackingUrl + '/delete/{id}')
+    return this.http.delete<boolean>(environment.trackingUrl + '/delete/' + id)
   }
 
   getStudentsInfo() {

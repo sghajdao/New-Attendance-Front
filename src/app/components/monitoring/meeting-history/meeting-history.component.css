@@ -359,6 +359,58 @@
     font-size: 0.875rem;
 }
 
+.types-cell {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.no-types {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+/* Multi-select styling improvements */
+:host ::ng-deep .p-multiselect {
+    width: 100%;
+    min-width: 180px;
+}
+
+:host ::ng-deep .p-multiselect-token {
+    background: #e2e8f0;
+    border-radius: 16px;
+    padding: 2px 8px;
+}
+
+:host ::ng-deep .p-multiselect-token-icon {
+    margin-left: 6px;
+}
+
+:host ::ng-deep .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
+    padding: 0.5rem 1rem;
+}
+
+/* Helper text styling */
+.helper-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+/* Tag spacing in table */
+:host ::ng-deep .p-tag {
+    margin-right: 4px;
+    margin-bottom: 2px;
+    display: inline-flex;
+}
+
+/* Filter bar multi-select */
+.filter-group .p-multiselect {
+    min-width: 180px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     :host ::ng-deep .meeting-card .p-card-body {
@@ -389,5 +441,13 @@
 
     :host ::ng-deep .meeting-table .p-datatable-wrapper {
         overflow-x: auto;
+    }
+
+    .filter-group .p-multiselect {
+        min-width: 140px;
+    }
+    
+    .types-cell {
+        min-width: 150px;
     }
 }

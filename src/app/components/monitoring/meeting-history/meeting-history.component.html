@@ -1,3 +1,4 @@
+<!-- meeting-history.component.html -->
 <p-card styleClass="meeting-card">
     <div class="header">
         <div class="header-left">
@@ -29,14 +30,22 @@
             <i *ngIf="searchTerm" class="pi pi-times clear-search" (click)="clearSearch()"></i>
         </div>
         <div class="filter-group">
-            <p-select 
-                [(ngModel)]="selectedType" 
+            <p-multiSelect 
+                [(ngModel)]="selectedTypes" 
                 [options]="typeFilterOptions" 
-                placeholder="All Types"
+                placeholder="Filter by Types"
                 (onChange)="filterMeetings()"
+                display="chip"
                 styleClass="type-filter"
                 appendTo="body"
-            ></p-select>
+            >
+                <ng-template let-type pTemplate="item">
+                    <div class="type-select-item">
+                        <i [class]="getTypeIcon(type.value)"></i>
+                        <span>{{ type.label }}</span>
+                    </div>
+                </ng-template>
+            </p-multiSelect>
             <p-button icon="pi pi-filter-slash" (onClick)="clearFilters()" severity="secondary" styleClass="p-button-text" pTooltip="Clear Filters"></p-button>
         </div>
     </div>
@@ -68,7 +77,7 @@
                 <th pSortableColumn="createdAt" style="min-width: 130px;">
                     Meeting Date <p-sortIcon field="createdAt"></p-sortIcon>
                 </th>
-                <th style="min-width: 110px;">Type</th>
+                <th style="min-width: 180px;">Types</th>
                 <th style="min-width: 250px;">Comments / Notes</th>
                 <th style="width: 80px;">Actions</th>
             </tr>
@@ -97,12 +106,18 @@
                     </div>
                 </td>
                 <td>
-                    <p-tag 
-                        [severity]="getTypeSeverity(student.type)" 
-                        [value]="student.type" 
-                        [rounded]="true"
-                        [icon]="getTypeIcon(student.type)">
-                    </p-tag>
+                    <div class="types-cell">
+                        <p-tag 
+                            *ngFor="let type of (student.typeArray || typeStringToArray(student.type))"
+                            [severity]="getTypeSeverity(type)" 
+                            [value]="getTypeLabel(type)" 
+                            [rounded]="true"
+                            [icon]="getTypeIcon(type)"
+                            styleClass="mr-1 mb-1"
+                        >
+                        </p-tag>
+                        <span *ngIf="!(student.typeArray || typeStringToArray(student.type)).length" class="no-types">No types</span>
+                    </div>
                 </td>
                 <td>
                     <div class="comment-cell" [title]="student.comment">
@@ -148,7 +163,7 @@
     [header]="selectedMeeting ? 'Edit Meeting' : 'New Meeting'" 
     [modal]="true" 
     [(visible)]="visible" 
-    [style]="{ width: '450px', 'max-width': '90vw' }"
+    [style]="{ width: '500px', 'max-width': '90vw' }"
     [draggable]="false"
     [resizable]="false"
     styleClass="meeting-dialog"
@@ -156,7 +171,7 @@
     <div class="dialog-content">
         <div class="dialog-info" *ngIf="!selectedMeeting">
             <i class="pi pi-info-circle"></i>
-            <span>Schedule a new meeting or follow-up with a student.</span>
+            <span>Schedule a new meeting or follow-up with a student. You can select multiple meeting types.</span>
         </div>
 
         <form [formGroup]="globalFormGroup" (ngSubmit)="onSave()">
@@ -194,30 +209,29 @@
             </div>
 
             <div class="form-field">
-                <label for="type" class="required-field">Meeting Type</label>
-                <p-select 
+                <label for="type" class="required-field">Meeting Types (select one or more)</label>
+                <p-multiSelect 
+                    id="type"
                     [options]="meetingTypes"
-                    placeholder="Select meeting type"
+                    placeholder="Select meeting types"
                     appendTo="body"
                     formControlName="type"
                     optionLabel="label"
                     optionValue="value"
+                    display="chip"
                 >
-                    <ng-template pTemplate="selectedItem">
-                        <div class="type-select-item">
-                            <i [class]="getTypeIcon(globalFormGroup.get('type')?.value)"></i>
-                            <span>{{ getTypeLabel(globalFormGroup.get('type')?.value) }}</span>
-                        </div>
-                    </ng-template>
                     <ng-template let-type pTemplate="item">
                         <div class="type-select-item">
                             <i [class]="getTypeIcon(type.value)"></i>
                             <span>{{ type.label }}</span>
                         </div>
                     </ng-template>
-                </p-select>
+                </p-multiSelect>
                 <small class="error-message" *ngIf="globalFormGroup.get('type')?.invalid && globalFormGroup.get('type')?.touched">
-                    Please select a meeting type
+                    Please select at least one meeting type
+                </small>
+                <small class="helper-text" *ngIf="globalFormGroup.get('type')?.value?.length > 0">
+                    Selected: {{ globalFormGroup.get('type')?.value?.length }} type(s)
                 </small>
             </div>
 
@@ -239,14 +253,14 @@
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
-                    [disabled]="!(this.globalFormGroup.value.studentId && this.globalFormGroup.value.courseId && this.globalFormGroup.value.date && this.globalFormGroup.value.type)"
+                    [disabled]="!globalFormGroup.valid"
                     [loading]="isSaving"
                 />
                 <p-button 
                     *ngIf="selectedMeeting"
-                    label="Save Meeting" 
+                    label="Update Meeting" 
                     severity="contrast" 
-                    [disabled]="!selectedMeeting"
+                    [disabled]="!globalFormGroup.valid"
                     [loading]="isSaving"
                     (click)="updateMeeting()"
                 />
