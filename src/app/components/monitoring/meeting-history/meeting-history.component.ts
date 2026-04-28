@@ -89,7 +89,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   processStudents(data: StudentTracking[]): StudentTracking[] {
     return data.map(student => {
       // If student.type is a single string (legacy), convert to array property
-      (student as any).typeArray = this.typeStringToArray(student.type || '');
+      (student as any).typeArray = student.type;
       // Ensure backward compatibility: if typeArray is empty but type had value, treat as single
       if ((student as any).typeArray.length === 0 && student.type) {
         (student as any).typeArray = [student.type];
@@ -123,7 +123,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     
     if (student) {
       // Use typeArray if available, otherwise convert from type string
-      const typeArray = (student as any).typeArray || this.typeStringToArray(student.type || '');
+      const typeArray = (student as any).typeArray || student.type;
       this.globalFormGroup.patchValue({
         studentId: student.studentSisId,
         courseId: student.coursSisId || '',
@@ -164,7 +164,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     const formValue = this.globalFormGroup.value;
     
     // Convert type array to comma-separated string for backend
-    const typeString = this.typeArrayToString(formValue.type);
+    const typeString = formValue.type;
     
     const formData: StudentTracking = {
       studentSisId: formValue.studentId,
@@ -184,7 +184,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
         console.log('Save successful:', res);
         
         // Add typeArray to response for consistent UI handling
-        (res as any).typeArray = this.typeStringToArray(res.type || '');
+        (res as any).typeArray = res.type;
         
         if (this.selectedMeeting) {
           // Update existing record
@@ -247,7 +247,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       // Multi-select filter: match if any selected type is in student's types (OR logic)
       let matchesType = true;
       if (this.selectedTypes && this.selectedTypes.length > 0) {
-        const studentTypes = (student as any).typeArray || this.typeStringToArray(student.type || '');
+        const studentTypes = (student as any).typeArray || student.type;
         matchesType = this.selectedTypes.some(selectedType => studentTypes.includes(selectedType));
       }
       
@@ -290,7 +290,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       }
       
       // Update local object
-      this.selectedMeeting.type = this.typeArrayToString(updatedTypeArray);
+      this.selectedMeeting.type = updatedTypeArray;
       this.selectedMeeting.comment = updatedComment || this.selectedMeeting.comment;
       (this.selectedMeeting as any).typeArray = updatedTypeArray;
       
