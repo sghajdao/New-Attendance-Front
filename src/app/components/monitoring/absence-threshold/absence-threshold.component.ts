@@ -291,7 +291,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
       const trackingData: StudentTracking = {
         studentSisId: student.id,
         studentName: student.name,
-        coursSisId: student.course,
+        coursSisId: [...student.course],
         createdAt: meetingDate,
         type: meetingType,
         comment: meetingComment
