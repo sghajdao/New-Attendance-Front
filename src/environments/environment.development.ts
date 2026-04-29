@@ -12,5 +12,5 @@ export const environment = {
     refuseUrl: 'https://attendance.aui.ma/wf/refuse',
     jenzabarUrl: 'https://attendance.aui.ma/jenzabar',
     trackingUrl: 'https://attendance.aui.ma/monitoring',
-    wfUrl: 'https://attendance.aui.ma/wf/red-flag-students',
+    wfUrl: 'https://attendance.aui.ma/wf',
 };

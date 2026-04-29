@@ -1,12 +1,12 @@
 // meeting-history.component.ts
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AttendanceService } from '../../../services/attendance.service';
-import { SearchDto } from '../../../models/dto/searchDto';
 import { StudentTracking } from '../../../models/entities/studentTracking';
 import { finalize, Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { IndexeddbService } from '../../../services/indexeddb.service';
+import { InitData } from '../../../models/dto/initData';
 
 @Component({
   selector: 'app-meeting-history',
@@ -22,7 +22,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     private indexedDbService: IndexeddbService,
   ) { }
 
-  @Input() searchDto?: SearchDto;
+  @Input() searchDto?: any;
   globalFormGroup!: FormGroup;
 
   students: StudentTracking[] = [];
@@ -31,11 +31,10 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   selectedMeeting?: StudentTracking;
   isSaving: boolean = false;
   
-  // Search and filter
   searchTerm: string = '';
-  selectedTypes: string[] = []; // Changed to array for multi-select filtering
+  selectedTypes: string[] = [];
+  courses: string[] = [];
   
-  // Meeting types with display labels - NEW TYPES
   meetingTypes = [
     { label: '👤 Face to Face', value: 'face to face', icon: 'pi pi-users' },
     { label: '📞 Team Call', value: 'team call', icon: 'pi pi-phone' },
@@ -44,12 +43,10 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     { label: '⚠️ Last Reminder', value: 'last reminder', icon: 'pi pi-exclamation-triangle' }
   ];
   
-  // Filter options for multi-select
   typeFilterOptions = this.meetingTypes;
-  
   subscriptions: Subscription[] = [];
 
-  // Custom validator for multi-select: at least one type selected
+  // Custom validator for multi-select: at least one item selected
   multiSelectRequired(control: AbstractControl): ValidationErrors | null {
     const value = control.value;
     if (!value || !Array.isArray(value) || value.length === 0) {
@@ -61,39 +58,40 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initForm();
     this.loadTrackingData();
+    const storage = localStorage.getItem('init');
+    if (storage) {
+      const init: InitData[] = JSON.parse(storage);
+      this.courses = init.filter(c => c.trmCde === 'SP').at(0)?.courses || [];
+    }
   }
 
   initForm(): void {
     this.globalFormGroup = this.fb.group({
       studentId: [null, Validators.required],
-      courseId: [null, Validators.required],
+      courseId: [[], this.multiSelectRequired], // Changed to array multi-select
       date: [null, Validators.required],
-      type: [[], this.multiSelectRequired], // Changed to array with custom validator
-      comment: [null] // Comment no longer required
+      type: [[], this.multiSelectRequired],
+      comment: [null]
     });
   }
 
-  // Helper to convert stored comma-separated string to array
-  typeStringToArray(typeStr: string): string[] {
-    if (!typeStr) return [];
-    return typeStr.split(',').map(t => t.trim()).filter(t => t.length > 0);
+  // Helper: Convert comma-separated string to array
+  stringToArray(str?: string): string[] {
+    if (!str) return [];
+    return str.split(',').map(s => s.trim()).filter(s => s.length > 0);
   }
 
-  // Helper to convert array to comma-separated string for backend storage
-  typeArrayToString(typeArray: string[]): string {
-    if (!typeArray || typeArray.length === 0) return '';
-    return typeArray.join(',');
+  // Helper: Convert array to comma-separated string
+  arrayToString(arr: string[]): string {
+    if (!arr || arr.length === 0) return '';
+    return arr.join(',');
   }
 
-  // Process students after load: add typeArray property and ensure legacy single types are converted
+  // Process students after load: add typeArray and courseArray for display
   processStudents(data: StudentTracking[]): StudentTracking[] {
     return data.map(student => {
-      // If student.type is a single string (legacy), convert to array property
       (student as any).typeArray = student.type;
-      // Ensure backward compatibility: if typeArray is empty but type had value, treat as single
-      if ((student as any).typeArray.length === 0 && student.type) {
-        (student as any).typeArray = [student.type];
-      }
+      (student as any).courseArray = student.coursSisId;
       return student;
     });
   }
@@ -122,18 +120,17 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     this.selectedMeeting = student;
     
     if (student) {
-      // Use typeArray if available, otherwise convert from type string
       const typeArray = (student as any).typeArray || student.type;
+      const courseArray = (student as any).courseArray || student.coursSisId;
       this.globalFormGroup.patchValue({
         studentId: student.studentSisId,
-        courseId: student.coursSisId || '',
+        courseId: courseArray,
         date: student.createdAt ? new Date(student.createdAt) : new Date(),
         type: typeArray,
         comment: student.comment || ''
       });
     } else {
-      // Set default empty array for new meeting
-      this.globalFormGroup.patchValue({ type: [] });
+      this.globalFormGroup.patchValue({ courseId: [], type: [] });
     }
     this.visible = true;
   }
@@ -145,16 +142,14 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   }
 
   onSave(): void {
-    // Validate required fields including multi-select
     if (!this.globalFormGroup.valid) {
-      // Mark all fields as touched to show validation errors
       Object.keys(this.globalFormGroup.controls).forEach(key => {
         this.globalFormGroup.get(key)?.markAsTouched();
       });
       this.messageService.add({
         severity: 'warn',
         summary: 'Validation Error',
-        detail: 'Please fill in all required fields and select at least one meeting type',
+        detail: 'Please fill all required fields (including at least one course and one meeting type)',
         life: 3000
       });
       return;
@@ -163,35 +158,25 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     this.isSaving = true;
     const formValue = this.globalFormGroup.value;
     
-    // Convert type array to comma-separated string for backend
-    const typeString = formValue.type;
-    
     const formData: StudentTracking = {
       studentSisId: formValue.studentId,
-      coursSisId: formValue.courseId,
+      coursSisId: formValue.courseId,  // Convert array to string
       createdAt: formValue.date,
-      type: typeString, // Store as comma-separated string
+      type: formValue.type,            // Convert array to string
       comment: formValue.comment || '',
-      studentName: `Student ${formValue.studentId}` // You can enhance this with actual student lookup
+      studentName: `Student ${formValue.studentId}`
     };
     
     const sub = this.attendanceService.trackStudent(formData).pipe(
-      finalize(() => {
-        this.isSaving = false;
-      })
+      finalize(() => { this.isSaving = false; })
     ).subscribe({
       next: (res: StudentTracking) => {
-        console.log('Save successful:', res);
-        
-        // Add typeArray to response for consistent UI handling
-        (res as any).typeArray = res.type;
-        
+        // Process response to include arrays
+        const processed = this.processStudents([res])[0];
         if (this.selectedMeeting) {
-          // Update existing record
           const index = this.students.findIndex(s => s.id === this.selectedMeeting?.id);
           if (index !== -1) {
-            this.students[index] = { ...res, id: this.selectedMeeting.id };
-            (this.students[index] as any).typeArray = (res as any).typeArray;
+            this.students[index] = { ...processed, id: this.selectedMeeting.id };
           }
           this.messageService.add({
             severity: 'success',
@@ -200,9 +185,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
             life: 3000
           });
         } else {
-          // Add new record with highlight
-          const newMeeting = { ...res, isNew: true };
-          (newMeeting as any).typeArray = (res as any).typeArray;
+          const newMeeting = { ...processed, isNew: true };
           this.students.unshift(newMeeting);
           this.messageService.add({
             severity: 'success',
@@ -210,17 +193,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
             detail: 'New meeting record has been created',
             life: 3000
           });
-          
-          // Remove highlight after 2 seconds
-          setTimeout(() => {
-            const meeting = this.students.find(s => s.id === newMeeting.id);
-            if (meeting) {
-              // meeting.isNew = false;
-            }
-            this.filterMeetings();
-          }, 2000);
+          setTimeout(() => this.filterMeetings(), 2000);
         }
-        
         this.filterMeetings();
         this.cancelDialog();
       },
@@ -234,72 +208,38 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
         });
       }
     });
-    
     this.subscriptions.push(sub);
   }
 
-  filterMeetings(): void {
-    this.filteredStudents = this.students.filter(student => {
-      const matchesSearch = !this.searchTerm || 
-        student.studentName?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        student.studentSisId?.toLowerCase().includes(this.searchTerm.toLowerCase());
-      
-      // Multi-select filter: match if any selected type is in student's types (OR logic)
-      let matchesType = true;
-      if (this.selectedTypes && this.selectedTypes.length > 0) {
-        const studentTypes = (student as any).typeArray || student.type;
-        matchesType = this.selectedTypes.some(selectedType => studentTypes.includes(selectedType));
-      }
-      
-      return matchesSearch && matchesType;
-    });
-  }
-
-  clearSearch(): void {
-    this.searchTerm = '';
-    this.filterMeetings();
-  }
-
-  clearFilters(): void {
-    this.searchTerm = '';
-    this.selectedTypes = [];
-    this.filterMeetings();
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Filters Cleared',
-      detail: 'All filters have been reset',
-      life: 2000
-    });
-  }
-
-  updateMeeting() {
+  updateMeeting(): void {
     if (this.selectedMeeting && this.selectedMeeting.id) {
-      // Get updated values from form
+      const updatedCourseArray = this.globalFormGroup.value.courseId;
       const updatedTypeArray = this.globalFormGroup.value.type;
       const updatedComment = this.globalFormGroup.value.comment;
       
-      // Only proceed if form is valid (at least one type selected)
-      if (!updatedTypeArray || updatedTypeArray.length === 0) {
+      if (!updatedCourseArray?.length || !updatedTypeArray?.length) {
         this.messageService.add({
           severity: 'warn',
           summary: 'Validation Error',
-          detail: 'Please select at least one meeting type',
+          detail: 'Please select at least one course and one meeting type',
           life: 3000
         });
         return;
       }
       
-      // Update local object
+      // Update local object with stringified values
+      this.selectedMeeting.coursSisId = updatedCourseArray;
       this.selectedMeeting.type = updatedTypeArray;
       this.selectedMeeting.comment = updatedComment || this.selectedMeeting.comment;
+      (this.selectedMeeting as any).courseArray = updatedCourseArray;
       (this.selectedMeeting as any).typeArray = updatedTypeArray;
       
       const sub = this.attendanceService.updateTracking(this.selectedMeeting).subscribe({
         next: (res) => {
-          // Find and update the record in students array
           const index = this.students.findIndex(s => s.id === this.selectedMeeting?.id);
           if (index !== -1) {
             this.students[index] = { ...res, id: this.selectedMeeting!.id };
+            (this.students[index] as any).courseArray = updatedCourseArray;
             (this.students[index] as any).typeArray = updatedTypeArray;
           }
           this.filterMeetings();
@@ -351,54 +291,76 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
 
+  filterMeetings(): void {
+    this.filteredStudents = this.students.filter(student => {
+      const matchesSearch = !this.searchTerm || 
+        student.studentName?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        student.studentSisId?.toLowerCase().includes(this.searchTerm.toLowerCase());
+      
+      let matchesType = true;
+      if (this.selectedTypes?.length) {
+        const studentTypes = (student as any).typeArray || student.type;
+        matchesType = this.selectedTypes.some(selected => studentTypes.includes(selected));
+      }
+      return matchesSearch && matchesType;
+    });
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.filterMeetings();
+  }
+
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.selectedTypes = [];
+    this.filterMeetings();
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Filters Cleared',
+      detail: 'All filters have been reset',
+      life: 2000
+    });
+  }
+
   // Helper methods for UI
   getInitials(name?: string): string {
     if (!name) return '?';
-    return name.split(' ')
-      .map(part => part[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
+    return name.split(' ').map(part => part[0]).join('').toUpperCase().slice(0, 2);
   }
 
   getAvatarColor(name?: string): string {
-    const colors = [
-      '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', 
-      '#ef4444', '#f59e0b', '#10b981', '#06b6d4'
-    ];
+    const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#ef4444', '#f59e0b', '#10b981', '#06b6d4'];
     if (!name) return colors[0];
     let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-      hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
     return colors[Math.abs(hash) % colors.length];
   }
 
-  getTypeSeverity(type: string): 'info' | 'success' | 'warning' | 'danger' | 'contrast' | 'secondary' {
-    const severityMap: Record<string, any> = {
+  getTypeSeverity(type: string): any {
+    const map: Record<string, any> = {
       'face to face': 'info',
       'team call': 'success',
       'by email': 'secondary',
       'first reminder': 'warning',
       'last reminder': 'danger'
     };
-    return severityMap[type] || 'info';
+    return map[type] || 'info';
   }
 
   getTypeIcon(type: string): string {
-    const iconMap: Record<string, string> = {
+    const map: Record<string, string> = {
       'face to face': 'pi pi-users',
       'team call': 'pi pi-phone',
       'by email': 'pi pi-envelope',
       'first reminder': 'pi pi-bell',
       'last reminder': 'pi pi-exclamation-triangle'
     };
-    return iconMap[type] || 'pi pi-calendar';
+    return map[type] || 'pi pi-calendar';
   }
 
   getTypeLabel(type: string): string {
-    const found = this.meetingTypes.find(t => t.value === type);
-    return found ? found.label : type;
+    return this.meetingTypes.find(t => t.value === type)?.label || type;
   }
 
   truncateComment(comment: string, maxLength: number = 50): string {

@@ -71,7 +71,7 @@
                 <th pSortableColumn="studentName" style="min-width: 160px;">
                     Student Name <p-sortIcon field="studentName"></p-sortIcon>
                 </th>
-                <th pSortableColumn="coursSisId" style="min-width: 120px;">
+                <th pSortableColumn="coursSisId" style="min-width: 140px;">
                     Course SIS ID <p-sortIcon field="coursSisId"></p-sortIcon>
                 </th>
                 <th pSortableColumn="createdAt" style="min-width: 130px;">
@@ -96,8 +96,18 @@
                         <span class="student-name">{{student.studentName || student.studentSisId}}</span>
                     </div>
                 </td>
+                <!-- Display multiple course codes as tags -->
                 <td>
-                    <span class="course-code">{{student.coursSisId || '-'}}</span>
+                    <div class="types-cell">
+                        <p-tag 
+                            *ngFor="let course of student.courseArray"
+                            severity="info" 
+                            [value]="course" 
+                            [rounded]="true"
+                            styleClass="mr-1 mb-1"
+                        ></p-tag>
+                        <span *ngIf="!student.courseArray?.length" class="no-types">No courses</span>
+                    </div>
                 </td>
                 <td>
                     <div class="date-cell">
@@ -108,15 +118,14 @@
                 <td>
                     <div class="types-cell">
                         <p-tag 
-                            *ngFor="let type of (student.typeArray || typeStringToArray(student.type))"
+                            *ngFor="let type of student.typeArray"
                             [severity]="getTypeSeverity(type)" 
                             [value]="getTypeLabel(type)" 
                             [rounded]="true"
                             [icon]="getTypeIcon(type)"
                             styleClass="mr-1 mb-1"
-                        >
-                        </p-tag>
-                        <span *ngIf="!(student.typeArray || typeStringToArray(student.type)).length" class="no-types">No types</span>
+                        ></p-tag>
+                        <span *ngIf="!student.typeArray?.length" class="no-types">No types</span>
                     </div>
                 </td>
                 <td>
@@ -171,7 +180,7 @@
     <div class="dialog-content">
         <div class="dialog-info" *ngIf="!selectedMeeting">
             <i class="pi pi-info-circle"></i>
-            <span>Schedule a new meeting or follow-up with a student. You can select multiple meeting types.</span>
+            <span>Schedule a new meeting or follow-up with a student. You can select multiple courses and meeting types.</span>
         </div>
 
         <form [formGroup]="globalFormGroup" (ngSubmit)="onSave()">
@@ -183,11 +192,22 @@
                 </small>
             </div>
 
+            <!-- Multi-select for courses -->
             <div class="form-field">
-                <label for="courseId" class="required-field">Course SIS ID</label>
-                <input pInputText id="courseId" formControlName="courseId" placeholder="Enter course SIS ID" />
+                <label for="courseId" class="required-field">Course SIS ID (select one or more)</label>
+                <p-multiSelect 
+                    id="courseId"
+                    [options]="courses"
+                    placeholder="Select courses"
+                    appendTo="body"
+                    formControlName="courseId"
+                    display="chip"
+                ></p-multiSelect>
                 <small class="error-message" *ngIf="globalFormGroup.get('courseId')?.invalid && globalFormGroup.get('courseId')?.touched">
-                    Course ID is required
+                    Please select at least one course
+                </small>
+                <small class="helper-text" *ngIf="globalFormGroup.get('courseId')?.value?.length > 0">
+                    Selected: {{ globalFormGroup.get('courseId')?.value?.length }} course(s)
                 </small>
             </div>
 
