@@ -75,10 +75,10 @@ export class TableComponent implements OnInit {
       const csvData = this.convertToCsv(
         this.filteredData
           .map(({ count, ...item }) => item)
-          .map(({ marked_time, ...item }) => ({
-            ...item,
-            marked_at: marked_time || ''
-          }))
+          // .map(({ marked_time, ...item }) => ({
+          //   ...item,
+          //   marked_at: marked_time || ''
+          // }))
       );
     
       const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });

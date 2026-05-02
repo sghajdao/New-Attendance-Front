@@ -20,6 +20,7 @@ addEventListener('message', ({ data }: { data: Attendance[] }) => {
       instructor_name: a.instructor_name,
       absentLimit: a.absentLimit,
       marked_at: a.marked_at,
+      marked_time: a.marked_time,
       trmCde: a.trmCde
     }
     // if (a.wf_requested_on)
