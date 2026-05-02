@@ -86,6 +86,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
           this.backup = res;
           this.students = this.buildAggregatedData(res);
           this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
+          localStorage.setItem('lastUpdate', JSON.stringify(new Date()));
         },
         error: (err) => {
           console.error(err);
