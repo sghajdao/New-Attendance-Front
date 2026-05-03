@@ -260,6 +260,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    this.closeModal();
   }
 
   formatDateToYYYYMMDD(date: any): string {
