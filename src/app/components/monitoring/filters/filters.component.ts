@@ -20,16 +20,18 @@ export class FiltersComponent implements OnInit {
   students: string[] = []
   courses: string[] = []
   seniorities: string[] = ['FR', 'SO', 'JR', 'SR', 'GR']
+  semesters: string[] = ['SP', 'FA', 'WI']
 
   ngOnInit(): void {
     const storage = localStorage.getItem('init');
     if (storage) {
       const init: InitData[] = JSON.parse(storage);
-      this.students = init.filter(c => c.trmCde === 'SP').at(0)?.students || []
-      this.courses = init.filter(c => c.trmCde === 'SP').at(0)?.courses || []
+      this.students = init.filter(c => c.trmCde === this.globalFormGroup.value.trmCde).at(0)?.students || []
+      this.courses = init.filter(c => c.trmCde === this.globalFormGroup.value.trmCde).at(0)?.courses || []
     }
 
     this.globalFormGroup = this.fb.group({
+      trmCde: 'SP',
       studentIds: [[]],
       courses: [[]],
       seniorities: [[]],

@@ -18,6 +18,7 @@ export interface StudentCourseAggregate {
   studentDiv: string;
   crsCde: string;
   crsDiv: string;
+  trmCde: string;
   status: string;
   grade: string | null;
   gradeChangeDate: string | null;
@@ -68,7 +69,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
 
     let dataExists: boolean = false
     if (!shouldFetch) {
-      this.indexeddbService.getData('info').then((data: StudentAttendanceDetails[]) => {
+      this.indexeddbService.getData('SP').then((data: StudentAttendanceDetails[]) => {
         dataExists = data && data.length? true : false
         console.log('Loaded from IndexedDB:', data);
         this.rawAttendanceData = data;
@@ -80,8 +81,12 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
       const sub = this.attendanceService.getStudentsInfo().subscribe({
         next: (res: StudentAttendanceDetails[]) => {
           console.log('Fetched raw records:', res.length);
-          this.indexeddbService.clearData('info');
-          this.indexeddbService.addData(res, 'info');
+          this.indexeddbService.clearData('WI');
+          this.indexeddbService.addData(res.filter(r => r.trmCde === 'WI'), 'WI');
+          this.indexeddbService.clearData('FA');
+          this.indexeddbService.addData(res.filter(r => r.trmCde === 'FA'), 'FA');
+          this.indexeddbService.clearData('SP');
+          this.indexeddbService.addData(res.filter(r => r.trmCde === 'SP'), 'SP');
           this.rawAttendanceData = res;
           this.backup = res;
           this.students = this.buildAggregatedData(res);
@@ -98,8 +103,17 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['searchDto'] && this.searchDto) {
+      if (this.searchDto.trmCde) {
+        this.indexeddbService.getData(this.searchDto.trmCde).then((data: StudentAttendanceDetails[]) => {
+          this.rawAttendanceData = data;
+          this.students = this.buildAggregatedData(data);
+          this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
+        });
+
+        this.students = this.students.filter(i => i.trmCde === this.searchDto?.trmCde)
+        this.rawAttendanceData = this.rawAttendanceData.filter(i => i.trmCde === this.searchDto?.trmCde)
+      }
       if (this.searchDto.courses && this.searchDto.courses.length) {
-        console.log('SP26-' + this.students[0].crsCde.replace(/\s/g, ""))
         this.students = this.students.filter(i => this.searchDto?.courses?.includes('SP26-' + i.crsCde.replace(/\s/g, "")))
         this.rawAttendanceData = this.rawAttendanceData.filter(i => this.searchDto?.courses?.includes('SP26-' + i.crsCde.replace(/\s/g, "")))
       }
@@ -139,6 +153,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
           studentDiv: record.studentDiv,
           crsCde: record.crsCde,
           crsDiv: record.crsDiv,
+          trmCde: record.trmCde,
           status: record.status,
           grade: record.grade,
           schedule: record.schedule,

@@ -20,8 +20,22 @@ export class IndexeddbService {
     return openDB('StudentsInfoDB', 1, {
       upgrade(db) {
         // Create the 'absences' object store if it doesn't exist
-        if (!db.objectStoreNames.contains('info')) {
-          const store = db.createObjectStore('info', {
+        if (!db.objectStoreNames.contains('FA')) {
+          const store = db.createObjectStore('FA', {
+            keyPath: 'id',
+            autoIncrement: true,
+          });
+          store.createIndex('list', 'id');
+        }
+        if (!db.objectStoreNames.contains('WI')) {
+          const store = db.createObjectStore('WI', {
+            keyPath: 'id',
+            autoIncrement: true,
+          });
+          store.createIndex('list', 'id');
+        }
+        if (!db.objectStoreNames.contains('SP')) {
+          const store = db.createObjectStore('SP', {
             keyPath: 'id',
             autoIncrement: true,
           });
