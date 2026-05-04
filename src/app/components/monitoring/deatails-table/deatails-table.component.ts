@@ -65,19 +65,19 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit(): void {
     const lastUpdate = localStorage.getItem('lastUpdate');
     const initData = localStorage.getItem('init');
-    const shouldFetch = !(lastUpdate && new Date().getDate() <= new Date(JSON.parse(lastUpdate)).getDate() && new Date().getMonth() <= new Date(JSON.parse(lastUpdate)).getMonth()) || !initData;
+    let shouldFetch = !(lastUpdate && new Date().getDate() <= new Date(JSON.parse(lastUpdate)).getDate() && new Date().getMonth() <= new Date(JSON.parse(lastUpdate)).getMonth()) || !initData;
 
-    let dataExists: boolean = false
     if (!shouldFetch) {
       this.indexeddbService.getData('SP').then((data: StudentAttendanceDetails[]) => {
-        dataExists = data && data.length? true : false
+        if (!data.length)
+          shouldFetch = true;
         console.log('Loaded from IndexedDB:', data);
         this.rawAttendanceData = data;
         this.students = this.buildAggregatedData(data);
         this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
       });
     }
-    if (shouldFetch || ! dataExists) {
+    if (shouldFetch) {
       const sub = this.attendanceService.getStudentsInfo().subscribe({
         next: (res: StudentAttendanceDetails[]) => {
           console.log('Fetched raw records:', res.length);
