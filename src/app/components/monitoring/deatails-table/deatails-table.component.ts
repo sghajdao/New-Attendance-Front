@@ -67,38 +67,36 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
     const initData = localStorage.getItem('init');
     let shouldFetch = !(lastUpdate && new Date().getDate() <= new Date(JSON.parse(lastUpdate)).getDate() && new Date().getMonth() <= new Date(JSON.parse(lastUpdate)).getMonth()) || !initData;
 
-    if (!shouldFetch) {
-      this.indexeddbService.getData('SP').then((data: StudentAttendanceDetails[]) => {
-        if (!data.length)
-          shouldFetch = true;
+    this.indexeddbService.getData('SP').then((data: StudentAttendanceDetails[]) => {
+      if (!data.length || shouldFetch) {
+        const sub = this.attendanceService.getStudentsInfo().subscribe({
+          next: (res: StudentAttendanceDetails[]) => {
+            console.log('Fetched raw records:', res.length);
+            this.indexeddbService.clearData('WI');
+            this.indexeddbService.addData(res.filter(r => r.trmCde === 'WI'), 'WI');
+            this.indexeddbService.clearData('FA');
+            this.indexeddbService.addData(res.filter(r => r.trmCde === 'FA'), 'FA');
+            this.indexeddbService.clearData('SP');
+            this.indexeddbService.addData(res.filter(r => r.trmCde === 'SP'), 'SP');
+            this.rawAttendanceData = res;
+            this.backup = res;
+            this.students = this.buildAggregatedData(res);
+            this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
+            localStorage.setItem('lastUpdate', JSON.stringify(new Date()));
+          },
+          error: (err) => {
+            console.error(err);
+          }
+        });
+        this.subscriptions.push(sub);
+      }
+      else {
         console.log('Loaded from IndexedDB:', data);
         this.rawAttendanceData = data;
         this.students = this.buildAggregatedData(data);
         this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
-      });
-    }
-    if (shouldFetch) {
-      const sub = this.attendanceService.getStudentsInfo().subscribe({
-        next: (res: StudentAttendanceDetails[]) => {
-          console.log('Fetched raw records:', res.length);
-          this.indexeddbService.clearData('WI');
-          this.indexeddbService.addData(res.filter(r => r.trmCde === 'WI'), 'WI');
-          this.indexeddbService.clearData('FA');
-          this.indexeddbService.addData(res.filter(r => r.trmCde === 'FA'), 'FA');
-          this.indexeddbService.clearData('SP');
-          this.indexeddbService.addData(res.filter(r => r.trmCde === 'SP'), 'SP');
-          this.rawAttendanceData = res;
-          this.backup = res;
-          this.students = this.buildAggregatedData(res);
-          this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
-          localStorage.setItem('lastUpdate', JSON.stringify(new Date()));
-        },
-        error: (err) => {
-          console.error(err);
-        }
-      });
-      this.subscriptions.push(sub);
-    }
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
