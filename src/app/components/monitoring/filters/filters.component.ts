@@ -31,6 +31,8 @@ export class FiltersComponent implements OnInit, OnDestroy {
     if (storage) {
       const init: InitData[] = JSON.parse(storage);
       this.dataBackup = init;
+      this.courses = this.dataBackup.filter(c => c.trmCde === 'SP').at(0)?.courses || []
+      this.students = this.dataBackup.filter(c => c.trmCde === 'SP').at(0)?.students || []
     }
 
     this.globalFormGroup = this.fb.group({

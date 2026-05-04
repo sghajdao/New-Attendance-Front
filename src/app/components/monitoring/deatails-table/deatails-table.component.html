@@ -28,7 +28,19 @@
     [showCurrentPageReport]="true"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
     styleClass="p-datatable-sm custom-datatable"
+    [loading]="isLoading"
   >
+    <ng-template pTemplate="loadingbody">
+      <tr>
+        <td colspan="23" class="text-center">
+          <div class="flex flex-column align-items-center justify-content-center p-4">
+            <i class="pi pi-spinner pi-spin" style="font-size: 2.5rem; color: #3b82f6;"></i>
+            <p class="mt-2 text-gray-500">Loading student data...</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
     <ng-template #header>
       <tr>
         <th pSortableColumn="idNum" style="min-width: 90px;">
@@ -154,7 +166,7 @@
 
     <ng-template #emptymessage>
       <tr>
-        <td colspan="24" class="empty-message">
+        <td colspan="23" class="empty-message">
           <i class="pi pi-inbox mr-2"></i> No students found.
         </td>
       </tr>

@@ -52,6 +52,9 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
   students: StudentCourseAggregate[] = [];
   numberOfStudents: number = 0;
 
+  // Loading spinner state
+  isLoading: boolean = false;
+
   // Modal properties
   showModal = false;
   modalRecords: StudentAttendanceDetails[] = [];
@@ -67,6 +70,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
     const initData = localStorage.getItem('init');
     let shouldFetch = !(lastUpdate && new Date().getDate() <= new Date(JSON.parse(lastUpdate)).getDate() && new Date().getMonth() <= new Date(JSON.parse(lastUpdate)).getMonth()) || !initData;
 
+    this.isLoading = true;
     this.indexeddbService.getData('SP').then((data: StudentAttendanceDetails[]) => {
       if (!data.length || shouldFetch) {
         const sub = this.attendanceService.getStudentsInfo().subscribe({
@@ -83,9 +87,11 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
             this.students = this.buildAggregatedData(res);
             this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
             localStorage.setItem('lastUpdate', JSON.stringify(new Date()));
+            this.isLoading = false;
           },
           error: (err) => {
             console.error(err);
+            this.isLoading = false;
           }
         });
         this.subscriptions.push(sub);
@@ -95,17 +101,26 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
         this.rawAttendanceData = data;
         this.students = this.buildAggregatedData(data);
         this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
+        this.isLoading = false;
       }
+    }).catch((err) => {
+      console.error('IndexedDB error:', err);
+      this.isLoading = false;
     });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['searchDto'] && this.searchDto) {
       if (this.searchDto.trmCde) {
+        this.isLoading = true;
         this.indexeddbService.getData(this.searchDto.trmCde).then((data: StudentAttendanceDetails[]) => {
           this.rawAttendanceData = data;
           this.students = this.buildAggregatedData(data);
           this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
+          this.isLoading = false;
+        }).catch((err) => {
+          console.error('Error loading term data:', err);
+          this.isLoading = false;
         });
 
         this.students = this.students.filter(i => i.trmCde === this.searchDto?.trmCde)
