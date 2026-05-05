@@ -15,7 +15,6 @@
     padding: 4px;
     margin-bottom: 20px;
     border-radius: 4px;
-    width: 420px;
     height: 45px;
     margin-top: 20px;
 }
@@ -23,7 +22,8 @@
 .driver-button {
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
+    gap: 20px;
     padding: 8px 16px;
     width: calc(33.33% - 4px);
     background-color: white;

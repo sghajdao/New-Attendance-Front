@@ -10,24 +10,27 @@ import { StudentTracking } from '../../../models/entities/studentTracking';
   styleUrl: './stats.component.css'
 })
 export class StatsComponent implements OnInit, OnDestroy {
-  @Input() searchDto?: any; // Optional filter for future use
+  @Input() searchDto?: any;
 
-  // Data
   students: StudentTracking[] = [];
   private subscription?: Subscription;
 
-  // Stats metrics
-  totalEvents: number = 0;
-  uniqueStudentsCount: number = 0;
-  totalCourseEnrollments: number = 0;
-  mostCommonType: string = 'N/A';
-  avgEventsPerStudent: number = 0;
+  // Key stats
+  totalNotifiedStudents = 0;
+  pendingVisits = 0;        // comment null/empty
+  completedVisits = 0;      // comment present
+  totalCoursesInvolved = 0;
 
-  // Chart Data
-  pieChartData: any;
-  pieChartOptions: any;
-  barChartData: any;
-  barChartOptions: any;
+  // Status chart (doughnut)
+  statusChartData: any;
+  statusChartOptions: any;
+
+  // Top courses chart (bar)
+  topCoursesChartData: any;
+  topCoursesChartOptions: any;
+
+  // Optional: keep type distribution if needed, but we can remove or adapt
+  // We'll keep it to avoid breaking existing code but rename label.
 
   constructor(private attendanceService: AttendanceService) {}
 
@@ -48,7 +51,7 @@ export class StatsComponent implements OnInit, OnDestroy {
       error: (err) => {
         console.error('Error loading tracking data:', err);
         this.students = [];
-        this.computeStatsAndCharts(); // Show empty state
+        this.computeStatsAndCharts();
       }
     });
   }
@@ -60,171 +63,104 @@ export class StatsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // 1. Basic counts
-    this.totalEvents = this.students.length;
+    // --- Student follow-up status ---
+    this.totalNotifiedStudents = this.students.length;
+    this.pendingVisits = this.students.filter(s => !s.comment || s.comment.trim() === '').length;
+    this.completedVisits = this.totalNotifiedStudents - this.pendingVisits;
 
-    // 2. Unique students (using studentSisId)
-    const studentMap = new Map<string, { name: string; count: number; courses: number }>();
-    // 3. Type frequency map
-    const typeMap = new Map<string, number>();
-    // 4. Course enrollments sum
-    let totalCourses = 0;
-
-    for (const tracking of this.students) {
-      const studentId = tracking.studentSisId || tracking.studentName || 'unknown';
-      const studentName = tracking.studentName || studentId;
-      
-      if (!studentMap.has(studentId)) {
-        studentMap.set(studentId, { name: studentName, count: 0, courses: 0 });
-      }
-      const studentEntry = studentMap.get(studentId)!;
-      studentEntry.count++;
-
-      // Courses: sum length of coursSisId array
-      const courseCount = tracking.coursSisId?.length || 0;
-      studentEntry.courses += courseCount;
-      totalCourses += courseCount;
-
-      // Types: handle type array (each tracking may have multiple types)
-      const types = tracking.type || [];
-      for (const type of types) {
-        if (type && type.trim()) {
-          typeMap.set(type, (typeMap.get(type) || 0) + 1);
+    // --- Courses: count unique students per course ---
+    // Each student may have coursSisId[] (courses they are absent in)
+    const courseStudentMap = new Map<string, Set<string>>(); // courseId -> Set of studentSisId
+    for (const student of this.students) {
+      const studentId = student.studentSisId || student.studentName || 'unknown';
+      const courses = student.coursSisId || [];
+      for (const course of courses) {
+        if (!course) continue;
+        if (!courseStudentMap.has(course)) {
+          courseStudentMap.set(course, new Set());
         }
+        courseStudentMap.get(course)!.add(studentId);
       }
     }
+    this.totalCoursesInvolved = courseStudentMap.size;
 
-    this.uniqueStudentsCount = studentMap.size;
-    this.totalCourseEnrollments = totalCourses;
-    this.avgEventsPerStudent = this.totalEvents / this.uniqueStudentsCount;
-
-    // Most common type
-    let maxCount = 0;
-    let mostCommon = 'N/A';
-    for (const [type, count] of typeMap.entries()) {
-      if (count > maxCount) {
-        maxCount = count;
-        mostCommon = type;
-      }
-    }
-    this.mostCommonType = mostCommon;
-
-    // Prepare Pie Chart Data (Type Distribution)
-    const pieLabels = Array.from(typeMap.keys());
-    const pieData = Array.from(typeMap.values());
-    this.pieChartData = {
-      labels: pieLabels,
-      datasets: [
-        {
-          data: pieData,
-          backgroundColor: [
-            '#42A5F5', '#66BB6A', '#FFA726', '#FF7043', '#AB47BC', 
-            '#EC407A', '#26C6DA', '#7E57C2', '#FFCA28', '#5C6BC0'
-          ],
-          hoverBackgroundColor: [
-            '#1E88E5', '#43A047', '#FB8C00', '#E64A19', '#8E24AA',
-            '#D81B60', '#00ACC1', '#5E35B1', '#F9A825', '#3949AB'
-          ]
-        }
-      ]
-    };
-
-    // Prepare Bar Chart Data (Top 5 Students by Tracking Events)
-    const studentStats = Array.from(studentMap.entries())
-      .map(([id, data]) => ({
-        name: data.name.length > 20 ? data.name.substring(0, 18) + '...' : data.name,
-        count: data.count
+    // Prepare top 5 courses (by number of unique students)
+    const courseStats = Array.from(courseStudentMap.entries())
+      .map(([courseId, studentsSet]) => ({
+        course: courseId.length > 25 ? courseId.substring(0, 22) + '...' : courseId,
+        studentCount: studentsSet.size
       }))
-      .sort((a, b) => b.count - a.count)
+      .sort((a, b) => b.studentCount - a.studentCount)
       .slice(0, 5);
 
-    const barLabels = studentStats.map(s => s.name);
-    const barCounts = studentStats.map(s => s.count);
+    const topCourseLabels = courseStats.map(c => c.course);
+    const topCourseData = courseStats.map(c => c.studentCount);
 
-    this.barChartData = {
-      labels: barLabels,
+    // Bar chart data (horizontal or vertical? We'll use vertical bar with rotation)
+    this.topCoursesChartData = {
+      labels: topCourseLabels,
       datasets: [
         {
-          label: 'Number of Tracking Events',
-          data: barCounts,
-          backgroundColor: '#42A5F5',
+          label: 'Number of Notified Students',
+          data: topCourseData,
+          backgroundColor: '#FFA726',
           borderRadius: 6,
-          barPercentage: 0.7,
-          categoryPercentage: 0.8
+          barPercentage: 0.7
         }
       ]
     };
 
-    // Chart Options
-    this.pieChartOptions = {
+    this.topCoursesChartOptions = {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          position: 'right',
-          labels: {
-            font: { size: 12 },
-            usePointStyle: true
-          }
-        },
-        tooltip: {
-          callbacks: {
-            label: (context: any) => {
-              const label = context.label || '';
-              const value = context.raw || 0;
-              const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
-              const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-              return `${label}: ${value} (${percent}%)`;
-            }
-          }
-        }
+        legend: { position: 'top', labels: { font: { size: 12 } } },
+        tooltip: { callbacks: { label: (ctx: any) => `${ctx.raw} student(s)` } }
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 }, title: { display: true, text: 'Students Notified' } },
+        x: { ticks: { autoSkip: false, rotation: 20, font: { size: 11 } }, title: { display: true, text: 'Course' } }
       }
     };
 
-    this.barChartOptions = {
+    // --- Status chart (doughnut) ---
+    this.statusChartData = {
+      labels: ['Not yet visited (Pending)', 'Visited the office'],
+      datasets: [
+        {
+          data: [this.pendingVisits, this.completedVisits],
+          backgroundColor: ['#EF5350', '#66BB6A'],
+          hoverBackgroundColor: ['#E53935', '#4CAF50'],
+          borderWidth: 0
+        }
+      ]
+    };
+
+    this.statusChartOptions = {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          position: 'top',
-          labels: { font: { size: 12 } }
-        },
-        tooltip: {
-          callbacks: {
-            label: (context: any) => `Events: ${context.raw}`
-          }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { stepSize: 1, precision: 0 },
-          title: { display: true, text: 'Number of Events', font: { weight: 'bold' } }
-        },
-        x: {
-          ticks: { autoSkip: false, rotation: 15, font: { size: 11 } },
-          title: { display: true, text: 'Students (Top 5)', font: { weight: 'bold' } }
-        }
+        legend: { position: 'bottom', labels: { font: { size: 12 }, usePointStyle: true } },
+        tooltip: { callbacks: { label: (ctx: any) => `${ctx.label}: ${ctx.raw} (${((ctx.raw / this.totalNotifiedStudents) * 100).toFixed(1)}%)` } }
       }
     };
   }
 
   private setEmptyStats(): void {
-    this.totalEvents = 0;
-    this.uniqueStudentsCount = 0;
-    this.totalCourseEnrollments = 0;
-    this.mostCommonType = 'N/A';
-    this.avgEventsPerStudent = 0;
+    this.totalNotifiedStudents = 0;
+    this.pendingVisits = 0;
+    this.completedVisits = 0;
+    this.totalCoursesInvolved = 0;
   }
 
   private setEmptyCharts(): void {
-    this.pieChartData = {
-      labels: ['No Data'],
+    this.statusChartData = {
+      labels: ['No data'],
       datasets: [{ data: [1], backgroundColor: ['#B0BEC5'] }]
     };
-    this.barChartData = {
-      labels: ['No Data'],
-      datasets: [{ label: 'Events', data: [0], backgroundColor: '#B0BEC5' }]
+    this.topCoursesChartData = {
+      labels: ['No data'],
+      datasets: [{ label: 'Students', data: [0], backgroundColor: '#B0BEC5' }]
     };
   }
 }

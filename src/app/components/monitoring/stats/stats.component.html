@@ -1,69 +1,66 @@
 <p-card styleClass="stats-card">
-  <!-- Header with title -->
   <ng-template pTemplate="header">
     <div class="stats-header">
-      <h2>📊 Attendance & Tracking Statistics</h2>
-      <p class="subtitle">Real-time insights from student tracking data</p>
+      <h2>📋 Academic Support Follow-up</h2>
+      <p class="subtitle">Students with frequent absences – notification & office visit tracking</p>
     </div>
   </ng-template>
 
-  <!-- Stats Summary Cards -->
+  <!-- Summary Cards -->
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-icon">🎯</div>
+      <div class="stat-icon">📧</div>
       <div class="stat-details">
-        <span class="stat-label">Total Events</span>
-        <span class="stat-value">{{ totalEvents }}</span>
+        <span class="stat-label">Notified Students</span>
+        <span class="stat-value">{{ totalNotifiedStudents }}</span>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon">👥</div>
+      <div class="stat-icon">⏳</div>
       <div class="stat-details">
-        <span class="stat-label">Unique Students</span>
-        <span class="stat-value">{{ uniqueStudentsCount }}</span>
+        <span class="stat-label">Pending Visit</span>
+        <span class="stat-value">{{ pendingVisits }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-details">
+        <span class="stat-label">Visited Office</span>
+        <span class="stat-value">{{ completedVisits }}</span>
       </div>
     </div>
     <div class="stat-card">
       <div class="stat-icon">📚</div>
       <div class="stat-details">
-        <span class="stat-label">Course Enrollments</span>
-        <span class="stat-value">{{ totalCourseEnrollments }}</span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">🔥</div>
-      <div class="stat-details">
-        <span class="stat-label">Most Common Type</span>
-        <span class="stat-value">{{ mostCommonType }}</span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">📈</div>
-      <div class="stat-details">
-        <span class="stat-label">Avg Events / Student</span>
-        <span class="stat-value">{{ avgEventsPerStudent | number:'1.1-1' }}</span>
+        <span class="stat-label">Courses Affected</span>
+        <span class="stat-value">{{ totalCoursesInvolved }}</span>
       </div>
     </div>
   </div>
 
   <!-- Charts Row -->
   <div class="charts-row">
+    <!-- Status Doughnut Chart -->
     <div class="chart-container">
-      <h3>📌 Event Type Distribution</h3>
+      <h3>📌 Student Follow-up Status</h3>
       <div class="chart-wrapper">
-        <p-chart type="pie" [data]="pieChartData" [options]="pieChartOptions"></p-chart>
+        <p-chart type="doughnut" [data]="statusChartData" [options]="statusChartOptions"></p-chart>
+      </div>
+      <div class="chart-note" *ngIf="pendingVisits > 0">
+        ⚠️ {{ pendingVisits }} student(s) have not yet come to the office.
       </div>
     </div>
+
+    <!-- Top Courses Bar Chart -->
     <div class="chart-container">
-      <h3>🏆 Top 5 Students by Activity</h3>
+      <h3>🏆 Top Courses with Notified Students</h3>
       <div class="chart-wrapper">
-        <p-chart type="bar" [data]="barChartData" [options]="barChartOptions"></p-chart>
+        <p-chart type="bar" [data]="topCoursesChartData" [options]="topCoursesChartOptions"></p-chart>
       </div>
     </div>
   </div>
 
-  <!-- Optional: Recent activity table (can be added later) -->
   <div class="footer-note" *ngIf="students.length === 0">
-    <p>⚠️ No tracking data available. Please check your connection or data source.</p>
+    <p>⚠️ No student notification data available. Please check the data source.</p>
   </div>
 </p-card>

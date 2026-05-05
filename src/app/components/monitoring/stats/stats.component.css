@@ -8,9 +8,8 @@
   padding: 1.5rem;
 }
 
-/* Header styling */
 .stats-header {
-  padding: 1rem 0 0.5rem 0;
+  padding: 1rem;
   border-bottom: 1px solid #e9ecef;
   margin-bottom: 1.5rem;
 }
@@ -28,7 +27,6 @@
   font-size: 0.875rem;
 }
 
-/* Stats grid - responsive cards */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -86,7 +84,6 @@
   word-break: break-word;
 }
 
-/* Charts row */
 .charts-row {
   display: flex;
   flex-wrap: wrap;
@@ -118,11 +115,21 @@
 
 .chart-wrapper {
   position: relative;
-  height: 320px;
+  height: 300px;
   width: 100%;
 }
 
-/* Responsive adjustments */
+.chart-note {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background: #fff3e0;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  text-align: center;
+  color: #e67e22;
+  border-left: 3px solid #e67e22;
+}
+
 @media (max-width: 768px) {
   :host ::ng-deep .stats-card .p-card-body {
     padding: 1rem;
@@ -148,15 +155,10 @@
   }
 
   .chart-wrapper {
-    height: 250px;
-  }
-
-  .chart-container h3 {
-    font-size: 1rem;
+    height: 240px;
   }
 }
 
-/* Empty state / footer note */
 .footer-note {
   margin-top: 1.5rem;
   padding: 1rem;
