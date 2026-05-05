@@ -84,6 +84,19 @@
   word-break: break-word;
 }
 
+.stats-section-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 1.5rem 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.stats-section-title:first-of-type {
+  margin-top: 0;
+}
+
 .charts-row {
   display: flex;
   flex-wrap: wrap;
