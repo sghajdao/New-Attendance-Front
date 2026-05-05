@@ -82,9 +82,9 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
             this.indexeddbService.addData(res.filter(r => r.trmCde === 'FA'), 'FA');
             this.indexeddbService.clearData('SP');
             this.indexeddbService.addData(res.filter(r => r.trmCde === 'SP'), 'SP');
-            this.rawAttendanceData = res;
+            this.rawAttendanceData = res.filter(r => r.trmCde === 'SP');
             this.backup = res;
-            this.students = this.buildAggregatedData(res);
+            this.students = this.buildAggregatedData(res.filter(r => r.trmCde === 'SP'));
             this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
             localStorage.setItem('lastUpdate', JSON.stringify(new Date()));
             this.isLoading = false;
