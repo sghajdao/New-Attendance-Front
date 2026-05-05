@@ -209,7 +209,7 @@
 /* Course code */
 .course-code {
     font-family: 'SF Mono', monospace;
-    font-weight: bold;
+    font-weight: 900;
     background: #f0f4f9;
     padding: 4px 8px;
     border-radius: 8px;
