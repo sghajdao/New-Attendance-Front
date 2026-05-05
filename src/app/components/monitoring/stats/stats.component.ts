@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AttendanceService } from '../../../services/attendance.service';
 import { StudentTracking } from '../../../models/entities/studentTracking';
+import { SearchDto } from '../../../models/dto/searchDto';
 
 @Component({
   selector: 'app-stats',
@@ -9,10 +10,11 @@ import { StudentTracking } from '../../../models/entities/studentTracking';
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css'
 })
-export class StatsComponent implements OnInit, OnDestroy {
-  @Input() searchDto?: any;
+export class StatsComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() searchDto?: SearchDto;
 
   students: StudentTracking[] = [];
+  backup: StudentTracking[] = [];
   private subscription?: Subscription;
 
   // Original stats
@@ -46,14 +48,28 @@ export class StatsComponent implements OnInit, OnDestroy {
     this.loadTrackingData();
   }
 
-  ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['searchDto'] && this.searchDto) {
+      if (this.searchDto.trmCde) {
+        this.students = this.students.filter(i => i.coursSisId?.some(c => c.startsWith(this.searchDto!.trmCde!)))
+      }
+      if (this.searchDto.courses && this.searchDto.courses.length) {
+        this.students = this.students.filter(i => i.coursSisId?.some(c => this.searchDto?.courses?.includes(c)))
+      }
+      if (this.searchDto.studentIds && this.searchDto.studentIds.length) {
+        this.students = this.students.filter(i => this.searchDto?.studentIds?.includes(i.studentSisId!))
+      }
+      else if (!this.searchDto.studentIds?.length && !this.searchDto.courses?.length && !this.searchDto.seniorities?.length) {
+        this.students = [...this.backup];
+      }
+    }
   }
 
   private loadTrackingData(): void {
     this.subscription = this.attendanceService.getTracking().subscribe({
       next: (res) => {
         this.students = res || [];
+        this.backup = [...this.students];
         this.computeAllStatsAndCharts();
       },
       error: (err) => {
@@ -231,5 +247,9 @@ export class StatsComponent implements OnInit, OnDestroy {
   private setEmptyNewCharts(): void {
     this.statusChartData = { labels: ['No Data'], datasets: [{ data: [1], backgroundColor: ['#B0BEC5'] }] };
     this.topCoursesChartData = { labels: ['No Data'], datasets: [{ label: 'Students', data: [0], backgroundColor: '#B0BEC5' }] };
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 }

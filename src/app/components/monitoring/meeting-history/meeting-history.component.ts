@@ -368,6 +368,97 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     return comment.length > maxLength ? comment.substring(0, maxLength) + '...' : comment;
   }
 
+  exportToCSV(): void {
+    if (!this.filteredStudents || this.filteredStudents.length === 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'No Data',
+        detail: 'There is no data to export',
+        life: 3000
+      });
+      return;
+    }
+
+    // Define CSV headers
+    const headers = [
+      'Student SIS ID',
+      'Student Name',
+      'Course SIS ID(s)',
+      'Meeting Date',
+      'Meeting Type(s)',
+      'Comments / Notes'
+    ];
+
+    // Convert each student to a CSV row
+    const rows = this.filteredStudents.map(student => {
+      // Format date
+      const meetingDate = student.createdAt 
+        ? new Date(student.createdAt).toLocaleString() 
+        : '';
+
+      // Get course array (already processed as .courseArray)
+      const courses = (student as any).courseArray || [];
+      const coursesStr = courses.join(', ');
+
+      // Get type array (already processed as .typeArray)
+      const types = (student as any).typeArray || [];
+      const typesStr = types.map((t: string) => this.getTypeLabel(t)).join(', ');
+
+      // Build row data
+      const row = [
+        student.studentSisId || '',
+        student.studentName || '',
+        coursesStr,
+        meetingDate,
+        typesStr,
+        student.comment || ''
+      ];
+
+      // Escape each field: wrap in quotes and replace internal quotes
+      return row.map(cell => this.escapeCSVCell(cell)).join(',');
+    });
+
+    // Combine header and rows
+    const csvContent = [
+      headers.map(h => this.escapeCSVCell(h)).join(','),
+      ...rows
+    ].join('\n');
+
+    // Add BOM for UTF-8 special characters
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `meeting_history_${new Date().toISOString().slice(0,19)}.csv`);
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Export Complete',
+      detail: 'CSV file has been downloaded',
+      life: 3000
+    });
+  }
+
+  // Helper method to escape CSV fields (handles commas, quotes, newlines)
+  private escapeCSVCell(cell: any): string {
+    if (cell === null || cell === undefined) return '""';
+
+    let stringCell = String(cell);
+    // If the cell contains commas, quotes, or newlines, wrap in quotes and escape existing quotes
+    if (stringCell.includes(',') || stringCell.includes('"') || stringCell.includes('\n') || stringCell.includes('\r')) {
+      stringCell = stringCell.replace(/"/g, '""'); // Escape double quotes
+      return `"${stringCell}"`;
+    }
+    return stringCell;
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }

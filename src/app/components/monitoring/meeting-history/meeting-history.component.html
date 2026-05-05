@@ -11,8 +11,19 @@
                 Records of emails, meetings, and follow-ups with students
             </p>
         </div>
-        
-        <p-button label="New Meeting" severity="contrast" (onClick)="showDialog()" icon="pi pi-plus" styleClass="new-meeting-btn" />
+
+        <div class="header-actions">
+            <p-button label="Export CSV" 
+                      icon="pi pi-download" 
+                      severity="secondary" 
+                      (onClick)="exportToCSV()" 
+                      styleClass="export-btn" />
+            <p-button label="New Meeting" 
+                      severity="contrast" 
+                      (onClick)="showDialog()" 
+                      icon="pi pi-plus" 
+                      styleClass="new-meeting-btn" />
+        </div>
     </div>
 
     <!-- Search and Filter Bar -->

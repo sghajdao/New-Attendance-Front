@@ -22,6 +22,18 @@
     flex: 1;
 }
 
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Optional: ensure buttons have consistent height */
+.header-actions .p-button {
+    white-space: nowrap;
+}
+
 .title-section {
     display: flex;
     align-items: center;
@@ -454,5 +466,14 @@
     
     .types-cell {
         min-width: 150px;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .header-actions .p-button {
+        flex: 1;
     }
 }
