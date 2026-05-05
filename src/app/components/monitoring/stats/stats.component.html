@@ -6,23 +6,6 @@
     </div>
   </ng-template>
 
-  <!-- Row 1: Original stats cards -->
-  <div class="stats-section-title">📈 Event Overview</div>
-  <div class="stats-grid">
-    <div class="stat-card"><div class="stat-icon">🎯</div><div class="stat-details"><span class="stat-label">Total Events</span><span class="stat-value">{{ totalEvents }}</span></div></div>
-    <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-details"><span class="stat-label">Unique Students</span><span class="stat-value">{{ uniqueStudentsCount }}</span></div></div>
-    <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-details"><span class="stat-label">Course Enrollments</span><span class="stat-value">{{ totalCourseEnrollments }}</span></div></div>
-    <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-details"><span class="stat-label">Most Common Type</span><span class="stat-value">{{ mostCommonType }}</span></div></div>
-    <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-details"><span class="stat-label">Avg Events/Student</span><span class="stat-value">{{ avgEventsPerStudent | number:'1.1-1' }}</span></div></div>
-  </div>
-
-  <!-- Row 2: Original charts -->
-  <div class="charts-row">
-    <div class="chart-container"><h3>📌 Event Type Distribution</h3><div class="chart-wrapper"><p-chart type="pie" [data]="pieChartData" [options]="pieChartOptions"></p-chart></div></div>
-    <div class="chart-container"><h3>🏆 Top 5 Students by Activity</h3><div class="chart-wrapper"><p-chart type="bar" [data]="barChartData" [options]="barChartOptions"></p-chart></div></div>
-  </div>
-
-  <!-- Row 3: New academic support stats -->
   <div class="stats-section-title">📋 Academic Support Follow-up</div>
   <div class="stats-grid">
     <div class="stat-card"><div class="stat-icon">📧</div><div class="stat-details"><span class="stat-label">Notified Students</span><span class="stat-value">{{ totalNotifiedStudents }}</span></div></div>
@@ -31,10 +14,16 @@
     <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-details"><span class="stat-label">Courses Affected</span><span class="stat-value">{{ totalCoursesInvolved }}</span></div></div>
   </div>
 
+  <!-- Row 2: Original charts -->
+  <div class="charts-row">
+    <div class="chart-container"><h3>📌 Type Distribution</h3><div class="chart-wrapper"><p-chart type="pie" [data]="pieChartData" [options]="pieChartOptions"></p-chart></div></div>
+    <div class="chart-container"><h3>👥 Top 5 Notified Students</h3><div class="chart-wrapper"><p-chart type="bar" [data]="barChartData" [options]="barChartOptions"></p-chart></div></div>
+  </div>
+
   <!-- Row 4: New charts -->
   <div class="charts-row">
     <div class="chart-container"><h3>📌 Student Follow-up Status</h3><div class="chart-wrapper"><p-chart type="doughnut" [data]="statusChartData" [options]="statusChartOptions"></p-chart></div></div>
-    <div class="chart-container"><h3>🏆 Top Courses with Notified Students</h3><div class="chart-wrapper"><p-chart type="bar" [data]="topCoursesChartData" [options]="topCoursesChartOptions"></p-chart></div></div>
+    <div class="chart-container"><h3>📚 Top Courses with Notified Students</h3><div class="chart-wrapper"><p-chart type="bar" [data]="topCoursesChartData" [options]="topCoursesChartOptions"></p-chart></div></div>
   </div>
 
   <div class="footer-note" *ngIf="students.length === 0">
