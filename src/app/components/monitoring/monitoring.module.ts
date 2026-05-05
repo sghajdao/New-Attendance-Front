@@ -31,6 +31,8 @@ import { DropdownModule } from 'primeng/dropdown';
 import { DeatailsTableComponent } from './deatails-table/deatails-table.component';
 import { PaginatorModule } from 'primeng/paginator';
 import { CheckboxModule } from 'primeng/checkbox';
+import { StatsComponent } from './stats/stats.component';
+import { ChartModule } from 'primeng/chart';
 
 
 @NgModule({
@@ -41,6 +43,7 @@ import { CheckboxModule } from 'primeng/checkbox';
     DeatailsTableComponent,
     AbsenceThresholdComponent,
     MeetingHistoryComponent,
+    StatsComponent,
   ],
   imports: [
     CommonModule,
@@ -69,6 +72,7 @@ import { CheckboxModule } from 'primeng/checkbox';
     DropdownModule,
     PaginatorModule,
     CheckboxModule,
+    ChartModule,
   ],
   providers: [MessageService]
 })

@@ -10,13 +10,13 @@ import { SearchDto } from '../../models/dto/searchDto';
 export class MonitoringComponent implements OnInit{
   constructor() { }
 
-  drivers: boolean[] = [true, false, false];
+  drivers: boolean[] = [true, false, false, false];
   searchDto?: SearchDto;
 
   ngOnInit(): void {}
 
   changeDriver(index: number): void {
-    this.drivers = [false, false, false];
+    this.drivers = [false, false, false, false];
     this.drivers[index] = !this.drivers[index];
   }
 

@@ -209,7 +209,7 @@
 /* Course code */
 .course-code {
     font-family: 'SF Mono', monospace;
-    font-weight: 600;
+    font-weight: 700;
     background: #f0f4f9;
     padding: 4px 8px;
     border-radius: 8px;
@@ -237,7 +237,7 @@
 }
 
 .attendance-value {
-    font-weight: 600;
+    font-weight: 700;
     min-width: 42px;
 }
 

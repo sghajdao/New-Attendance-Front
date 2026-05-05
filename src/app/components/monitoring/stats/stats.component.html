@@ -1,0 +1,69 @@
+<p-card styleClass="stats-card">
+  <!-- Header with title -->
+  <ng-template pTemplate="header">
+    <div class="stats-header">
+      <h2>📊 Attendance & Tracking Statistics</h2>
+      <p class="subtitle">Real-time insights from student tracking data</p>
+    </div>
+  </ng-template>
+
+  <!-- Stats Summary Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-details">
+        <span class="stat-label">Total Events</span>
+        <span class="stat-value">{{ totalEvents }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-details">
+        <span class="stat-label">Unique Students</span>
+        <span class="stat-value">{{ uniqueStudentsCount }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📚</div>
+      <div class="stat-details">
+        <span class="stat-label">Course Enrollments</span>
+        <span class="stat-value">{{ totalCourseEnrollments }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔥</div>
+      <div class="stat-details">
+        <span class="stat-label">Most Common Type</span>
+        <span class="stat-value">{{ mostCommonType }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-details">
+        <span class="stat-label">Avg Events / Student</span>
+        <span class="stat-value">{{ avgEventsPerStudent | number:'1.1-1' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="charts-row">
+    <div class="chart-container">
+      <h3>📌 Event Type Distribution</h3>
+      <div class="chart-wrapper">
+        <p-chart type="pie" [data]="pieChartData" [options]="pieChartOptions"></p-chart>
+      </div>
+    </div>
+    <div class="chart-container">
+      <h3>🏆 Top 5 Students by Activity</h3>
+      <div class="chart-wrapper">
+        <p-chart type="bar" [data]="barChartData" [options]="barChartOptions"></p-chart>
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional: Recent activity table (can be added later) -->
+  <div class="footer-note" *ngIf="students.length === 0">
+    <p>⚠️ No tracking data available. Please check your connection or data source.</p>
+  </div>
+</p-card>
