@@ -74,8 +74,8 @@ export class TableComponent implements OnInit {
     if (this.filteredData) {
       const csvData = this.convertToCsv(
         this.filteredData
-          .map(({ count, ...item }) => item)
-          .map(({ id, ...item }) => item)
+          // .map(({ count, ...item }) => item)
+          // .map(({ id, ...item }) => item)
           // .map(({ marked_time, ...item }) => ({
           //   ...item,
           //   marked_at: marked_time || ''
