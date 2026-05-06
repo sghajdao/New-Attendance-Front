@@ -72,8 +72,14 @@ export class TableComponent implements OnInit {
 
   exportReport() {
     if (this.filteredData) {
+      const cleanedData = this.filteredData.map(
+      ({ id, count, marked_time, ...rest }) => ({
+        ...rest,
+        marked_at: marked_time || rest.marked_at
+      })
+    );
       const csvData = this.convertToCsv(
-        this.filteredData
+        cleanedData
           // .map(({ count, ...item }) => item)
           // .map(({ id, ...item }) => item)
           // .map(({ marked_time, ...item }) => ({
@@ -95,16 +101,32 @@ export class TableComponent implements OnInit {
   }
 
   convertToCsv(data: any[]): string {
-    if (!data || !data.length) {
-      return '';
-    }
+    if (!data || !data.length) return '';
 
     const keys = Object.keys(data[0]);
-    const csvContent = data.map(row => {
-      return keys.map(key => row[key]).join(',');
-    });
 
-    return [keys.join(','), ...csvContent].join('\n');
+    const escapeValue = (value: any) => {
+      if (value === null || value === undefined) return '';
+
+      // Format Date
+      if (value instanceof Date) {
+        return value.toISOString(); // or custom format
+      }
+
+      const stringValue = String(value);
+
+      // Escape quotes by doubling them
+      const escaped = stringValue.replace(/"/g, '""');
+
+      // Wrap in quotes to protect commas
+      return `"${escaped}"`;
+    };
+
+    const csvRows = data.map(row =>
+      keys.map(key => escapeValue(row[key])).join(',')
+    );
+
+    return [keys.join(','), ...csvRows].join('\n');
   }
 
   formatDate(date: string): string {
