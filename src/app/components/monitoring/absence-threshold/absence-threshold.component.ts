@@ -58,8 +58,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   dotFilterOptions = [
     { label: '🟢 No contact yet', value: 'green' },
     { label: '🟡 Emailed (1st time)', value: 'yellow' },
-    { label: '🟠 Emailed (2nd time)', value: 'orange' },
-    { label: '🔴 Emailed (3rd time)', value: 'red' }
+    { label: '🔴 Emailed (2nd time)', value: 'orange' },
+    { label: '⚫ Emailed (3rd time)', value: 'red' }
   ];
 
   // Selection tracking
@@ -142,7 +142,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
         this.students = this.students.filter(student => this.searchDto?.courses?.includes(student.course))
       if (this.searchDto.seniorities?.length)
         this.students = this.students.filter(student => this.searchDto?.seniorities?.includes(student.seniority))
-      else if (!this.searchDto.studentIds?.length && !this.searchDto.courses?.length && !this.searchDto.seniorities?.length)
+      else if ((!this.searchDto.studentIds?.length && !this.searchDto.courses?.length && !this.searchDto.seniorities?.length) || !this.students.length)
         this.students = [...this.studentsBackup];
       
       // Reset to first page whenever filters change
@@ -160,7 +160,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
       const count = this.hasPendingMeeting(student);
       if (this.dotColorFilter === 'green') return count === 0;
       if (this.dotColorFilter === 'yellow') return count === 1;
-      if (this.dotColorFilter === 'red') return count > 1;
+      if (this.dotColorFilter === 'red') return count === 2;
+      if (this.dotColorFilter === 'black') return count === 3;
       return true;
     });
   }
@@ -189,6 +190,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
       case 'green': return 'pi pi-circle-fill green-live-dot';
       case 'yellow': return 'pi pi-circle-fill yellow-live-dot';
       case 'red': return 'pi pi-circle-fill red-live-dot';
+      case 'black': return 'pi pi-circle-fill black-live-dot';
       default: return 'pi pi-circle-fill';
     }
   }

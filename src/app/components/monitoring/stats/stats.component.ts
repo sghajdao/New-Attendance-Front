@@ -152,7 +152,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
     const topStudents = Array.from(studentMap.entries())
       .map(([id, data]) => ({ name: data.name.length > 20 ? data.name.substring(0, 18) + '...' : data.name, count: data.count }))
       .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
+      .slice(0, 10);
     this.barChartData = {
       labels: topStudents.map(s => s.name),
       datasets: [{ label: 'Number of Tracking Events', data: topStudents.map(s => s.count), backgroundColor: '#42A5F5', borderRadius: 6, barPercentage: 0.7 }]
@@ -178,7 +178,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
     const topCourses = Array.from(courseStudentMap.entries())
       .map(([courseId, studentsSet]) => ({ course: courseId.length > 25 ? courseId.substring(0, 22) + '...' : courseId, studentCount: studentsSet.size }))
       .sort((a, b) => b.studentCount - a.studentCount)
-      .slice(0, 5);
+      .slice(0, 10);
 
     this.topCoursesChartData = {
       labels: topCourses.map(c => c.course),

@@ -116,7 +116,8 @@
                     <span class="progress-label">Absence Threshold Reached</span>
                     <span *ngIf="hasPendingMeeting(student) === 0" class="green-live-dot"></span>
                     <span *ngIf="hasPendingMeeting(student) === 1" class="yellow-live-dot"></span>
-                    <span *ngIf="hasPendingMeeting(student) > 1" class="red-live-dot"></span>
+                    <span *ngIf="hasPendingMeeting(student) === 2" class="red-live-dot"></span>
+                    <span *ngIf="hasPendingMeeting(student) > 2" class="black-live-dot"></span>
                 </div>
                 <div class="progress-bar-container">
                     <div 
