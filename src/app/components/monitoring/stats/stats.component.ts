@@ -3,6 +3,8 @@ import { Subscription } from 'rxjs';
 import { AttendanceService } from '../../../services/attendance.service';
 import { StudentTracking } from '../../../models/entities/studentTracking';
 import { SearchDto } from '../../../models/dto/searchDto';
+import Chart from 'chart.js/auto';
+import * as chartJsDataLabels from 'chartjs-plugin-datalabels';
 
 @Component({
   selector: 'app-stats',
@@ -16,6 +18,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
   students: StudentTracking[] = [];
   backup: StudentTracking[] = [];
   private subscription?: Subscription;
+  private static dataLabelsRegistered = false;
 
   // Original stats
   totalEvents = 0;
@@ -30,19 +33,23 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
   completedVisits = 0;
   totalCoursesInvolved = 0;
 
-  // Original chart data
+  // Chart data
   pieChartData: any;
   pieChartOptions: any;
   barChartData: any;
   barChartOptions: any;
-
-  // New chart data
   statusChartData: any;
   statusChartOptions: any;
   topCoursesChartData: any;
   topCoursesChartOptions: any;
 
-  constructor(private attendanceService: AttendanceService) {}
+  constructor(private attendanceService: AttendanceService) {
+    // Register datalabels plugin once globally
+    if (!StatsComponent.dataLabelsRegistered) {
+      Chart.register(chartJsDataLabels.default);
+      StatsComponent.dataLabelsRegistered = true;
+    }
+  }
 
   ngOnInit(): void {
     this.loadTrackingData();
@@ -89,7 +96,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
-    // ----- Original calculations (Event distribution, top students) -----
+    // Original calculations
     const studentMap = new Map<string, { name: string; count: number; courses: number }>();
     const typeMap = new Map<string, number>();
     let totalCoursesTemp = 0;
@@ -131,7 +138,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.mostCommonType = mostCommon;
 
-    // Pie chart (type distribution)
+    // Pie chart - Type distribution
     this.pieChartData = {
       labels: Array.from(typeMap.keys()),
       datasets: [{
@@ -141,7 +148,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
       }]
     };
 
-    // Bar chart (top 5 students by events)
+    // Bar chart - Top 5 students
     const topStudents = Array.from(studentMap.entries())
       .map(([id, data]) => ({ name: data.name.length > 20 ? data.name.substring(0, 18) + '...' : data.name, count: data.count }))
       .sort((a, b) => b.count - a.count)
@@ -151,7 +158,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
       datasets: [{ label: 'Number of Tracking Events', data: topStudents.map(s => s.count), backgroundColor: '#42A5F5', borderRadius: 6, barPercentage: 0.7 }]
     };
 
-    // ----- New calculations (follow-up status & top courses) -----
+    // New stats
     this.totalNotifiedStudents = this.students.length;
     this.pendingVisits = this.students.filter(s => !s.comment || s.comment.trim() === '').length;
     this.completedVisits = this.totalNotifiedStudents - this.pendingVisits;
@@ -183,10 +190,10 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
       datasets: [{ data: [this.pendingVisits, this.completedVisits], backgroundColor: ['#EF5350', '#66BB6A'], hoverBackgroundColor: ['#E53935', '#4CAF50'], borderWidth: 0 }]
     };
 
-    // Chart options
+    // Chart options with datalabels (numbers on every piece/bar)
     this.pieChartOptions = this.getPieOptions();
-    this.barChartOptions = this.getBarOptions('Students', 'Events');
-    this.topCoursesChartOptions = this.getBarOptions('Courses', 'Notified Students');
+    this.barChartOptions = this.getBarOptions('Students', 'Events', '#42A5F5');
+    this.topCoursesChartOptions = this.getBarOptions('Courses', 'Notified Students', '#FFA726');
     this.statusChartOptions = this.getDoughnutOptions();
   }
 
@@ -196,19 +203,16 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
       maintainAspectRatio: false,
       plugins: {
         legend: { position: 'right', labels: { font: { size: 12 }, usePointStyle: true } },
-        tooltip: { callbacks: { label: (ctx: any) => `${ctx.label}: ${ctx.raw} (${((ctx.raw / this.totalEvents) * 100).toFixed(1)}%)` } }
-      }
-    };
-  }
-
-  private getBarOptions(xTitle: string, yTitle: string) {
-    return {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', labels: { font: { size: 12 } } } },
-      scales: {
-        y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 }, title: { display: true, text: yTitle } },
-        x: { ticks: { autoSkip: false, rotation: 20, font: { size: 11 } }, title: { display: true, text: xTitle } }
+        tooltip: { callbacks: { label: (ctx: any) => `${ctx.label}: ${ctx.raw} (${((ctx.raw / this.totalEvents) * 100).toFixed(1)}%)` } },
+        datalabels: {
+          color: 'white',
+          font: { weight: 'bold', size: 14 },
+          textShadowBlur: 8,
+          textShadowColor: 'rgba(0,0,0,0.6)',
+          anchor: 'center',
+          align: 'center',
+          formatter: (value: number) => value
+        }
       }
     };
   }
@@ -219,7 +223,38 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
       maintainAspectRatio: false,
       plugins: {
         legend: { position: 'bottom', labels: { font: { size: 12 }, usePointStyle: true } },
-        tooltip: { callbacks: { label: (ctx: any) => `${ctx.label}: ${ctx.raw} (${((ctx.raw / this.totalNotifiedStudents) * 100).toFixed(1)}%)` } }
+        tooltip: { callbacks: { label: (ctx: any) => `${ctx.label}: ${ctx.raw} (${((ctx.raw / this.totalNotifiedStudents) * 100).toFixed(1)}%)` } },
+        datalabels: {
+          color: 'white',
+          font: { weight: 'bold', size: 14 },
+          textShadowBlur: 8,
+          textShadowColor: 'rgba(0,0,0,0.6)',
+          anchor: 'center',
+          align: 'center',
+          formatter: (value: number) => value
+        }
+      }
+    };
+  }
+
+  private getBarOptions(xTitle: string, yTitle: string, barColor: string) {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { font: { size: 12 } } },
+        datalabels: {
+          color: 'white',
+          font: { weight: 'bold', size: 12 },
+          anchor: 'end',
+          align: 'top',
+          offset: 2,
+          formatter: (value: number) => value
+        }
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 }, title: { display: true, text: yTitle } },
+        x: { ticks: { autoSkip: false, rotation: 20, font: { size: 11 } }, title: { display: true, text: xTitle } }
       }
     };
   }
@@ -235,6 +270,8 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
   private setEmptyOriginalCharts(): void {
     this.pieChartData = { labels: ['No Data'], datasets: [{ data: [1], backgroundColor: ['#B0BEC5'] }] };
     this.barChartData = { labels: ['No Data'], datasets: [{ label: 'Events', data: [0], backgroundColor: '#B0BEC5' }] };
+    this.pieChartOptions = this.getPieOptions();
+    this.barChartOptions = this.getBarOptions('Students', 'Events', '#B0BEC5');
   }
 
   private setEmptyNewStats(): void {
@@ -247,6 +284,8 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
   private setEmptyNewCharts(): void {
     this.statusChartData = { labels: ['No Data'], datasets: [{ data: [1], backgroundColor: ['#B0BEC5'] }] };
     this.topCoursesChartData = { labels: ['No Data'], datasets: [{ label: 'Students', data: [0], backgroundColor: '#B0BEC5' }] };
+    this.statusChartOptions = this.getDoughnutOptions();
+    this.topCoursesChartOptions = this.getBarOptions('Courses', 'Notified Students', '#B0BEC5');
   }
 
   ngOnDestroy(): void {
