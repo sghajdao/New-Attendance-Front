@@ -5,6 +5,8 @@ import { StudentTracking } from '../../../models/entities/studentTracking';
 import { SearchDto } from '../../../models/dto/searchDto';
 import Chart from 'chart.js/auto';
 import * as chartJsDataLabels from 'chartjs-plugin-datalabels';
+import { StudentAttendanceDetails } from '../../../models/dto/studentAttendanceDetails';
+import { IndexeddbService } from '../../../services/indexeddb.service';
 
 @Component({
   selector: 'app-stats',
@@ -17,6 +19,8 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
 
   students: StudentTracking[] = [];
   backup: StudentTracking[] = [];
+  info: StudentAttendanceDetails[] = [];
+  infoBackup: StudentAttendanceDetails[] = [];
   private subscription?: Subscription;
   private static dataLabelsRegistered = false;
 
@@ -43,7 +47,15 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
   topCoursesChartData: any;
   topCoursesChartOptions: any;
 
-  constructor(private attendanceService: AttendanceService) {
+  courseAttendanceChartData: any;
+  courseAttendanceChartOptions: any;
+  studentAttendanceChartData: any;
+  studentAttendanceChartOptions: any;
+
+  constructor(
+    private attendanceService: AttendanceService,
+    private indexeddbService: IndexeddbService
+  ) {
     // Register datalabels plugin once globally
     if (!StatsComponent.dataLabelsRegistered) {
       Chart.register(chartJsDataLabels.default);
@@ -53,22 +65,33 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit(): void {
     this.loadTrackingData();
+
+    this.indexeddbService.getData('SP').then(data => {
+      this.info = data;
+      this.infoBackup = [...this.info];
+      this.computeAttendanceCharts();
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['searchDto'] && this.searchDto) {
       if (this.searchDto.trmCde) {
         this.students = this.students.filter(i => i.coursSisId?.some(c => c.startsWith(this.searchDto!.trmCde!)))
+        this.info = this.info.filter(i => i.trmCde === this.searchDto!.trmCde);
       }
       if (this.searchDto.courses && this.searchDto.courses.length) {
         this.students = this.students.filter(i => i.coursSisId?.some(c => this.searchDto?.courses?.includes(c)))
+        this.info = this.info.filter(i => this.searchDto?.courses?.includes(i.crsCde));
       }
       if (this.searchDto.studentIds && this.searchDto.studentIds.length) {
         this.students = this.students.filter(i => this.searchDto?.studentIds?.includes(i.studentSisId!))
+        this.info = this.info.filter(i => this.searchDto?.studentIds?.includes(i.idNum));
       }
       else if (!this.searchDto.studentIds?.length && !this.searchDto.courses?.length && !this.searchDto.seniorities?.length) {
         this.students = [...this.backup];
+        this.info = [...this.infoBackup];
       }
+      this.computeAttendanceCharts();
     }
   }
 
@@ -286,6 +309,158 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
     this.topCoursesChartData = { labels: ['No Data'], datasets: [{ label: 'Students', data: [0], backgroundColor: '#B0BEC5' }] };
     this.statusChartOptions = this.getDoughnutOptions();
     this.topCoursesChartOptions = this.getBarOptions('Courses', 'Notified Students', '#B0BEC5');
+  }
+
+  private computeAttendanceCharts(): void {
+    if (!this.info || this.info.length === 0) {
+      this.setEmptyAttendanceCharts();
+      return;
+    }
+  
+    // --- Attendance by Course ---
+    const courseMap = new Map<string, { present: number; late: number; absent: number }>();
+    for (const record of this.info) {
+      const course = record.crsCde || 'Unknown Course';
+      if (!courseMap.has(course)) {
+        courseMap.set(course, { present: 0, late: 0, absent: 0 });
+      }
+      const stats = courseMap.get(course)!;
+      const att = (record.attendance || '').toLowerCase();
+      if (att === 'present') stats.present++;
+      else if (att === 'late') stats.late++;
+      else stats.absent++; // treat any other value (absent, undefined, etc.) as absent
+    }
+  
+    // Convert to array, sort by total attendance, take top 10
+    const courseEntries = Array.from(courseMap.entries())
+      .map(([course, counts]) => ({
+        course: course.length > 25 ? course.substring(0, 22) + '...' : course,
+        ...counts,
+        total: counts.present + counts.late + counts.absent
+      }))
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 10);
+    
+    this.courseAttendanceChartData = {
+      labels: courseEntries.map(c => c.course),
+      datasets: [
+        {
+          label: 'Present',
+          data: courseEntries.map(c => c.present),
+          backgroundColor: '#66BB6A',
+          borderRadius: 4,
+          barPercentage: 0.7
+        },
+        {
+          label: 'Late',
+          data: courseEntries.map(c => c.late),
+          backgroundColor: '#FFA726',
+          borderRadius: 4,
+          barPercentage: 0.7
+        },
+        {
+          label: 'Absent',
+          data: courseEntries.map(c => c.absent),
+          backgroundColor: '#EF5350',
+          borderRadius: 4,
+          barPercentage: 0.7
+        }
+      ]
+    };
+  
+    // --- Attendance by Student (Top 10 by total attendance records) ---
+    const studentMap = new Map<string, { name: string; present: number; late: number; absent: number }>();
+    for (const record of this.info) {
+      const studentId = record.idNum;
+      const fullName = `${record.firstName || ''} ${record.lastName || ''}`.trim() || studentId;
+      if (!studentMap.has(studentId)) {
+        studentMap.set(studentId, { name: fullName, present: 0, late: 0, absent: 0 });
+      }
+      const stats = studentMap.get(studentId)!;
+      const att = (record.attendance || '').toLowerCase();
+      if (att === 'present') stats.present++;
+      else if (att === 'late') stats.late++;
+      else stats.absent++;
+    }
+  
+    const studentEntries = Array.from(studentMap.entries())
+      .map(([id, data]) => ({
+        studentId: id,
+        name: data.name.length > 20 ? data.name.substring(0, 18) + '...' : data.name,
+        present: data.present,
+        late: data.late,
+        absent: data.absent,
+        total: data.present + data.late + data.absent
+      }))
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 10);
+    
+    this.studentAttendanceChartData = {
+      labels: studentEntries.map(s => s.name),
+      datasets: [
+        {
+          label: 'Present',
+          data: studentEntries.map(s => s.present),
+          backgroundColor: '#66BB6A',
+          borderRadius: 4,
+          barPercentage: 0.7
+        },
+        {
+          label: 'Late',
+          data: studentEntries.map(s => s.late),
+          backgroundColor: '#FFA726',
+          borderRadius: 4,
+          barPercentage: 0.7
+        },
+        {
+          label: 'Absent',
+          data: studentEntries.map(s => s.absent),
+          backgroundColor: '#EF5350',
+          borderRadius: 4,
+          barPercentage: 0.7
+        }
+      ]
+    };
+  
+    // Options for grouped bar charts (shared)
+    const groupedBarOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { font: { size: 12 } } },
+        tooltip: { callbacks: { label: (ctx: any) => `${ctx.dataset.label}: ${ctx.raw}` } },
+        datalabels: {
+          color: 'white',
+          font: { weight: 'bold', size: 12 },
+          anchor: 'end',
+          align: 'top',
+          offset: 2,
+          formatter: (value: number) => value > 0 ? value : ''
+        }
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 }, title: { display: true, text: 'Number of Records' } },
+        x: { ticks: { autoSkip: false, rotation: 25, font: { size: 11 } }, title: { display: true, text: '' } }
+      }
+    };
+  
+    this.courseAttendanceChartOptions = groupedBarOptions;
+    this.studentAttendanceChartOptions = groupedBarOptions;
+  }
+  
+  private setEmptyAttendanceCharts(): void {
+    const emptyData = {
+      labels: ['No Data'],
+      datasets: [
+        { label: 'Present', data: [0], backgroundColor: '#B0BEC5' },
+        { label: 'Late', data: [0], backgroundColor: '#B0BEC5' },
+        { label: 'Absent', data: [0], backgroundColor: '#B0BEC5' }
+      ]
+    };
+    this.courseAttendanceChartData = emptyData;
+    this.studentAttendanceChartData = emptyData;
+    this.courseAttendanceChartOptions = this.getBarOptions('', 'Records', '#B0BEC5');
+    this.studentAttendanceChartOptions = this.getBarOptions('', 'Records', '#B0BEC5');
   }
 
   ngOnDestroy(): void {
