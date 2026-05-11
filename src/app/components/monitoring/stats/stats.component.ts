@@ -91,6 +91,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
         this.students = [...this.backup];
         this.info = [...this.infoBackup];
       }
+      this.loadTrackingData();
       this.computeAttendanceCharts();
     }
   }
@@ -178,7 +179,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
       .slice(0, 10);
     this.barChartData = {
       labels: topStudents.map(s => s.name),
-      datasets: [{ label: 'Number of Tracking Events', data: topStudents.map(s => s.count), backgroundColor: '#42A5F5', borderRadius: 6, barPercentage: 0.7 }]
+      datasets: [{ label: 'Number of Tracking Events', data: topStudents.map(s => s.count), backgroundColor: '#42A5F5', borderRadius: 6, barPercentage: 0.9, categoryPercentage: 0.9 }]
     };
 
     // New stats
@@ -205,7 +206,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
 
     this.topCoursesChartData = {
       labels: topCourses.map(c => c.course),
-      datasets: [{ label: 'Notified Students', data: topCourses.map(c => c.studentCount), backgroundColor: '#FFA726', borderRadius: 6, barPercentage: 0.7 }]
+      datasets: [{ label: 'Notified Students', data: topCourses.map(c => c.studentCount), backgroundColor: '#FFA726', borderRadius: 6, barPercentage: 0.9, categoryPercentage: 0.9 }]
     };
 
     this.statusChartData = {
@@ -349,21 +350,24 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
           data: courseEntries.map(c => c.present),
           backgroundColor: '#66BB6A',
           borderRadius: 4,
-          barPercentage: 0.7
+          barPercentage: 0.9,
+          categoryPercentage: 0.9
         },
         {
           label: 'Late',
           data: courseEntries.map(c => c.late),
           backgroundColor: '#FFA726',
           borderRadius: 4,
-          barPercentage: 0.7
+          barPercentage: 0.9,
+          categoryPercentage: 0.9
         },
         {
           label: 'Absent',
           data: courseEntries.map(c => c.absent),
           backgroundColor: '#EF5350',
           borderRadius: 4,
-          barPercentage: 0.7
+          barPercentage: 0.9,
+          categoryPercentage: 0.9
         }
       ]
     };
@@ -403,21 +407,24 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
           data: studentEntries.map(s => s.present),
           backgroundColor: '#66BB6A',
           borderRadius: 4,
-          barPercentage: 0.7
+          barPercentage: 0.9,
+          categoryPercentage: 0.9
         },
         {
           label: 'Late',
           data: studentEntries.map(s => s.late),
           backgroundColor: '#FFA726',
           borderRadius: 4,
-          barPercentage: 0.7
+          barPercentage: 0.9,
+          categoryPercentage: 0.9
         },
         {
           label: 'Absent',
           data: studentEntries.map(s => s.absent),
           backgroundColor: '#EF5350',
           borderRadius: 4,
-          barPercentage: 0.7
+          barPercentage: 0.9,
+          categoryPercentage: 0.9
         }
       ]
     };
@@ -452,9 +459,9 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
     const emptyData = {
       labels: ['No Data'],
       datasets: [
-        { label: 'Present', data: [0], backgroundColor: '#B0BEC5' },
-        { label: 'Late', data: [0], backgroundColor: '#B0BEC5' },
-        { label: 'Absent', data: [0], backgroundColor: '#B0BEC5' }
+        { label: 'Present', data: [0], backgroundColor: '#B0BEC5', barPercentage: 0.9, categoryPercentage: 0.9 },
+        { label: 'Late', data: [0], backgroundColor: '#B0BEC5', barPercentage: 0.9, categoryPercentage: 0.9 },
+        { label: 'Absent', data: [0], backgroundColor: '#B0BEC5', barPercentage: 0.9, categoryPercentage: 0.9 }
       ]
     };
     this.courseAttendanceChartData = emptyData;
