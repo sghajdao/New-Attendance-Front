@@ -32,6 +32,7 @@ export interface StudentCourseAggregate {
   absentLimit: number;
   midtermGrade: string;
   major: string;
+  hold: string;
   meetings: StudentTracking[];
 }
 
@@ -182,6 +183,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
           visaType: record.visaType,
           midtermGrade: record.midtermGrade,
           major: record.major,
+          hold: record.hold,
           meetings: record.meetings || []
         });
       }

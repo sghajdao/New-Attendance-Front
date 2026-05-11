@@ -1,4 +1,4 @@
-// absence-threshold.component.ts - Updated with multi-select and contact dialog
+// absence-threshold.component.ts - Updated with grid/row view toggle
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AttendanceService } from '../../../services/attendance.service';
@@ -41,6 +41,9 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   studentsBackup: Student[] = [];
   subscriptions: Subscription[] = [];
   loading: boolean = false;
+
+  // View mode: 'grid' or 'list' (row view)
+  viewMode: 'grid' | 'list' = 'grid';
 
   // History dialog
   displayHistoryDialog: boolean = false;
@@ -89,6 +92,11 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   ngOnInit(): void {
     this.initContactForm();
     this.loadRedFlagStudents();
+    // Load saved view preference from localStorage (optional)
+    const savedViewMode = localStorage.getItem('absenceThresholdViewMode');
+    if (savedViewMode === 'grid' || savedViewMode === 'list') {
+      this.viewMode = savedViewMode;
+    }
   }
 
   initContactForm(): void {
@@ -151,6 +159,13 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
       // Clear selection when filters change
       this.clearSelection();
     }
+  }
+
+  // Set view mode and save preference
+  setViewMode(mode: 'grid' | 'list'): void {
+    this.viewMode = mode;
+    // Save preference to localStorage for persistence across sessions
+    localStorage.setItem('absenceThresholdViewMode', mode);
   }
 
   // Getter for students after applying dot color filter
@@ -269,7 +284,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   submitContact(): void {
-    if (this.contactForm.invalid) {
+    if (this.contactForm.value.type && this.contactForm.value.date) {
       Object.keys(this.contactForm.controls).forEach(key => {
         this.contactForm.get(key)?.markAsTouched();
       });
@@ -293,7 +308,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
       const trackingData: StudentTracking = {
         studentSisId: student.id,
         studentName: student.name,
-        coursSisId: [...student.course],
+        coursSisId: [student.course],
         createdAt: meetingDate,
         type: meetingType,
         comment: meetingComment

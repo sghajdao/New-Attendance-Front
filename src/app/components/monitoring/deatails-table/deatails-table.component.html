@@ -89,6 +89,7 @@
           Professor Name <p-sortIcon field="teacherName"></p-sortIcon>
         </th>
         <th style="min-width: 100px;">Major</th>
+        <th style="min-width: 100px;">Hold</th>
       </tr>
     </ng-template>
 
@@ -161,12 +162,15 @@
         <td> 
           <span class="seniority-badge">{{ student.major }}</span>
         </td>
+        <td> 
+          <strong>{{ student.hold }}</strong>
+        </td>
       </tr>
     </ng-template>
 
     <ng-template #emptymessage>
       <tr>
-        <td colspan="23" class="empty-message">
+        <td colspan="24" class="empty-message">
           <i class="pi pi-inbox mr-2"></i> No students found.
         </td>
       </tr>

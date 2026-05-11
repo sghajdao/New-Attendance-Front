@@ -1,10 +1,30 @@
-<!-- absence-threshold.component.html - Updated with multi-select and contact dialog -->
+<!-- absence-threshold.component.html - Updated with grid/row view toggle -->
 <p-card [style]="{'height': '800px', 'overflow-y': 'auto'}" styleClass="threshold-card">
     <div class="card-header">
       <div class="title-section">
         <i class="pi pi-exclamation-triangle mr-2 warning-icon"></i>
         <span class="title">Absence Threshold Monitoring</span>
         <p-tag severity="danger" [value]="'≥ 50%'" styleClass="threshold-badge"></p-tag>
+
+        <!-- View Toggle Buttons -->
+        <div class="view-toggle" *ngIf="students.length">
+          <p-button
+            [ngClass]="{'active-view': viewMode === 'grid'}"
+            icon="pi pi-th-large"
+            (onClick)="setViewMode('grid')"
+            pTooltip="Grid View"
+            tooltipPosition="top"
+            styleClass="p-button-text p-button-sm">
+          </p-button>
+          <p-button
+            [ngClass]="{'active-view': viewMode === 'list'}"
+            icon="pi pi-bars"
+            (onClick)="setViewMode('list')"
+            pTooltip="List View"
+            tooltipPosition="top"
+            styleClass="p-button-text p-button-sm">
+          </p-button>
+        </div>
 
         <!-- NEW: Dot color filter dropdown -->
         <div class="filter-controls" *ngIf="students.length">
@@ -64,6 +84,8 @@
         Students who have reached at least 50% of the absence limit
         <span class="student-count" *ngIf="displayedStudents.length">({{displayedStudents.length}} students)</span>
         <span *ngIf="dotColorFilter" class="filter-badge"> · Filtered by {{dotColorFilter}} dot</span>
+        <span class="view-badge" *ngIf="viewMode === 'list'"> · List View</span>
+        <span class="view-badge" *ngIf="viewMode === 'grid'"> · Grid View</span>
       </p>
     </div>
 
@@ -80,8 +102,8 @@
         <p class="empty-subtitle">All students are below the 50% absence threshold</p>
     </div>
 
-    <!-- Student Cards Grid -->
-    <div class="cards-grid" *ngIf="!loading && displayedStudents.length">
+    <!-- Student Cards Container - Dynamic between Grid and List -->
+    <div [ngClass]="viewMode === 'grid' ? 'cards-grid' : 'cards-list'" *ngIf="!loading && displayedStudents.length">
         <div class="student-card" 
              *ngFor="let student of paginatedStudents" 
              [class.selected]="isSelected(student)"
@@ -176,7 +198,7 @@
     </div>
 </p-card>
 
-<!-- History Dialog -->
+<!-- History Dialog (unchanged) -->
 <p-dialog header="Meeting History" [(visible)]="displayHistoryDialog" 
           [modal]="true" [style]="{width: '550px'}" [draggable]="false" [resizable]="false">
   <ng-container *ngIf="selectedStudentForHistory">
@@ -210,7 +232,7 @@
   </ng-container>
 </p-dialog>
 
-<!-- Contact Dialog -->
+<!-- Contact Dialog (unchanged) -->
 <p-dialog 
     [header]="contactSelectedStudents.length === 1 ? 'Contact Student' : 'Contact Selected Students (' + contactSelectedStudents.length + ')'" 
     [modal]="true" 
@@ -257,7 +279,6 @@
                 </small>
             </div>
 
-            <!-- rest of the form (date, comment) unchanged -->
             <div class="form-field">
                 <label for="contactDate" class="required-field">Meeting Date & Time</label>
                 <p-datepicker 
@@ -295,7 +316,7 @@
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
-                    [disabled]="contactForm.invalid || isContactSaving"
+                    [disabled]="!(contactForm.value.type && contactForm.value.date) || isContactSaving"
                     [loading]="isContactSaving"
                 />
             </div>
