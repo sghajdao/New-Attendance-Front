@@ -316,7 +316,7 @@
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
-                    [disabled]="!(contactForm.value.type && contactForm.value.date) || isContactSaving"
+                    [disabled]="!(contactForm.value.type.length > 0 && contactForm.value.date) || isContactSaving"
                     [loading]="isContactSaving"
                 />
             </div>

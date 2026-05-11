@@ -284,7 +284,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   submitContact(): void {
-    if (this.contactForm.value.type && this.contactForm.value.date) {
+    if (this.contactForm.value.type.length > 0 && this.contactForm.value.date) {
       Object.keys(this.contactForm.controls).forEach(key => {
         this.contactForm.get(key)?.markAsTouched();
       });

@@ -183,7 +183,7 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
           visaType: record.visaType,
           midtermGrade: record.midtermGrade,
           major: record.major,
-          hold: record.hold,
+          hold: record.hold? record.hold.trim() : 'No Hold',
           meetings: record.meetings || []
         });
       }
