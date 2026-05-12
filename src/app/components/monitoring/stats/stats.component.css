@@ -130,6 +130,12 @@
   position: relative;
   height: 300px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-wrapper > * {
+    flex: 1;
 }
 
 .chart-note {
@@ -174,6 +180,8 @@ canvas {
 
   .chart-wrapper {
     height: 240px;
+    display: flex;
+    flex-direction: column;
   }
 }
 
