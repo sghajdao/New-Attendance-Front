@@ -118,12 +118,40 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
 }
 
-.chart-container h3 {
-  margin: 0 0 1rem 0;
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chart-header h3 {
+  margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
   color: #495057;
-  text-align: center;
+}
+
+.csv-btn {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #495057;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.csv-btn:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+  transform: translateY(-1px);
 }
 
 .chart-wrapper {
@@ -169,6 +197,15 @@
 
   .chart-wrapper {
     height: 240px;
+  }
+  
+  .chart-header h3 {
+    font-size: 0.95rem;
+  }
+  
+  .csv-btn {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
   }
 }
 

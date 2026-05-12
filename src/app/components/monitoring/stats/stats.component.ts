@@ -141,19 +141,11 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
 
       const types = tracking.type || [];
       for (const type of types) {
-        if (type && type.trim() && this.students.filter(s => s.studentSisId === studentId && (!s.comment || s.comment.trim() === '')).length === 0) {
-          if (type.toLowerCase() === 'face to face')
-            typeMap.set('Responsive', (typeMap.get(type) || 0) + 1);
-          typeMap.set(type, (typeMap.get(type) || 0) + 1);
-        }
-        else if (type && type.trim()) {
-          if (type.toLowerCase() === 'face to face')
-            typeMap.set('Unresponsive', (typeMap.get(type) || 0) + 1);
+        if (type && type.trim()) {
           typeMap.set(type, (typeMap.get(type) || 0) + 1);
         }
       }
     }
-    typeMap.delete('face to face');
 
     this.totalEvents = this.students.length;
     this.uniqueStudentsCount = studentMap.size;
@@ -180,7 +172,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
       }]
     };
 
-    // Bar chart - Top 5 students
+    // Bar chart - Top 10 students
     const topStudents = Array.from(studentMap.entries())
       .map(([id, data]) => ({ name: data.name.length > 20 ? data.name.substring(0, 18) + '...' : data.name, count: data.count }))
       .sort((a, b) => b.count - a.count)
@@ -476,6 +468,155 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
     this.studentAttendanceChartData = emptyData;
     this.courseAttendanceChartOptions = this.getBarOptions('', 'Records', '#B0BEC5');
     this.studentAttendanceChartOptions = this.getBarOptions('', 'Records', '#B0BEC5');
+  }
+
+  // ========== CSV Export Methods ==========
+  
+  /**
+   * Generic method to download CSV content
+   * @param rows Array of arrays representing rows (first row should be headers)
+   * @param filename Name of the file to download (without extension)
+   */
+  private downloadCSV(rows: any[][], filename: string): void {
+    if (!rows.length) {
+      console.warn('No data to export');
+      return;
+    }
+    
+    const csvContent = rows.map(row => 
+      row.map(cell => {
+        // Handle cells that contain commas, quotes, or newlines
+        if (cell === undefined || cell === null) return '';
+        const stringCell = String(cell);
+        if (stringCell.includes(',') || stringCell.includes('"') || stringCell.includes('\n')) {
+          return `"${stringCell.replace(/"/g, '""')}"`;
+        }
+        return stringCell;
+      }).join(',')
+    ).join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${filename}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  /**
+   * Export Type Distribution (Pie Chart) data
+   */
+  exportTypeDistribution(): void {
+    if (!this.pieChartData || !this.pieChartData.labels || this.pieChartData.labels.length === 0) {
+      console.warn('No type distribution data to export');
+      return;
+    }
+    
+    const headers = ['Type', 'Count'];
+    const rows = this.pieChartData.labels.map((label: string, index: number) => [
+      label,
+      this.pieChartData.datasets[0].data[index]
+    ]);
+    
+    this.downloadCSV([headers, ...rows], 'type_distribution');
+  }
+
+  /**
+   * Export Top 10 Notified Students (Bar Chart) data
+   */
+  exportTopStudents(): void {
+    if (!this.barChartData || !this.barChartData.labels || this.barChartData.labels.length === 0) {
+      console.warn('No top students data to export');
+      return;
+    }
+    
+    const headers = ['Student Name', 'Number of Tracking Events'];
+    const rows = this.barChartData.labels.map((label: string, index: number) => [
+      label,
+      this.barChartData.datasets[0].data[index]
+    ]);
+    
+    this.downloadCSV([headers, ...rows], 'top_notified_students');
+  }
+
+  /**
+   * Export Student Follow-up Status (Doughnut Chart) data
+   */
+  exportFollowUpStatus(): void {
+    if (!this.statusChartData || !this.statusChartData.labels || this.statusChartData.labels.length === 0) {
+      console.warn('No follow-up status data to export');
+      return;
+    }
+    
+    const headers = ['Status', 'Count'];
+    const rows = this.statusChartData.labels.map((label: string, index: number) => [
+      label,
+      this.statusChartData.datasets[0].data[index]
+    ]);
+    
+    this.downloadCSV([headers, ...rows], 'follow_up_status');
+  }
+
+  /**
+   * Export Top Courses with Notified Students (Bar Chart) data
+   */
+  exportTopCourses(): void {
+    if (!this.topCoursesChartData || !this.topCoursesChartData.labels || this.topCoursesChartData.labels.length === 0) {
+      console.warn('No top courses data to export');
+      return;
+    }
+    
+    const headers = ['Course', 'Notified Students'];
+    const rows = this.topCoursesChartData.labels.map((label: string, index: number) => [
+      label,
+      this.topCoursesChartData.datasets[0].data[index]
+    ]);
+    
+    this.downloadCSV([headers, ...rows], 'top_courses_notified');
+  }
+
+  /**
+   * Export Attendance by Course (Grouped Bar Chart) data
+   */
+  exportCourseAttendance(): void {
+    if (!this.courseAttendanceChartData || !this.courseAttendanceChartData.labels || this.courseAttendanceChartData.labels.length === 0) {
+      console.warn('No course attendance data to export');
+      return;
+    }
+    
+    const headers = ['Course', 'Present', 'Late', 'Absent', 'Total'];
+    const rows = this.courseAttendanceChartData.labels.map((label: string, index: number) => {
+      const present = this.courseAttendanceChartData.datasets.find((d: any) => d.label === 'Present')?.data[index] || 0;
+      const late = this.courseAttendanceChartData.datasets.find((d: any) => d.label === 'Late')?.data[index] || 0;
+      const absent = this.courseAttendanceChartData.datasets.find((d: any) => d.label === 'Absent')?.data[index] || 0;
+      return [label, present, late, absent, present + late + absent];
+    });
+    
+    this.downloadCSV([headers, ...rows], 'attendance_by_course');
+  }
+
+  /**
+   * Export Attendance by Student (Grouped Bar Chart) data
+   */
+  exportStudentAttendance(): void {
+    if (!this.studentAttendanceChartData || !this.studentAttendanceChartData.labels || this.studentAttendanceChartData.labels.length === 0) {
+      console.warn('No student attendance data to export');
+      return;
+    }
+    
+    const headers = ['Student', 'Present', 'Late', 'Absent', 'Total'];
+    const rows = this.studentAttendanceChartData.labels.map((label: string, index: number) => {
+      const present = this.studentAttendanceChartData.datasets.find((d: any) => d.label === 'Present')?.data[index] || 0;
+      const late = this.studentAttendanceChartData.datasets.find((d: any) => d.label === 'Late')?.data[index] || 0;
+      const absent = this.studentAttendanceChartData.datasets.find((d: any) => d.label === 'Absent')?.data[index] || 0;
+      return [label, present, late, absent, present + late + absent];
+    });
+    
+    this.downloadCSV([headers, ...rows], 'attendance_by_student');
   }
 
   ngOnDestroy(): void {

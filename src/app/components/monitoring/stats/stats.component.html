@@ -15,26 +15,56 @@
 
   <!-- Row 2: Original charts -->
   <div class="charts-row" *ngIf="students.length > 0">
-    <div class="chart-container"><h3>📌 Type Distribution</h3><div class="chart-wrapper"><p-chart type="pie" [data]="pieChartData" [options]="pieChartOptions"></p-chart></div></div>
-    <div class="chart-container"><h3>👥 Top 10 Notified Students</h3><div class="chart-wrapper"><p-chart height="280px" type="bar" [data]="barChartData" [options]="barChartOptions"></p-chart></div></div>
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>📌 Type Distribution</h3>
+        <button class="csv-btn" (click)="exportTypeDistribution()" title="Download CSV">📥 CSV</button>
+      </div>
+      <div class="chart-wrapper"><p-chart type="pie" [data]="pieChartData" [options]="pieChartOptions"></p-chart></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>👥 Top 10 Notified Students</h3>
+        <button class="csv-btn" (click)="exportTopStudents()" title="Download CSV">📥 CSV</button>
+      </div>
+      <div class="chart-wrapper"><p-chart height="280px" type="bar" [data]="barChartData" [options]="barChartOptions"></p-chart></div>
+    </div>
   </div>
 
-  <!-- Row 4: New charts -->
+  <!-- Row 3: New charts -->
   <div class="charts-row" *ngIf="students.length > 0">
-    <div class="chart-container"><h3>📌 Student Follow-up Status</h3><div class="chart-wrapper"><p-chart type="doughnut" [data]="statusChartData" [options]="statusChartOptions"></p-chart></div></div>
-    <div class="chart-container"><h3>📚 Top Courses with Notified Students</h3><div class="chart-wrapper"><p-chart height="280px" type="bar" [data]="topCoursesChartData" [options]="topCoursesChartOptions"></p-chart></div></div>
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>📌 Student Follow-up Status</h3>
+        <button class="csv-btn" (click)="exportFollowUpStatus()" title="Download CSV">📥 CSV</button>
+      </div>
+      <div class="chart-wrapper"><p-chart type="doughnut" [data]="statusChartData" [options]="statusChartOptions"></p-chart></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>📚 Top Courses with Notified Students</h3>
+        <button class="csv-btn" (click)="exportTopCourses()" title="Download CSV">📥 CSV</button>
+      </div>
+      <div class="chart-wrapper"><p-chart height="280px" type="bar" [data]="topCoursesChartData" [options]="topCoursesChartOptions"></p-chart></div>
+    </div>
   </div>
 
-  <!-- New row: Attendance charts -->
+  <!-- Row 4: Attendance charts -->
   <div class="charts-row" *ngIf="info && info.length > 0">
     <div class="chart-container">
-      <h3>📊 Attendance by Course</h3>
+      <div class="chart-header">
+        <h3>📊 Attendance by Course</h3>
+        <button class="csv-btn" (click)="exportCourseAttendance()" title="Download CSV">📥 CSV</button>
+      </div>
       <div class="chart-wrapper">
         <p-chart height="280px" type="bar" [data]="courseAttendanceChartData" [options]="courseAttendanceChartOptions"></p-chart>
       </div>
     </div>
     <div class="chart-container">
-      <h3>👩‍🎓 Attendance by Student (Top 10)</h3>
+      <div class="chart-header">
+        <h3>👩‍🎓 Attendance by Student (Top 10)</h3>
+        <button class="csv-btn" (click)="exportStudentAttendance()" title="Download CSV">📥 CSV</button>
+      </div>
       <div class="chart-wrapper">
         <p-chart height="280px" type="bar" [data]="studentAttendanceChartData" [options]="studentAttendanceChartOptions"></p-chart>
       </div>
