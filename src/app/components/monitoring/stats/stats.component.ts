@@ -52,6 +52,9 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
   studentAttendanceChartData: any;
   studentAttendanceChartOptions: any;
 
+  coursesAttendanceReport: any
+  studentsAttendanceReport: any
+
   constructor(
     private attendanceService: AttendanceService,
     private indexeddbService: IndexeddbService
@@ -210,7 +213,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     this.statusChartData = {
-      labels: ['Pending (comment empty)', 'Visited (comment present)'],
+      labels: ['Unresponsive (comment empty)', 'Responsive (comment present)'],
       datasets: [{ data: [this.pendingVisits, this.completedVisits], backgroundColor: ['#EF5350', '#66BB6A'], hoverBackgroundColor: ['#E53935', '#4CAF50'], borderWidth: 0 }]
     };
 
@@ -340,8 +343,8 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
         total: counts.present + counts.late + counts.absent
       }))
       .sort((a, b) => b.total - a.total)
-      .slice(0, 10);
-    
+      .slice(0, 10)
+
     this.courseAttendanceChartData = {
       labels: courseEntries.map(c => c.course),
       datasets: [
@@ -477,15 +480,15 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
    * @param rows Array of arrays representing rows (first row should be headers)
    * @param filename Name of the file to download (without extension)
    */
+  // ========== CSV Export Methods (Full Data) ==========
+
   private downloadCSV(rows: any[][], filename: string): void {
     if (!rows.length) {
       console.warn('No data to export');
       return;
     }
-    
     const csvContent = rows.map(row => 
       row.map(cell => {
-        // Handle cells that contain commas, quotes, or newlines
         if (cell === undefined || cell === null) return '';
         const stringCell = String(cell);
         if (stringCell.includes(',') || stringCell.includes('"') || stringCell.includes('\n')) {
@@ -494,7 +497,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
         return stringCell;
       }).join(',')
     ).join('\n');
-    
+
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
@@ -508,115 +511,148 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * Export Type Distribution (Pie Chart) data
-   */
-  exportTypeDistribution(): void {
-    if (!this.pieChartData || !this.pieChartData.labels || this.pieChartData.labels.length === 0) {
-      console.warn('No type distribution data to export');
-      return;
-    }
-    
-    const headers = ['Type', 'Count'];
-    const rows = this.pieChartData.labels.map((label: string, index: number) => [
-      label,
-      this.pieChartData.datasets[0].data[index]
-    ]);
-    
-    this.downloadCSV([headers, ...rows], 'type_distribution');
-  }
-
-  /**
-   * Export Top 10 Notified Students (Bar Chart) data
+   * Export ALL students with tracking event counts (not just top 10)
    */
   exportTopStudents(): void {
-    if (!this.barChartData || !this.barChartData.labels || this.barChartData.labels.length === 0) {
-      console.warn('No top students data to export');
-      return;
+    if (!this.students.length) return;
+
+    // Recompute student event counts from full data
+    const studentMap = new Map<string, { name: string; count: number }>();
+    for (const tracking of this.students) {
+      const studentId = tracking.studentSisId || tracking.studentName || 'unknown';
+      const studentName = tracking.studentName || studentId;
+      studentMap.set(studentId, {
+        name: studentName,
+        count: (studentMap.get(studentId)?.count || 0) + 1
+      });
     }
-    
-    const headers = ['Student Name', 'Number of Tracking Events'];
-    const rows = this.barChartData.labels.map((label: string, index: number) => [
-      label,
-      this.barChartData.datasets[0].data[index]
-    ]);
-    
-    this.downloadCSV([headers, ...rows], 'top_notified_students');
+
+    const rows = Array.from(studentMap.entries())
+      .map(([id, data]) => [data.name, data.count])
+      .sort((a, b) => (b[1] as number) - (a[1] as number)); // sort descending
+
+    this.downloadCSV([['Student Name', 'Number of Tracking Events'], ...rows], 'all_notified_students');
   }
 
   /**
-   * Export Student Follow-up Status (Doughnut Chart) data
-   */
-  exportFollowUpStatus(): void {
-    if (!this.statusChartData || !this.statusChartData.labels || this.statusChartData.labels.length === 0) {
-      console.warn('No follow-up status data to export');
-      return;
-    }
-    
-    const headers = ['Status', 'Count'];
-    const rows = this.statusChartData.labels.map((label: string, index: number) => [
-      label,
-      this.statusChartData.datasets[0].data[index]
-    ]);
-    
-    this.downloadCSV([headers, ...rows], 'follow_up_status');
-  }
-
-  /**
-   * Export Top Courses with Notified Students (Bar Chart) data
+   * Export ALL courses with notified student counts (not just top 10)
    */
   exportTopCourses(): void {
-    if (!this.topCoursesChartData || !this.topCoursesChartData.labels || this.topCoursesChartData.labels.length === 0) {
-      console.warn('No top courses data to export');
-      return;
+    if (!this.students.length) return;
+
+    const courseStudentMap = new Map<string, Set<string>>();
+    for (const student of this.students) {
+      const studentId = student.studentSisId || student.studentName || 'unknown';
+      const courses = student.coursSisId || [];
+      for (const course of courses) {
+        if (!course) continue;
+        if (!courseStudentMap.has(course)) courseStudentMap.set(course, new Set());
+        courseStudentMap.get(course)!.add(studentId);
+      }
     }
-    
-    const headers = ['Course', 'Notified Students'];
-    const rows = this.topCoursesChartData.labels.map((label: string, index: number) => [
-      label,
-      this.topCoursesChartData.datasets[0].data[index]
-    ]);
-    
-    this.downloadCSV([headers, ...rows], 'top_courses_notified');
+
+    const rows = Array.from(courseStudentMap.entries())
+      .map(([course, studentsSet]) => [course, studentsSet.size])
+      .sort((a, b) => (b[1] as number) - (a[1] as number));
+
+    this.downloadCSV([['Course', 'Notified Students'], ...rows], 'all_courses_notified');
   }
 
   /**
-   * Export Attendance by Course (Grouped Bar Chart) data
+   * Export ALL courses attendance data (not limited to top 10)
    */
   exportCourseAttendance(): void {
-    if (!this.courseAttendanceChartData || !this.courseAttendanceChartData.labels || this.courseAttendanceChartData.labels.length === 0) {
-      console.warn('No course attendance data to export');
-      return;
+    if (!this.info || !this.info.length) return;
+
+    const courseMap = new Map<string, { present: number; late: number; absent: number }>();
+    for (const record of this.info) {
+      const course = record.crsCde || 'Unknown Course';
+      if (!courseMap.has(course)) {
+        courseMap.set(course, { present: 0, late: 0, absent: 0 });
+      }
+      const stats = courseMap.get(course)!;
+      const att = (record.attendance || '').toLowerCase();
+      if (att === 'present') stats.present++;
+      else if (att === 'late') stats.late++;
+      else stats.absent++;
     }
-    
-    const headers = ['Course', 'Present', 'Late', 'Absent', 'Total'];
-    const rows = this.courseAttendanceChartData.labels.map((label: string, index: number) => {
-      const present = this.courseAttendanceChartData.datasets.find((d: any) => d.label === 'Present')?.data[index] || 0;
-      const late = this.courseAttendanceChartData.datasets.find((d: any) => d.label === 'Late')?.data[index] || 0;
-      const absent = this.courseAttendanceChartData.datasets.find((d: any) => d.label === 'Absent')?.data[index] || 0;
-      return [label, present, late, absent, present + late + absent];
-    });
-    
-    this.downloadCSV([headers, ...rows], 'attendance_by_course');
+
+    const rows = Array.from(courseMap.entries()).map(([course, counts]) => [
+      course,
+      counts.present,
+      counts.late,
+      counts.absent,
+      counts.present + counts.late + counts.absent
+    ]).sort((a, b) => (b[4] as number) - (a[4] as number)); // sort by total
+
+    this.downloadCSV([['Course', 'Present', 'Late', 'Absent', 'Total'], ...rows], 'all_course_attendance');
   }
 
   /**
-   * Export Attendance by Student (Grouped Bar Chart) data
+   * Export ALL students attendance data (not limited to top 10)
    */
   exportStudentAttendance(): void {
-    if (!this.studentAttendanceChartData || !this.studentAttendanceChartData.labels || this.studentAttendanceChartData.labels.length === 0) {
-      console.warn('No student attendance data to export');
-      return;
+    if (!this.info || !this.info.length) return;
+
+    const studentMap = new Map<string, { name: string; present: number; late: number; absent: number }>();
+    for (const record of this.info) {
+      const studentId = record.idNum;
+      const fullName = `${record.firstName || ''} ${record.lastName || ''}`.trim() || studentId;
+      if (!studentMap.has(studentId)) {
+        studentMap.set(studentId, { name: fullName, present: 0, late: 0, absent: 0 });
+      }
+      const stats = studentMap.get(studentId)!;
+      const att = (record.attendance || '').toLowerCase();
+      if (att === 'present') stats.present++;
+      else if (att === 'late') stats.late++;
+      else stats.absent++;
     }
-    
-    const headers = ['Student', 'Present', 'Late', 'Absent', 'Total'];
-    const rows = this.studentAttendanceChartData.labels.map((label: string, index: number) => {
-      const present = this.studentAttendanceChartData.datasets.find((d: any) => d.label === 'Present')?.data[index] || 0;
-      const late = this.studentAttendanceChartData.datasets.find((d: any) => d.label === 'Late')?.data[index] || 0;
-      const absent = this.studentAttendanceChartData.datasets.find((d: any) => d.label === 'Absent')?.data[index] || 0;
-      return [label, present, late, absent, present + late + absent];
-    });
-    
-    this.downloadCSV([headers, ...rows], 'attendance_by_student');
+
+    const rows = Array.from(studentMap.entries()).map(([id, data]) => [
+      data.name,
+      data.present,
+      data.late,
+      data.absent,
+      data.present + data.late + data.absent
+    ]).sort((a, b) => (b[4] as number) - (a[4] as number));
+
+    this.downloadCSV([['Student', 'Present', 'Late', 'Absent', 'Total'], ...rows], 'all_student_attendance');
+  }
+
+  /**
+   * Export Type Distribution (pie chart) – this is already full data (all types)
+   */
+  exportTypeDistribution(): void {
+    if (!this.students.length) return;
+
+    const typeMap = new Map<string, number>();
+    for (const tracking of this.students) {
+      const types = tracking.type || [];
+      for (const type of types) {
+        if (type && type.trim()) {
+          typeMap.set(type, (typeMap.get(type) || 0) + 1);
+        }
+      }
+    }
+
+    const rows = Array.from(typeMap.entries()).map(([type, count]) => [type, count]);
+    this.downloadCSV([['Type', 'Count'], ...rows], 'type_distribution');
+  }
+
+  /**
+   * Export Follow-up Status – this is already full data (only two categories)
+   */
+  exportFollowUpStatus(): void {
+    if (!this.students.length) return;
+
+    const pending = this.students.filter(s => !s.comment || s.comment.trim() === '').length;
+    const completed = this.students.length - pending;
+
+    const rows = [
+      ['Pending (comment empty)', pending],
+      ['Visited (comment present)', completed]
+    ];
+    this.downloadCSV([['Status', 'Count'], ...rows], 'follow_up_status');
   }
 
   ngOnDestroy(): void {
