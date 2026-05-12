@@ -8,21 +8,21 @@
 
   <div class="stats-grid" *ngIf="students.length > 0">
     <div class="stat-card"><div class="stat-icon">📧</div><div class="stat-details"><span class="stat-label">Notified Students</span><span class="stat-value">{{ totalNotifiedStudents }}</span></div></div>
-    <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-details"><span class="stat-label">Pending Visit (no comment)</span><span class="stat-value">{{ pendingVisits }}</span></div></div>
-    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-details"><span class="stat-label">Visited Office</span><span class="stat-value">{{ completedVisits }}</span></div></div>
+    <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-details"><span class="stat-label">Pending (no comment)</span><span class="stat-value">{{ pendingVisits }}</span></div></div>
+    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-details"><span class="stat-label">Responded</span><span class="stat-value">{{ completedVisits }}</span></div></div>
     <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-details"><span class="stat-label">Courses Affected</span><span class="stat-value">{{ totalCoursesInvolved }}</span></div></div>
   </div>
 
   <!-- Row 2: Original charts -->
   <div class="charts-row" *ngIf="students.length > 0">
     <div class="chart-container"><h3>📌 Type Distribution</h3><div class="chart-wrapper"><p-chart type="pie" [data]="pieChartData" [options]="pieChartOptions"></p-chart></div></div>
-    <div class="chart-container"><h3>👥 Top 10 Notified Students</h3><div class="chart-wrapper"><p-chart height="300px" type="bar" [data]="barChartData" [options]="barChartOptions"></p-chart></div></div>
+    <div class="chart-container"><h3>👥 Top 10 Notified Students</h3><div class="chart-wrapper"><p-chart height="280px" type="bar" [data]="barChartData" [options]="barChartOptions"></p-chart></div></div>
   </div>
 
   <!-- Row 4: New charts -->
   <div class="charts-row" *ngIf="students.length > 0">
     <div class="chart-container"><h3>📌 Student Follow-up Status</h3><div class="chart-wrapper"><p-chart type="doughnut" [data]="statusChartData" [options]="statusChartOptions"></p-chart></div></div>
-    <div class="chart-container"><h3>📚 Top Courses with Notified Students</h3><div class="chart-wrapper"><p-chart height="300px" type="bar" [data]="topCoursesChartData" [options]="topCoursesChartOptions"></p-chart></div></div>
+    <div class="chart-container"><h3>📚 Top Courses with Notified Students</h3><div class="chart-wrapper"><p-chart height="280px" type="bar" [data]="topCoursesChartData" [options]="topCoursesChartOptions"></p-chart></div></div>
   </div>
 
   <!-- New row: Attendance charts -->
@@ -30,13 +30,13 @@
     <div class="chart-container">
       <h3>📊 Attendance by Course</h3>
       <div class="chart-wrapper">
-        <p-chart height="300px" type="bar" [data]="courseAttendanceChartData" [options]="courseAttendanceChartOptions"></p-chart>
+        <p-chart height="280px" type="bar" [data]="courseAttendanceChartData" [options]="courseAttendanceChartOptions"></p-chart>
       </div>
     </div>
     <div class="chart-container">
       <h3>👩‍🎓 Attendance by Student (Top 10)</h3>
       <div class="chart-wrapper">
-        <p-chart height="300px" type="bar" [data]="studentAttendanceChartData" [options]="studentAttendanceChartOptions"></p-chart>
+        <p-chart height="280px" type="bar" [data]="studentAttendanceChartData" [options]="studentAttendanceChartOptions"></p-chart>
       </div>
     </div>
   </div>
