@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges, ElementRef, QueryList, ViewChildren, AfterViewInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AttendanceService } from '../../../services/attendance.service';
 import { StudentTracking } from '../../../models/entities/studentTracking';
@@ -14,8 +14,10 @@ import { IndexeddbService } from '../../../services/indexeddb.service';
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css'
 })
-export class StatsComponent implements OnInit, OnChanges, OnDestroy {
+export class StatsComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @Input() searchDto?: SearchDto;
+
+  @ViewChildren('barChart') barCharts!: QueryList<ElementRef>;
 
   students: StudentTracking[] = [];
   backup: StudentTracking[] = [];
@@ -94,6 +96,17 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
       this.loadTrackingData();
       this.computeAttendanceCharts();
     }
+  }
+
+  ngAfterViewInit(): void {
+    this.barCharts.changes.subscribe(() => {
+      this.barCharts.forEach(chartRef => {
+        const chartInstance = (chartRef.nativeElement as any).chart;
+        if (chartInstance) {
+          chartInstance.resize();
+        }
+      });
+    });
   }
 
   private loadTrackingData(): void {
