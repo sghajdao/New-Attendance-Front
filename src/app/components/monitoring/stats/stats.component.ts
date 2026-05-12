@@ -14,10 +14,8 @@ import { IndexeddbService } from '../../../services/indexeddb.service';
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css'
 })
-export class StatsComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class StatsComponent implements OnInit, OnChanges, OnDestroy {
   @Input() searchDto?: SearchDto;
-
-  @ViewChildren('barChart') barCharts!: QueryList<ElementRef>;
 
   students: StudentTracking[] = [];
   backup: StudentTracking[] = [];
@@ -96,17 +94,6 @@ export class StatsComponent implements OnInit, OnChanges, AfterViewInit, OnDestr
       this.loadTrackingData();
       this.computeAttendanceCharts();
     }
-  }
-
-  ngAfterViewInit(): void {
-    this.barCharts.changes.subscribe(() => {
-      this.barCharts.forEach(chartRef => {
-        const chartInstance = (chartRef.nativeElement as any).chart;
-        if (chartInstance) {
-          chartInstance.resize();
-        }
-      });
-    });
   }
 
   private loadTrackingData(): void {
