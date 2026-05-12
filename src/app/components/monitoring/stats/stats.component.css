@@ -143,14 +143,9 @@
   border-left: 3px solid #e67e22;
 }
 
-.chart-wrapper ::ng-deep .p-chart {
-  height: 100%;
-  width: 100%;
-}
-
-.chart-wrapper ::ng-deep .p-chart canvas {
-  height: 100% !important;
+.chart-wrapper canvas {
   width: 100% !important;
+  height: 100% !important;
 }
 
 @media (max-width: 768px) {
