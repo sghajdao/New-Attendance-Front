@@ -153,6 +153,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     }
+    typeMap.delete('face to face');
 
     this.totalEvents = this.students.length;
     this.uniqueStudentsCount = studentMap.size;
