@@ -141,7 +141,14 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
 
       const types = tracking.type || [];
       for (const type of types) {
-        if (type && type.trim()) {
+        if (type && type.trim() && this.students.filter(s => s.studentSisId === studentId && (!s.comment || s.comment.trim() === '')).length === 0) {
+          if (type.toLowerCase() === 'face to face')
+            typeMap.set('Responsive', (typeMap.get(type) || 0) + 1);
+          typeMap.set(type, (typeMap.get(type) || 0) + 1);
+        }
+        else if (type && type.trim()) {
+          if (type.toLowerCase() === 'face to face')
+            typeMap.set('Unresponsive', (typeMap.get(type) || 0) + 1);
           typeMap.set(type, (typeMap.get(type) || 0) + 1);
         }
       }
