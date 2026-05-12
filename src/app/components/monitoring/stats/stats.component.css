@@ -143,6 +143,11 @@
   border-left: 3px solid #e67e22;
 }
 
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 @media (max-width: 768px) {
   :host ::ng-deep .stats-card .p-card-body {
     padding: 1rem;
