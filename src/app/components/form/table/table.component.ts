@@ -79,34 +79,40 @@ export class TableComponent implements OnInit {
         })
       );
       const csvData = this.convertToCsv(cleanedData);
-    
+
       const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
-    
+
       const a = document.createElement('a');
       a.href = url;
       a.download = 'attendanceReport.csv';
       a.click();
-    
+
       window.URL.revokeObjectURL(url);
     }
   }
-  
+
   convertToCsv(data: any[]): string {
     if (!data || !data.length) return '';
     const keys = Object.keys(data[0]);
-  
+
     const formatValue = (value: any): string => {
       if (value === null || value === undefined) return '';
       if (value instanceof Date) {
-        return value.toISOString();
+        return `"${value.toISOString()}"`;
       }
-      const str = String(value);
-      // If it looks like a time (H:M:S or HH:MM:SS), preserve colons
-      const escaped = str.replace(/"/g, '""');
+      // Handle time-like objects: { hours, minutes, seconds }
+      if (typeof value === 'object') {
+        const { hours, minutes, seconds } = value as any;
+        if (hours !== undefined) {
+          return `"${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}"`;
+        }
+        return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
+      }
+      const escaped = String(value).replace(/"/g, '""');
       return `"${escaped}"`;
     };
-  
+
     const csvRows = data.map(row =>
       keys.map(key => formatValue(row[key])).join(',')
     );
