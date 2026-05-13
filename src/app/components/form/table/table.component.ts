@@ -105,25 +105,35 @@ export class TableComponent implements OnInit {
 
     const keys = Object.keys(data[0]);
 
-    const escapeValue = (value: any) => {
+    const escapeValue = (value: any, key?: string) => {
       if (value === null || value === undefined) return '';
-
-      // Format Date
-      if (value instanceof Date) {
-        return value.toISOString(); // or custom format
+      
+      // Special formatting for marked_at
+      if (key === 'marked_at' && value) {
+        const date = new Date(value);
+      
+        const hh = String(date.getHours()).padStart(2, '0');
+        const mm = String(date.getMinutes()).padStart(2, '0');
+        const ss = String(date.getSeconds()).padStart(2, '0');
+      
+        return `"${hh}:${mm}:${ss}"`;
       }
-
+    
+      // General Date formatting
+      if (value instanceof Date) {
+        return `"${value.toISOString()}"`;
+      }
+    
       const stringValue = String(value);
-
-      // Escape quotes by doubling them
+    
+      // Escape quotes
       const escaped = stringValue.replace(/"/g, '""');
-
-      // Wrap in quotes to protect commas
+    
       return `"${escaped}"`;
     };
 
     const csvRows = data.map(row =>
-      keys.map(key => escapeValue(row[key])).join(',')
+      keys.map(key => escapeValue(row[key], key)).join(',')
     );
 
     return [keys.join(','), ...csvRows].join('\n');
