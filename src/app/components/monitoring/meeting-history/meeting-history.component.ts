@@ -37,8 +37,10 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   
   meetingTypes = [
     { label: '👤 Face to Face', value: 'face to face', icon: 'pi pi-users' },
-    { label: '📞 Team Call', value: 'team call', icon: 'pi pi-phone' },
+    { label: '🖥️ Team Call', value: 'team call', icon: 'pi pi-desktop' },
+    { label: '📞 Phone Call', value: 'phone call', icon: 'pi pi-phone' },
     { label: '✉️ By Email', value: 'by email', icon: 'pi pi-envelope' },
+    { label: '📨 First Email', value: 'first email', icon: 'pi pi-envelope' },
     { label: '🔔 First Reminder', value: 'first reminder', icon: 'pi pi-bell' },
     { label: '⚠️ Last Reminder', value: 'last reminder', icon: 'pi pi-exclamation-triangle' }
   ];

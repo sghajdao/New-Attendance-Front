@@ -80,8 +80,10 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
   // Meeting types (same as meeting-history)
   meetingTypes = [
     { label: '👤 Face to Face', value: 'face to face' },
-    { label: '📞 Team Call', value: 'team call' },
+    { label: '🖥️ Team Call', value: 'team call' },
+    { label: '📞 Phone Call', value: 'phone call' },
     { label: '✉️ By Email', value: 'by email' },
+    { label: '📨 First Email', value: 'first email' },
     { label: '🔔 First Reminder', value: 'first reminder' },
     { label: '⚠️ Last Reminder', value: 'last reminder' }
   ];
