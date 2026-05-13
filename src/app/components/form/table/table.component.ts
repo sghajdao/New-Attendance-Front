@@ -102,40 +102,48 @@ export class TableComponent implements OnInit {
 
   convertToCsv(data: any[]): string {
     if (!data || !data.length) return '';
-
+    
     const keys = Object.keys(data[0]);
-
-    const escapeValue = (value: any, key?: string) => {
-      if (value === null || value === undefined) return '';
-      
-      // Special formatting for marked_at
-      if (key === 'marked_at' && value) {
-        const date = new Date(value);
-      
-        const hh = String(date.getHours()).padStart(2, '0');
-        const mm = String(date.getMinutes()).padStart(2, '0');
-        const ss = String(date.getSeconds()).padStart(2, '0');
-      
-        return `"${hh}:${mm}:${ss}"`;
+    
+    const formatTime = (value: any): string => {
+      if (!value) return '';
+    
+      const date = new Date(value);
+    
+      // Invalid date check
+      if (isNaN(date.getTime())) {
+        return '';
       }
     
-      // General Date formatting
+      const hh = String(date.getHours()).padStart(2, '0');
+      const mm = String(date.getMinutes()).padStart(2, '0');
+      const ss = String(date.getSeconds()).padStart(2, '0');
+    
+      return `${hh}:${mm}:${ss}`;
+    };
+  
+    const escapeValue = (value: any, key?: string) => {
+      if (value === null || value === undefined) return '';
+    
+      // Format marked_at as HH:mm:ss
+      if (key === 'marked_at') {
+        return `"${formatTime(value)}"`;
+      }
+    
+      // General date formatting
       if (value instanceof Date) {
         return `"${value.toISOString()}"`;
       }
     
-      const stringValue = String(value);
-    
-      // Escape quotes
-      const escaped = stringValue.replace(/"/g, '""');
+      const escaped = String(value).replace(/"/g, '""');
     
       return `"${escaped}"`;
     };
-
+  
     const csvRows = data.map(row =>
       keys.map(key => escapeValue(row[key], key)).join(',')
     );
-
+  
     return [keys.join(','), ...csvRows].join('\n');
   }
 
