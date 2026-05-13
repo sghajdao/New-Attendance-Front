@@ -36,6 +36,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
   pendingVisits = 0;
   completedVisits = 0;
   totalCoursesInvolved = 0;
+  savedStudents: string = '0'
 
   // Chart data
   pieChartData: any;
@@ -154,6 +155,15 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
     this.uniqueStudentsCount = studentMap.size;
     this.totalCourseEnrollments = totalCoursesTemp;
     this.avgEventsPerStudent = this.totalEvents / this.uniqueStudentsCount;
+
+    const studentsGpa: Map<string, number> = new Map();
+    for (const i of this.info) {
+      const gpa = parseFloat(i.localGpa);
+      if (!isNaN(gpa)) {
+        studentsGpa.set(i.idNum, gpa);
+      }
+    }
+    this.savedStudents = `${Array.from(studentsGpa.values()).filter(gpa => gpa >= 2).length} - (${studentsGpa.size > 0 ? ((Array.from(studentsGpa.values()).filter(gpa => gpa >= 2).length / studentsGpa.size) * 100).toFixed(1) : '0'}%)`;
 
     let maxCount = 0;
     let mostCommon = 'N/A';
