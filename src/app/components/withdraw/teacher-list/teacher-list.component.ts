@@ -167,7 +167,7 @@ export class TeacherListComponent implements OnChanges, OnInit {
     csvRows.push(headers.join(','));
   
     // Add rows
-    this.students.filter(a => a.count >= a.absentLimit + 3).forEach(student => {
+    this.students.forEach(student => {
       const values = headers.map(h => {
         const val = (student as Record<string, any>)[h] ?? '';
         // Escape quotes and commas
