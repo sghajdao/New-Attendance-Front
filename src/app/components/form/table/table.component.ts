@@ -101,13 +101,16 @@ export class TableComponent implements OnInit {
       if (value instanceof Date) {
         return `"${value.toISOString()}"`;
       }
-      // Handle time-like objects: { hours, minutes, seconds }
-      if (typeof value === 'object') {
-        const { hours, minutes, seconds } = value as any;
-        if (hours !== undefined) {
-          return `"${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}"`;
+      if (Array.isArray(value)) {
+        // Handle time array [H, M, S] or [Y, M, D, H, M, S]
+        if (value.length === 3) {
+          const [h, m, s] = value;
+          return `"${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}"`;
         }
-        return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
+        if (value.length === 6) {
+          const [y, mo, d, h, m, s] = value;
+          return `"${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}"`;
+        }
       }
       const escaped = String(value).replace(/"/g, '""');
       return `"${escaped}"`;
