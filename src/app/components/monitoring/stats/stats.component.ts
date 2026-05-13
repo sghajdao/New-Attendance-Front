@@ -71,17 +71,30 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
     this.loadTrackingData();
 
     this.indexeddbService.getData('SP').then(data => {
+      // Store absence counts
+      const absenceMap = new Map<string, number>();
+
+      // First pass: count absences
+      for (const s of data) {
+        if (s.attendance === 'absent') {
+          const key = `${s.idNum}_${s.crsCde}_${s.yrCde}_${s.trmCde}`;
+        
+          absenceMap.set(
+            key,
+            (absenceMap.get(key) || 0) + 1
+          );
+        }
+      }
+    
+      // Second pass: filter students
       this.info = data.filter(student => {
-        const absences = data.filter(s =>
-          s.idNum === student.idNum &&
-          s.crsCde === student.crsCde &&
-          s.yrCde === student.yrCde &&
-          s.trmCde === student.trmCde &&
-          s.attendance === 'absent'
-        ).length;
+        const key = `${student.idNum}_${student.crsCde}_${student.yrCde}_${student.trmCde}`;
+      
+        const absences = absenceMap.get(key) || 0;
       
         return absences >= student.absentLimit / 2;
       });
+    
       this.infoBackup = [...this.info];
       this.computeAttendanceCharts();
     });
