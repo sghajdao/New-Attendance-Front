@@ -73,20 +73,12 @@ export class TableComponent implements OnInit {
   exportReport() {
     if (this.filteredData) {
       const cleanedData = this.filteredData.map(
-      ({ id, count, marked_time, ...rest }) => ({
-        ...rest,
-        marked_at: marked_time || rest.marked_at
-      })
-    );
-      const csvData = this.convertToCsv(
-        cleanedData
-          // .map(({ count, ...item }) => item)
-          // .map(({ id, ...item }) => item)
-          // .map(({ marked_time, ...item }) => ({
-          //   ...item,
-          //   marked_at: marked_time || ''
-          // }))
+        ({ id, count, marked_time, ...rest }) => ({
+          ...rest,
+          marked_at: marked_time || rest.marked_at
+        })
       );
+      const csvData = this.convertToCsv(cleanedData);
     
       const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
@@ -99,51 +91,25 @@ export class TableComponent implements OnInit {
       window.URL.revokeObjectURL(url);
     }
   }
-
+  
   convertToCsv(data: any[]): string {
     if (!data || !data.length) return '';
-    
     const keys = Object.keys(data[0]);
-    
-    const formatTime = (value: any): string => {
-      if (!value) return '';
-    
-      const date = new Date(value);
-    
-      // Invalid date check
-      if (isNaN(date.getTime())) {
-        return '';
-      }
-    
-      const hh = String(date.getHours()).padStart(2, '0');
-      const mm = String(date.getMinutes()).padStart(2, '0');
-      const ss = String(date.getSeconds()).padStart(2, '0');
-    
-      return `${hh}:${mm}:${ss}`;
-    };
   
-    const escapeValue = (value: any, key?: string) => {
+    const formatValue = (value: any): string => {
       if (value === null || value === undefined) return '';
-    
-      // Format marked_at as HH:mm:ss
-      if (key === 'marked_at') {
-        return `"${formatTime(value)}"`;
-      }
-    
-      // General date formatting
       if (value instanceof Date) {
-        return `"${value.toISOString()}"`;
+        return value.toISOString();
       }
-    
-      const escaped = String(value).replace(/"/g, '""');
-    
+      const str = String(value);
+      // If it looks like a time (H:M:S or HH:MM:SS), preserve colons
+      const escaped = str.replace(/"/g, '""');
       return `"${escaped}"`;
     };
   
     const csvRows = data.map(row =>
-      keys.map(key => escapeValue(row[key], key)).join(',')
+      keys.map(key => formatValue(row[key])).join(',')
     );
-  
     return [keys.join(','), ...csvRows].join('\n');
   }
 
