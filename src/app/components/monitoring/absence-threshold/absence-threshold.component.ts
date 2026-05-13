@@ -65,6 +65,15 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
     { label: '⚫ Emailed (3rd time)', value: 'red' }
   ];
 
+  percentageFilter: string | null = null;
+  percentageFilterOptions = [
+    { label: 'All', value: null },
+    { label: '≥ 50%', value: '50' },
+    { label: '≥ 60%', value: '60' },
+    { label: '≥ 75%', value: '75' },
+    { label: '≥ 90%', value: '90' }
+  ];
+
   // Selection tracking
   selectedStudents: Set<Student> = new Set();
 
@@ -158,6 +167,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
       this.updatePagination();
       // Clear selection when filters change
       this.clearSelection();
+      this.dotColorFilter = null;
+      this.percentageFilter = null;
     }
   }
 
@@ -170,8 +181,10 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
 
   // Getter for students after applying dot color filter
   get displayedStudents(): Student[] {
-    if (!this.dotColorFilter) return this.students;
-    return this.students.filter(student => {
+    let result = this.students;
+  // Dot color filter
+  if (this.dotColorFilter) {
+    result = result.filter(student => {
       const count = this.hasPendingMeeting(student);
       if (this.dotColorFilter === 'green') return count === 0;
       if (this.dotColorFilter === 'yellow') return count === 1;
@@ -179,6 +192,13 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
       if (this.dotColorFilter === 'black') return count === 3;
       return true;
     });
+  }
+  // Percentage filter
+  if (this.percentageFilter) {
+    const minValue = parseInt(this.percentageFilter, 10);
+    result = result.filter(student => student.value >= minValue);
+  }
+  return result;
   }
 
   // New: Select all currently displayed students
@@ -189,6 +209,18 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
         student._selected = true;
       }
     });
+  }
+
+  setPercentageFilter(value: string | null): void {
+    this.percentageFilter = value;
+    this.currentPage = 1;
+    this.updatePagination();
+    this.clearSelection();
+  }
+
+  getPercentageFilterLabel(): string {
+    const option = this.percentageFilterOptions.find(opt => opt.value === this.percentageFilter);
+    return option ? option.label : '';
   }
 
   // New: set dot filter and clear selection

@@ -48,6 +48,27 @@
               </div>
             </ng-template>
           </p-dropdown>
+          
+          <p-dropdown
+            [options]="percentageFilterOptions"
+            [(ngModel)]="percentageFilter"
+            (onChange)="setPercentageFilter($event.value)"
+            placeholder="Threshold %"
+            styleClass="p-button-sm"
+            [showClear]="true">
+            <ng-template let-option pTemplate="selectedItem">
+              <div class="filter-option">
+                <i class="pi pi-percent"></i>
+                <span>{{ option.label }}</span>
+              </div>
+            </ng-template>
+            <ng-template let-option pTemplate="item">
+              <div class="filter-option">
+                <i class="pi pi-percent"></i>
+                <span>{{ option.label }}</span>
+              </div>
+            </ng-template>
+          </p-dropdown>
         </div>
 
         <div class="contact-header-actions" *ngIf="students.length">
@@ -82,7 +103,7 @@
       </div>
       <p class="subtitle">
         Students who have reached at least 50% of the absence limit
-        <span class="student-count" *ngIf="displayedStudents.length">({{displayedStudents.length}} students)</span>
+        <span class="student-count" *ngIf="displayedStudents.length">({{displayedStudents.length}} Records)</span>
         <span *ngIf="dotColorFilter" class="filter-badge"> · Filtered by {{dotColorFilter}} dot</span>
         <span class="view-badge" *ngIf="viewMode === 'list'"> · List View</span>
         <span class="view-badge" *ngIf="viewMode === 'grid'"> · Grid View</span>
