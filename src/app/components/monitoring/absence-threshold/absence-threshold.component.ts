@@ -348,10 +348,14 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
         type: meetingType,
         comment: meetingComment
       };
-      return this.attendanceService.trackStudent(trackingData);
+      if (!ids.includes(student.id)) {
+        ids.push(student.id);
+        return this.attendanceService.trackStudent(trackingData);
+      }
+      return null as any; // This will be filtered out later
     });
 
-    forkJoin(trackingRequests).pipe(
+    forkJoin(trackingRequests.filter((v): v is NonNullable<typeof v> => !!v)).pipe(
       finalize(() => {
         this.isContactSaving = false;
       })
