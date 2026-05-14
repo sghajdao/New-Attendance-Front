@@ -338,17 +338,21 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
     const meetingComment = formValue.comment;
 
     // Create tracking records for each selected student
+    let ids: string[] = [];
     const trackingRequests = this.contactSelectedStudents.map(student => {
       const trackingData: StudentTracking = {
         studentSisId: student.id,
         studentName: student.name,
-        // coursSisId: [student.course],
         coursSisId: [...this.contactSelectedStudents.filter(s => s.id === student.id).map(s => s.course)],
         createdAt: meetingDate,
         type: meetingType,
         comment: meetingComment
       };
-      return this.attendanceService.trackStudent(trackingData);
+      if (!ids.includes(student.id)) {
+        ids.push(student.id);
+        return this.attendanceService.trackStudent(trackingData);
+      }
+      return null as any; // This will be filtered out later
     });
 
     forkJoin(trackingRequests).pipe(
