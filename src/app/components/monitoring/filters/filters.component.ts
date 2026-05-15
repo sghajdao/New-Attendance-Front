@@ -63,13 +63,12 @@ export class FiltersComponent implements OnInit, OnDestroy {
   }
 
   onSearch() {
-    // this.search.emit(this.globalFormGroup.value);
     this.attendanceService.attendanceFilterSource.next(this.globalFormGroup.value);
   }
 
   onClear() {
     this.globalFormGroup.reset()
-    // this.search.emit(this.globalFormGroup.value);
+    this.globalFormGroup.get('trmCde')?.setValue('SP');
     this.attendanceService.attendanceFilterSource.next(this.globalFormGroup.value);
   }
 

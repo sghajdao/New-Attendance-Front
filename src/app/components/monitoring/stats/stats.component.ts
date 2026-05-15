@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { from, map, Subscription, switchMap } from 'rxjs';
+import { from, Subscription, combineLatest } from 'rxjs';
 import { AttendanceService } from '../../../services/attendance.service';
 import { StudentTracking } from '../../../models/entities/studentTracking';
 import { SearchDto } from '../../../models/dto/searchDto';
@@ -7,6 +7,7 @@ import Chart from 'chart.js/auto';
 import * as chartJsDataLabels from 'chartjs-plugin-datalabels';
 import { StudentAttendanceDetails } from '../../../models/dto/studentAttendanceDetails';
 import { IndexeddbService } from '../../../services/indexeddb.service';
+import { switchMap, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-stats',
@@ -69,58 +70,87 @@ export class StatsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.loadTrackingData();
-    this.fetchData();
+    const sub = combineLatest([
+      this.attendanceService.getRedFlagStudents(),
+      this.attendanceService.attendanceFilter$
+    ])
 
-    const sub = this.attendanceService.attendanceFilter$.subscribe(filter => {
-      console.log('Received filter update in DetailsTableComponent:', filter);
-      if (filter.trmCde) {
-        this.students = this.students.filter(i => i.coursSisId?.some(c => c.startsWith(filter!.trmCde!)))
-        this.info = this.info.filter(i => i.trmCde === filter!.trmCde);
-      }
-      if (filter.courses && filter.courses.length) {
-        this.students = this.students.filter(i => i.coursSisId?.some(c => filter?.courses?.includes(c)))
-        this.info = this.info.filter(i => filter?.courses?.includes(i.crsCde));
-      }
-      if (filter.studentIds && filter.studentIds.length) {
-        this.students = this.students.filter(i => filter?.studentIds?.includes(i.studentSisId!))
-        this.info = this.info.filter(i => filter?.studentIds?.includes(i.idNum));
-      }
-      else if (!filter.studentIds?.length && !filter.courses?.length && !filter.seniorities?.length) {
-        this.students = [...this.backup];
-        this.info = [...this.infoBackup];
-      }
-      this.loadTrackingData();
-      this.computeAttendanceCharts();
-    });
-    this.subscriptions.push(sub);
-  }
+    .pipe(
 
-  fetchData() {
-    const sub = this.attendanceService.getRedFlagStudents().pipe(
-    
-      switchMap(res => {
+      switchMap(([redFlagStudents, filter]) => {
+
         const studentIds = new Set(
-          res.map(r => r.student_sis_id)
+          redFlagStudents.map(r => r.student_sis_id)
         );
-      
-        return from(this.indexeddbService.getData('SP')).pipe(
-          map(data =>
-            data.filter(student =>
-              studentIds.has(student.idNum)
-            )
+
+        return from(
+          this.indexeddbService.getData(
+            filter.trmCde || 'SP'
           )
+        ).pipe(
+
+          map(data => {
+
+            // Keep only red-flag students
+            let filteredInfo = data.filter(student =>
+              studentIds.has(student.idNum)
+            );
+
+            // Fast lookup sets
+            const coursesSet = new Set(filter.courses || []);
+            const studentIdsSet = new Set(filter.studentIds || []);
+
+            // Apply term filter
+            if (filter.trmCde) {
+
+              filteredInfo = filteredInfo.filter(i =>
+                i.trmCde === filter.trmCde
+              );
+
+            }
+
+            // Apply course filter
+            if (coursesSet.size) {
+
+              filteredInfo = filteredInfo.filter(i =>
+                coursesSet.has(i.crsCde)
+              );
+
+            }
+
+            // Apply student filter
+            if (studentIdsSet.size) {
+
+              filteredInfo = filteredInfo.filter(i =>
+                studentIdsSet.has(i.idNum)
+              );
+
+            }
+
+            return filteredInfo;
+          })
+
         );
       })
-    
-    ).subscribe({
+
+    )
+
+    .subscribe({
+
       next: filteredData => {
+
         this.info = filteredData;
-        this.infoBackup = [...this.info];
+        this.infoBackup = [...filteredData];
+        this.loadTrackingData();
         this.computeAttendanceCharts();
+      },
+
+      error: err => {
+        console.error(err);
       }
+
     });
-  
+
     this.subscriptions.push(sub);
   }
 

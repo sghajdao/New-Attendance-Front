@@ -9,6 +9,7 @@ import { RedFlagStudents } from '../../../models/dto/reFlagStudent';
 import { MessageService } from 'primeng/api';
 import { StudentAttendanceDetails } from '../../../models/dto/studentAttendanceDetails';
 import { IndexeddbService } from '../../../services/indexeddb.service';
+import { combineLatest } from 'rxjs';
 
 export interface Student {
   label: string; 
@@ -102,32 +103,15 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initContactForm();
-    this.loadRedFlagStudents();
-    // Load saved view preference from localStorage (optional)
+    
+    // Load saved view preference
     const savedViewMode = localStorage.getItem('absenceThresholdViewMode');
+    
     if (savedViewMode === 'grid' || savedViewMode === 'list') {
       this.viewMode = savedViewMode;
     }
-
-    const sub = this.attendanceService.attendanceFilter$.subscribe(filter => {
-      if (filter.studentIds?.length)
-        this.students = this.studentsBackup.filter(student => filter?.studentIds?.includes(student.id))
-      if (filter.courses?.length)
-        this.students = this.students.filter(student => filter?.courses?.includes(student.course))
-      if (filter.seniorities?.length)
-        this.students = this.students.filter(student => filter?.seniorities?.includes(student.seniority))
-      else if ((!filter.studentIds?.length && !filter.courses?.length && !filter.seniorities?.length) || !this.students.length)
-        this.students = [...this.studentsBackup];
-      
-      // Reset to first page whenever filters change
-      this.currentPage = 1;
-      this.updatePagination();
-      // Clear selection when filters change
-      this.clearSelection();
-      this.dotColorFilter = null;
-      this.percentageFilter = null;
-    });
-    this.subscriptions.push(sub);
+  
+    this.loadData();
   }
 
   initContactForm(): void {
@@ -137,39 +121,97 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       comment: [null, Validators.required]
     });
   }
-
-  loadRedFlagStudents(): void {
+  
+  loadData(): void {
     this.loading = true;
-    const sub = this.attendanceService.getRedFlagStudents().subscribe({
-      next: (res) => {
-        this.students = res.map((student: RedFlagStudents) => ({
-          label: `Absences: ${student.count} / ${student.absentLimit}`,
-          value: +((student.count / student.absentLimit) * 100).toFixed(2),
-          color: student.count >= student.absentLimit ? 'red' : 'black',
-          name: `${student.firstName} ${student.lastName}`,
-          course: `${student.course_sis_id}`,
-          seniority: student.seniority,
-          id: student.student_sis_id,
-          meetings: student.meetings || [],
-          _selected: false
-        }));
-        this.studentsBackup = [...this.students];
+  
+    const sub = combineLatest([
+      this.attendanceService.getRedFlagStudents(),
+      this.attendanceService.attendanceFilter$
+    ]).subscribe({
+    
+      next: ([studentsRes, filter]) => {
+      
+        // Build base dataset
+        const allStudents = studentsRes.map(
+          (student: RedFlagStudents) => ({
+            label: `Absences: ${student.count} / ${student.absentLimit}`,
+            value: +(
+              (student.count / student.absentLimit) * 100
+            ).toFixed(2),
+          
+            color:
+              student.count >= student.absentLimit
+                ? 'red'
+                : 'black',
+          
+            name: `${student.firstName} ${student.lastName}`,
+            course: student.course_sis_id,
+            seniority: student.seniority,
+            id: student.student_sis_id,
+            meetings: student.meetings || [],
+            _selected: false
+          })
+        );
+      
+        this.studentsBackup = allStudents;
+      
+        // Sets for faster lookup
+        const studentIdsSet = new Set(filter.studentIds || []);
+        const coursesSet = new Set(filter.courses || []);
+        const senioritiesSet = new Set(filter.seniorities || []);
+      
+        // Apply filters
+        let filteredStudents = allStudents;
+      
+        if (studentIdsSet.size) {
+          filteredStudents = filteredStudents.filter(student =>
+            studentIdsSet.has(student.id)
+          );
+        }
+      
+        if (coursesSet.size) {
+          filteredStudents = filteredStudents.filter(student =>
+            coursesSet.has(student.course)
+          );
+        }
+      
+        if (senioritiesSet.size) {
+          filteredStudents = filteredStudents.filter(student =>
+            senioritiesSet.has(student.seniority)
+          );
+        }
+      
+        this.students = filteredStudents;
+      
+        // Reset pagination
+        this.currentPage = 1;
         this.updatePagination();
-        this.loading = false;
-        // Clear selection when data reloads
+      
+        // Reset filters/selections
         this.clearSelection();
+        this.dotColorFilter = null;
+        this.percentageFilter = null;
+      
+        this.loading = false;
       },
-      error: (err) => {
+    
+      error: err => {
+      
         console.error(err);
+      
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
           detail: 'Failed to load student data',
           life: 3000
         });
+      
         this.loading = false;
       }
+    
     });
+  
     this.subscriptions.push(sub);
   }
 
@@ -369,7 +411,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         });
         
         // Refresh the data to show updated meetings
-        this.loadRedFlagStudents();
+        this.loadData();
         
         // Clear selection and close dialog
         this.clearSelection();
