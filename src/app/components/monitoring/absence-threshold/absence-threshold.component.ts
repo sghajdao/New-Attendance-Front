@@ -1,5 +1,5 @@
 // absence-threshold.component.ts - Updated with grid/row view toggle
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AttendanceService } from '../../../services/attendance.service';
 import { Subscription, forkJoin, finalize } from 'rxjs';
@@ -28,7 +28,7 @@ export interface Student {
   templateUrl: './absence-threshold.component.html',
   styleUrl: './absence-threshold.component.css'
 })
-export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
+export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   constructor(
     private attendanceService: AttendanceService,
     private fb: FormBuilder,
@@ -108,6 +108,26 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
     if (savedViewMode === 'grid' || savedViewMode === 'list') {
       this.viewMode = savedViewMode;
     }
+
+    const sub = this.attendanceService.attendanceFilter$.subscribe(filter => {
+      if (filter.studentIds?.length)
+        this.students = this.studentsBackup.filter(student => filter?.studentIds?.includes(student.id))
+      if (filter.courses?.length)
+        this.students = this.students.filter(student => filter?.courses?.includes(student.course))
+      if (filter.seniorities?.length)
+        this.students = this.students.filter(student => filter?.seniorities?.includes(student.seniority))
+      else if ((!filter.studentIds?.length && !filter.courses?.length && !filter.seniorities?.length) || !this.students.length)
+        this.students = [...this.studentsBackup];
+      
+      // Reset to first page whenever filters change
+      this.currentPage = 1;
+      this.updatePagination();
+      // Clear selection when filters change
+      this.clearSelection();
+      this.dotColorFilter = null;
+      this.percentageFilter = null;
+    });
+    this.subscriptions.push(sub);
   }
 
   initContactForm(): void {
@@ -151,27 +171,6 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy, OnChanges {
       }
     });
     this.subscriptions.push(sub);
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['searchDto'] && this.searchDto && this.students.length) {
-      if (this.searchDto.studentIds?.length)
-        this.students = this.studentsBackup.filter(student => this.searchDto?.studentIds?.includes(student.id))
-      if (this.searchDto.courses?.length)
-        this.students = this.students.filter(student => this.searchDto?.courses?.includes(student.course))
-      if (this.searchDto.seniorities?.length)
-        this.students = this.students.filter(student => this.searchDto?.seniorities?.includes(student.seniority))
-      else if ((!this.searchDto.studentIds?.length && !this.searchDto.courses?.length && !this.searchDto.seniorities?.length) || !this.students.length)
-        this.students = [...this.studentsBackup];
-      
-      // Reset to first page whenever filters change
-      this.currentPage = 1;
-      this.updatePagination();
-      // Clear selection when filters change
-      this.clearSelection();
-      this.dotColorFilter = null;
-      this.percentageFilter = null;
-    }
   }
 
   // Set view mode and save preference

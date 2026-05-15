@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges, ElementRef, QueryList, ViewChildren, AfterViewInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AttendanceService } from '../../../services/attendance.service';
 import { StudentTracking } from '../../../models/entities/studentTracking';
@@ -14,14 +14,13 @@ import { IndexeddbService } from '../../../services/indexeddb.service';
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css'
 })
-export class StatsComponent implements OnInit, OnChanges, OnDestroy {
+export class StatsComponent implements OnInit, OnDestroy {
   @Input() searchDto?: SearchDto;
 
   students: StudentTracking[] = [];
   backup: StudentTracking[] = [];
   info: StudentAttendanceDetails[] = [];
   infoBackup: StudentAttendanceDetails[] = [];
-  private subscription?: Subscription;
   private static dataLabelsRegistered = false;
 
   // Original stats
@@ -56,6 +55,8 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
   coursesAttendanceReport: any
   studentsAttendanceReport: any
 
+  subscriptions: Subscription[] = [];
+
   constructor(
     private attendanceService: AttendanceService,
     private indexeddbService: IndexeddbService
@@ -70,6 +71,30 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit(): void {
     this.loadTrackingData();
 
+    const sub = this.attendanceService.attendanceFilter$.subscribe(filter => {
+      if (filter.trmCde) {
+        this.students = this.students.filter(i => i.coursSisId?.some(c => c.startsWith(filter!.trmCde!)))
+        this.info = this.info.filter(i => i.trmCde === filter!.trmCde);
+      }
+      if (filter.courses && filter.courses.length) {
+        this.students = this.students.filter(i => i.coursSisId?.some(c => filter?.courses?.includes(c)))
+        this.info = this.info.filter(i => filter?.courses?.includes(i.crsCde));
+      }
+      if (filter.studentIds && filter.studentIds.length) {
+        this.students = this.students.filter(i => filter?.studentIds?.includes(i.studentSisId!))
+        this.info = this.info.filter(i => filter?.studentIds?.includes(i.idNum));
+      }
+      else if (!filter.studentIds?.length && !filter.courses?.length && !filter.seniorities?.length) {
+        this.students = [...this.backup];
+        this.info = [...this.infoBackup];
+      }
+      this.loadTrackingData();
+      this.computeAttendanceCharts();
+    });
+    this.subscriptions.push(sub);
+  }
+
+  fetchData() {
     this.indexeddbService.getData('SP').then(data => {
       // Store absence counts
       const absenceMap = new Map<string, number>();
@@ -100,31 +125,8 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['searchDto'] && this.searchDto) {
-      if (this.searchDto.trmCde) {
-        this.students = this.students.filter(i => i.coursSisId?.some(c => c.startsWith(this.searchDto!.trmCde!)))
-        this.info = this.info.filter(i => i.trmCde === this.searchDto!.trmCde);
-      }
-      if (this.searchDto.courses && this.searchDto.courses.length) {
-        this.students = this.students.filter(i => i.coursSisId?.some(c => this.searchDto?.courses?.includes(c)))
-        this.info = this.info.filter(i => this.searchDto?.courses?.includes(i.crsCde));
-      }
-      if (this.searchDto.studentIds && this.searchDto.studentIds.length) {
-        this.students = this.students.filter(i => this.searchDto?.studentIds?.includes(i.studentSisId!))
-        this.info = this.info.filter(i => this.searchDto?.studentIds?.includes(i.idNum));
-      }
-      else if (!this.searchDto.studentIds?.length && !this.searchDto.courses?.length && !this.searchDto.seniorities?.length) {
-        this.students = [...this.backup];
-        this.info = [...this.infoBackup];
-      }
-      this.loadTrackingData();
-      this.computeAttendanceCharts();
-    }
-  }
-
   private loadTrackingData(): void {
-    this.subscription = this.attendanceService.getTracking().subscribe({
+    const sub = this.attendanceService.getTracking().subscribe({
       next: (res) => {
         this.students = res || [];
         this.backup = [...this.students];
@@ -136,6 +138,7 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
         this.computeAllStatsAndCharts();
       }
     });
+    this.subscriptions.push(sub);
   }
 
   private computeAllStatsAndCharts(): void {
@@ -689,6 +692,6 @@ export class StatsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

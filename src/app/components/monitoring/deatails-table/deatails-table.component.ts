@@ -1,5 +1,5 @@
 // deatails-table.component.ts
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AttendanceService } from '../../../services/attendance.service';
 import { IndexeddbService } from '../../../services/indexeddb.service';
@@ -42,7 +42,7 @@ export interface StudentCourseAggregate {
   templateUrl: './deatails-table.component.html',
   styleUrl: './deatails-table.component.css'
 })
-export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
+export class DeatailsTableComponent implements OnInit, OnDestroy {
   @Input() searchDto?: SearchDto;
   subscriptions: Subscription[] = [];
 
@@ -67,6 +67,47 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.fetchData();
+
+    const sub = this.attendanceService.attendanceFilter$.subscribe(filter => {
+      console.log('Received filter update in DetailsTableComponent:', filter);
+      if (filter.trmCde) {
+        this.isLoading = true;
+        this.indexeddbService.getData(filter.trmCde).then((data: StudentAttendanceDetails[]) => {
+          this.rawAttendanceData = data;
+          this.students = this.buildAggregatedData(data);
+          this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
+          this.isLoading = false;
+        }).catch((err) => {
+          console.error('Error loading term data:', err);
+          this.isLoading = false;
+        });
+
+        this.students = this.students.filter(i => i.trmCde === filter?.trmCde)
+        this.rawAttendanceData = this.rawAttendanceData.filter(i => i.trmCde === filter?.trmCde)
+      }
+      if (filter.courses && filter.courses.length) {
+        this.students = this.students.filter(i => filter?.courses?.includes('SP26-' + i.crsCde.replace(/\s/g, "")))
+        this.rawAttendanceData = this.rawAttendanceData.filter(i => filter?.courses?.includes('SP26-' + i.crsCde.replace(/\s/g, "")))
+      }
+      if (filter.seniorities && filter.seniorities.length) {
+        this.students = this.students.filter(i => filter?.seniorities?.includes(i.seniority))
+        this.rawAttendanceData = this.rawAttendanceData.filter(i => filter?.seniorities?.includes(i.seniority))
+      }
+      if (filter.studentIds && filter.studentIds.length) {
+        this.students = this.students.filter(i => filter?.studentIds?.includes(i.idNum))
+        this.rawAttendanceData = this.rawAttendanceData.filter(i => filter?.studentIds?.includes(i.idNum))
+      }
+      else if (!filter.studentIds?.length && !filter.courses?.length && !filter.seniorities?.length) {
+        this.students = this.buildAggregatedData(this.backup)
+        this.rawAttendanceData = this.backup
+      }
+      this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
+    });
+    this.subscriptions.push(sub);
+  }
+
+  fetchData() {
     const lastUpdate = localStorage.getItem('lastUpdate');
     const initData = localStorage.getItem('init');
     let shouldFetch = !(lastUpdate && new Date().getDate() <= new Date(JSON.parse(lastUpdate)).getDate() && new Date().getMonth() <= new Date(JSON.parse(lastUpdate)).getMonth()) || !initData;
@@ -108,43 +149,6 @@ export class DeatailsTableComponent implements OnInit, OnChanges, OnDestroy {
       console.error('IndexedDB error:', err);
       this.isLoading = false;
     });
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['searchDto'] && this.searchDto) {
-      if (this.searchDto.trmCde) {
-        this.isLoading = true;
-        this.indexeddbService.getData(this.searchDto.trmCde).then((data: StudentAttendanceDetails[]) => {
-          this.rawAttendanceData = data;
-          this.students = this.buildAggregatedData(data);
-          this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
-          this.isLoading = false;
-        }).catch((err) => {
-          console.error('Error loading term data:', err);
-          this.isLoading = false;
-        });
-
-        this.students = this.students.filter(i => i.trmCde === this.searchDto?.trmCde)
-        this.rawAttendanceData = this.rawAttendanceData.filter(i => i.trmCde === this.searchDto?.trmCde)
-      }
-      if (this.searchDto.courses && this.searchDto.courses.length) {
-        this.students = this.students.filter(i => this.searchDto?.courses?.includes('SP26-' + i.crsCde.replace(/\s/g, "")))
-        this.rawAttendanceData = this.rawAttendanceData.filter(i => this.searchDto?.courses?.includes('SP26-' + i.crsCde.replace(/\s/g, "")))
-      }
-      if (this.searchDto.seniorities && this.searchDto.seniorities.length) {
-        this.students = this.students.filter(i => this.searchDto?.seniorities?.includes(i.seniority))
-        this.rawAttendanceData = this.rawAttendanceData.filter(i => this.searchDto?.seniorities?.includes(i.seniority))
-      }
-      if (this.searchDto.studentIds && this.searchDto.studentIds.length) {
-        this.students = this.students.filter(i => this.searchDto?.studentIds?.includes(i.idNum))
-        this.rawAttendanceData = this.rawAttendanceData.filter(i => this.searchDto?.studentIds?.includes(i.idNum))
-      }
-      else if (!this.searchDto.studentIds?.length && !this.searchDto.courses?.length && !this.searchDto.seniorities?.length) {
-        this.students = this.buildAggregatedData(this.backup)
-        this.rawAttendanceData = this.backup
-      }
-      this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
-    }
   }
 
   /**

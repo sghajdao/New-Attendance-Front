@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { SearchDto } from '../../../models/dto/searchDto';
 import { InitData } from '../../../models/dto/initData';
 import { Subscription } from 'rxjs';
+import { AttendanceService } from '../../../services/attendance.service';
 
 @Component({
   selector: 'app-filters',
@@ -12,6 +13,7 @@ import { Subscription } from 'rxjs';
 })
 export class FiltersComponent implements OnInit, OnDestroy {
   constructor(
+    private attendanceService: AttendanceService,
     private fb: FormBuilder,
   ) { }
 
@@ -61,12 +63,14 @@ export class FiltersComponent implements OnInit, OnDestroy {
   }
 
   onSearch() {
-    this.search.emit(this.globalFormGroup.value);
+    // this.search.emit(this.globalFormGroup.value);
+    this.attendanceService.attendanceFilterSource.next(this.globalFormGroup.value);
   }
 
   onClear() {
     this.globalFormGroup.reset()
-    this.search.emit(this.globalFormGroup.value);
+    // this.search.emit(this.globalFormGroup.value);
+    this.attendanceService.attendanceFilterSource.next(this.globalFormGroup.value);
   }
 
   ngOnDestroy() {

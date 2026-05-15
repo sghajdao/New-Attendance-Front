@@ -25,6 +25,9 @@ export class AttendanceService {
   attendanceSource = new BehaviorSubject<Attendance[]>([])
   attendance$ = this.attendanceSource.asObservable()
 
+  attendanceFilterSource = new BehaviorSubject<SearchDto>({})
+  attendanceFilter$ = this.attendanceFilterSource.asObservable()
+
   filterAttendance(filter: FilrterRequest) {
     const auth = this.getAuthRequest()
     filter.userId = auth.id
