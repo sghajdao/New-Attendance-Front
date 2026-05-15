@@ -97,34 +97,16 @@ export class StatsComponent implements OnInit, OnDestroy {
   }
 
   fetchData() {
-    this.indexeddbService.getData('SP').then(data => {
-      // Store absence counts
-      const absenceMap = new Map<string, number>();
-
-      // First pass: count absences
-      for (const s of data) {
-        if (s.attendance === 'absent') {
-          const key = `${s.idNum}_${s.crsCde}_${s.yrCde}_${s.trmCde}`;
-        
-          absenceMap.set(
-            key,
-            (absenceMap.get(key) || 0) + 1
-          );
-        }
+    const sub = this.attendanceService.getRedFlagStudents().subscribe({
+      next: res => {
+        this.indexeddbService.getData('SP').then(data => {
+          this.info = data.filter(student => res.map(r => r.student_sis_id).includes(student.idNum))
+          this.infoBackup = [...this.info];
+          this.computeAttendanceCharts();
+        })
       }
-    
-      // Second pass: filter students
-      this.info = data.filter(student => {
-        const key = `${student.idNum}_${student.crsCde}_${student.yrCde}_${student.trmCde}`;
-      
-        const absences = absenceMap.get(key) || 0;
-      
-        return absences >= student.absentLimit / 2;
-      });
-    
-      this.infoBackup = [...this.info];
-      this.computeAttendanceCharts();
-    });
+    })
+    this.subscriptions.push(sub);
   }
 
   private loadTrackingData(): void {
