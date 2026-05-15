@@ -597,7 +597,7 @@ export class StatsComponent implements OnInit, OnDestroy {
       .map(([id, data]) => [data.name, data.count])
       .sort((a, b) => (b[1] as number) - (a[1] as number)); // sort descending
 
-    this.downloadCSV([['Student Name', 'Number of Tracking Events'], ...rows], 'all_notified_students');
+    this.downloadCSV([['Student ID', 'Student Name', 'Number of Tracking Events'], ...rows], 'all_notified_students');
   }
 
   /**
@@ -675,6 +675,7 @@ export class StatsComponent implements OnInit, OnDestroy {
     }
 
     const rows = Array.from(studentMap.entries()).map(([id, data]) => [
+      data.id,
       data.name,
       data.present,
       data.late,
