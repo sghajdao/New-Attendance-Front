@@ -1,6 +1,6 @@
 // deatails-table.component.ts
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { catchError, EMPTY, from, Subscription, switchMap, tap } from 'rxjs';
 import { AttendanceService } from '../../../services/attendance.service';
 import { IndexeddbService } from '../../../services/indexeddb.service';
 import { StudentAttendanceDetails } from '../../../models/dto/studentAttendanceDetails';
@@ -69,36 +69,85 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.fetchData();
 
-    const sub = this.attendanceService.attendanceFilter$.subscribe(filter => {
-      console.log('Received filter update in DetailsTableComponent:', filter);
-      this.isLoading = true;
-      this.indexeddbService.getData(filter.trmCde? filter.trmCde : 'SP').then((data: StudentAttendanceDetails[]) => {
-        this.rawAttendanceData = data;
-        this.students = this.buildAggregatedData(data);
-        this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
-        if (filter.courses && filter.courses.length) {
-          this.students = this.students.filter(i => filter?.courses?.includes('SP26-' + i.crsCde.replace(/\s/g, "")))
-          this.rawAttendanceData = this.rawAttendanceData.filter(i => filter?.courses?.includes('SP26-' + i.crsCde.replace(/\s/g, "")))
-        }
-        if (filter.seniorities && filter.seniorities.length) {
-          this.students = this.students.filter(i => filter?.seniorities?.includes(i.seniority))
-          this.rawAttendanceData = this.rawAttendanceData.filter(i => filter?.seniorities?.includes(i.seniority))
-        }
-        if (filter.studentIds && filter.studentIds.length) {
-          this.students = this.students.filter(i => filter?.studentIds?.includes(i.idNum))
-          this.rawAttendanceData = this.rawAttendanceData.filter(i => filter?.studentIds?.includes(i.idNum))
-        }
-        else if (!filter.studentIds?.length && !filter.courses?.length && !filter.seniorities?.length) {
-          this.students = this.buildAggregatedData(this.backup)
-          this.rawAttendanceData = this.backup
-        }
-        this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
-        this.isLoading = false;
-      }).catch((err) => {
-          console.error('Error loading term data:', err);
-          this.isLoading = false;
-        });
-    });
+    const sub = this.attendanceService.attendanceFilter$
+      .pipe(
+      
+        tap(filter => {
+          console.log('Received filter update in DetailsTableComponent:', filter);
+          this.isLoading = true;
+        }),
+      
+        switchMap(filter => {
+        
+          const term = filter.trmCde || 'SP';
+        
+          return from(
+            this.indexeddbService.getData(term)
+          ).pipe(
+          
+            tap((data: StudentAttendanceDetails[]) => {
+            
+              this.backup = data;
+            
+              // Convert arrays to Sets for fast lookup
+              const coursesSet = new Set(
+                filter.courses?.map(c => c.trim())
+              );
+            
+              const senioritiesSet = new Set(
+                filter.seniorities
+              );
+            
+              const studentIdsSet = new Set(
+                filter.studentIds
+              );
+            
+              let filteredRawData = data;
+            
+              // Apply filters only if needed
+              if (coursesSet.size) {
+                filteredRawData = filteredRawData.filter(i =>
+                  coursesSet.has(
+                    'SP26-' + i.crsCde.replace(/\s/g, '')
+                  )
+                );
+              }
+            
+              if (senioritiesSet.size) {
+                filteredRawData = filteredRawData.filter(i =>
+                  senioritiesSet.has(i.seniority)
+                );
+              }
+            
+              if (studentIdsSet.size) {
+                filteredRawData = filteredRawData.filter(i =>
+                  studentIdsSet.has(i.idNum)
+                );
+              }
+            
+              this.rawAttendanceData = filteredRawData;
+            
+              this.students =
+                this.buildAggregatedData(filteredRawData);
+            
+              this.numberOfStudents =
+                new Set(this.students.map(s => s.idNum)).size;
+            
+              this.isLoading = false;
+            }),
+          
+            catchError(err => {
+              console.error('Error loading term data:', err);
+              this.isLoading = false;
+              return EMPTY;
+            })
+          
+          );
+        })
+      
+      )
+      .subscribe();
+    
     this.subscriptions.push(sub);
   }
 

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { from, map, Subscription, switchMap } from 'rxjs';
 import { AttendanceService } from '../../../services/attendance.service';
 import { StudentTracking } from '../../../models/entities/studentTracking';
 import { SearchDto } from '../../../models/dto/searchDto';
@@ -97,15 +97,30 @@ export class StatsComponent implements OnInit, OnDestroy {
   }
 
   fetchData() {
-    const sub = this.attendanceService.getRedFlagStudents().subscribe({
-      next: res => {
-        this.indexeddbService.getData('SP').then(data => {
-          this.info = data.filter(student => res.map(r => r.student_sis_id).includes(student.idNum))
-          this.infoBackup = [...this.info];
-          this.computeAttendanceCharts();
-        })
+    const sub = this.attendanceService.getRedFlagStudents().pipe(
+    
+      switchMap(res => {
+        const studentIds = new Set(
+          res.map(r => r.student_sis_id)
+        );
+      
+        return from(this.indexeddbService.getData('SP')).pipe(
+          map(data =>
+            data.filter(student =>
+              studentIds.has(student.idNum)
+            )
+          )
+        );
+      })
+    
+    ).subscribe({
+      next: filteredData => {
+        this.info = filteredData;
+        this.infoBackup = [...this.info];
+        this.computeAttendanceCharts();
       }
-    })
+    });
+  
     this.subscriptions.push(sub);
   }
 
