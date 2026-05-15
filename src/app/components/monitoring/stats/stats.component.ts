@@ -582,11 +582,12 @@ export class StatsComponent implements OnInit, OnDestroy {
     if (!this.students.length) return;
 
     // Recompute student event counts from full data
-    const studentMap = new Map<string, { name: string; count: number }>();
+    const studentMap = new Map<string, { id: string; name: string; count: number }>();
     for (const tracking of this.students) {
       const studentId = tracking.studentSisId || tracking.studentName || 'unknown';
       const studentName = tracking.studentName || studentId;
       studentMap.set(studentId, {
+        id: studentId,
         name: studentName,
         count: (studentMap.get(studentId)?.count || 0) + 1
       });
@@ -659,12 +660,12 @@ export class StatsComponent implements OnInit, OnDestroy {
   exportStudentAttendance(): void {
     if (!this.info || !this.info.length) return;
 
-    const studentMap = new Map<string, { name: string; present: number; late: number; absent: number }>();
+    const studentMap = new Map<string, { id: string; name: string; present: number; late: number; absent: number }>();
     for (const record of this.info) {
       const studentId = record.idNum;
       const fullName = `${record.firstName || ''} ${record.lastName || ''}`.trim() || studentId;
       if (!studentMap.has(studentId)) {
-        studentMap.set(studentId, { name: fullName, present: 0, late: 0, absent: 0 });
+        studentMap.set(studentId, { id: studentId, name: fullName, present: 0, late: 0, absent: 0 });
       }
       const stats = studentMap.get(studentId)!;
       const att = (record.attendance || '').toLowerCase();
