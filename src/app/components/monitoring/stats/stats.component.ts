@@ -594,8 +594,8 @@ export class StatsComponent implements OnInit, OnDestroy {
     }
 
     const rows = Array.from(studentMap.entries())
-      .map(([id, data]) => [data.name, data.count])
-      .sort((a, b) => (b[1] as number) - (a[1] as number)); // sort descending
+      .map(([id, data]) => [data.id, data.name, data.count])
+      .sort((a, b) => (b[2] as number) - (a[2] as number)); // sort descending
 
     this.downloadCSV([['Student ID', 'Student Name', 'Number of Tracking Events'], ...rows], 'all_notified_students');
   }
@@ -683,7 +683,7 @@ export class StatsComponent implements OnInit, OnDestroy {
       data.present + data.late + data.absent
     ]).sort((a, b) => (b[4] as number) - (a[4] as number));
 
-    this.downloadCSV([['Student', 'Present', 'Late', 'Absent', 'Total'], ...rows], 'all_student_attendance');
+    this.downloadCSV([['Student ID', 'Student Name', 'Present', 'Late', 'Absent', 'Total'], ...rows], 'all_student_attendance');
   }
 
   /**
