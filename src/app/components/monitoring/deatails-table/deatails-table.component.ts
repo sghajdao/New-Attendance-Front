@@ -71,38 +71,33 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
 
     const sub = this.attendanceService.attendanceFilter$.subscribe(filter => {
       console.log('Received filter update in DetailsTableComponent:', filter);
-      if (filter.trmCde) {
-        this.isLoading = true;
-        this.indexeddbService.getData(filter.trmCde).then((data: StudentAttendanceDetails[]) => {
-          this.rawAttendanceData = data;
-          this.students = this.buildAggregatedData(data);
-          this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
-          this.isLoading = false;
-        }).catch((err) => {
+      this.isLoading = true;
+      this.indexeddbService.getData(filter.trmCde? filter.trmCde : 'SP').then((data: StudentAttendanceDetails[]) => {
+        this.rawAttendanceData = data;
+        this.students = this.buildAggregatedData(data);
+        this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
+        if (filter.courses && filter.courses.length) {
+          this.students = this.students.filter(i => filter?.courses?.includes('SP26-' + i.crsCde.replace(/\s/g, "")))
+          this.rawAttendanceData = this.rawAttendanceData.filter(i => filter?.courses?.includes('SP26-' + i.crsCde.replace(/\s/g, "")))
+        }
+        if (filter.seniorities && filter.seniorities.length) {
+          this.students = this.students.filter(i => filter?.seniorities?.includes(i.seniority))
+          this.rawAttendanceData = this.rawAttendanceData.filter(i => filter?.seniorities?.includes(i.seniority))
+        }
+        if (filter.studentIds && filter.studentIds.length) {
+          this.students = this.students.filter(i => filter?.studentIds?.includes(i.idNum))
+          this.rawAttendanceData = this.rawAttendanceData.filter(i => filter?.studentIds?.includes(i.idNum))
+        }
+        else if (!filter.studentIds?.length && !filter.courses?.length && !filter.seniorities?.length) {
+          this.students = this.buildAggregatedData(this.backup)
+          this.rawAttendanceData = this.backup
+        }
+        this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
+        this.isLoading = false;
+      }).catch((err) => {
           console.error('Error loading term data:', err);
           this.isLoading = false;
         });
-
-        this.students = this.students.filter(i => i.trmCde === filter?.trmCde)
-        this.rawAttendanceData = this.rawAttendanceData.filter(i => i.trmCde === filter?.trmCde)
-      }
-      if (filter.courses && filter.courses.length) {
-        this.students = this.students.filter(i => filter?.courses?.includes('SP26-' + i.crsCde.replace(/\s/g, "")))
-        this.rawAttendanceData = this.rawAttendanceData.filter(i => filter?.courses?.includes('SP26-' + i.crsCde.replace(/\s/g, "")))
-      }
-      if (filter.seniorities && filter.seniorities.length) {
-        this.students = this.students.filter(i => filter?.seniorities?.includes(i.seniority))
-        this.rawAttendanceData = this.rawAttendanceData.filter(i => filter?.seniorities?.includes(i.seniority))
-      }
-      if (filter.studentIds && filter.studentIds.length) {
-        this.students = this.students.filter(i => filter?.studentIds?.includes(i.idNum))
-        this.rawAttendanceData = this.rawAttendanceData.filter(i => filter?.studentIds?.includes(i.idNum))
-      }
-      else if (!filter.studentIds?.length && !filter.courses?.length && !filter.seniorities?.length) {
-        this.students = this.buildAggregatedData(this.backup)
-        this.rawAttendanceData = this.backup
-      }
-      this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
     });
     this.subscriptions.push(sub);
   }
@@ -139,7 +134,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
       }
       else {
-        console.log('Loaded from IndexedDB:', data);
+        console.log('Loaded from IndexedDB, record count:', data.length);
         this.rawAttendanceData = data;
         this.students = this.buildAggregatedData(data);
         this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;

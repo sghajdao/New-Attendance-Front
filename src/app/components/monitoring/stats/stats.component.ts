@@ -70,8 +70,10 @@ export class StatsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadTrackingData();
+    this.fetchData();
 
     const sub = this.attendanceService.attendanceFilter$.subscribe(filter => {
+      console.log('Received filter update in DetailsTableComponent:', filter);
       if (filter.trmCde) {
         this.students = this.students.filter(i => i.coursSisId?.some(c => c.startsWith(filter!.trmCde!)))
         this.info = this.info.filter(i => i.trmCde === filter!.trmCde);
