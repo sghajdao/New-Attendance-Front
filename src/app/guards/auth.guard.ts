@@ -8,6 +8,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router)
   return service.isAuthenticated().pipe(map((res) => {
     if (res) {
+      console.log(res)
       localStorage.setItem('email', res.authorities[0].attributes.email)
       if (res.authorities[0].attributes.EmployeeID)
         localStorage.setItem('id', res.authorities[0].attributes.EmployeeID)
