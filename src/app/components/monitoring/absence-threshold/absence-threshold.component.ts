@@ -182,7 +182,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
           );
         }
       
-        this.students = filteredStudents.slice(0, 20); // Limit to 20 for performance
+        this.students = filteredStudents
       
         // Reset pagination
         this.currentPage = 1;
