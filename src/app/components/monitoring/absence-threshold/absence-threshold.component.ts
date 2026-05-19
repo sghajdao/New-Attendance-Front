@@ -386,7 +386,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         studentName: student.name,
         coursSisId: [...this.contactSelectedStudents.filter(s => s.id === student.id).map(s => s.course)],
         createdAt: meetingDate,
-        type: meetingType,
+        meetingType: meetingType,
+        mailType: meetingType,
         comment: meetingComment
       };
       if (!ids.includes(student.id)) {

@@ -233,8 +233,11 @@
         <div class="meeting-date">
           <i class="pi pi-calendar"></i> {{ formatMeetingDate(meeting.createdAt) }}
         </div>
-        <div class="meeting-type" *ngIf="meeting.type">
-          <i class="pi pi-tag"></i> {{ meeting.type }}
+        <div class="meeting-type" *ngIf="meeting.meetingType">
+          <i class="pi pi-tag"></i> {{ meeting.meetingType }}
+        </div>
+        <div class="meeting-type" *ngIf="meeting.mailType">
+          <i class="pi pi-tag"></i> {{ meeting.mailType }}
         </div>
         <div class="meeting-comment" *ngIf="meeting.comment">
           <i class="pi pi-comment"></i> {{ meeting.comment }}
