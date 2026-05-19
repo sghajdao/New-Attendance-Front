@@ -136,6 +136,8 @@
                         ></p-tag>
                         <span *ngIf="!student.meetingTypeArray?.length" class="no-types">No type</span>
                     </div>
+                </td>
+                <td>
                     <div class="types-cell">
                         <p-tag 
                             [severity]="getTypeSeverity(student.mailType)" 
