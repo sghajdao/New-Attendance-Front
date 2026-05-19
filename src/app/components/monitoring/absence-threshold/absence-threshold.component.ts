@@ -1,4 +1,4 @@
-// absence-threshold.component.ts - Updated with grid/row view toggle
+// absence-threshold.component.ts - Updated with categories field in contact form
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AttendanceService } from '../../../services/attendance.service';
@@ -92,6 +92,18 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     { label: '⚠️ Last Reminder', value: 'last reminder' }
   ];
 
+  // Categories options (same as meeting-history)
+  categoriesOptions = [
+    { label: 'Health & Well-Being', value: 'Health & Well-Being' },
+    { label: 'Adaptation & Social Adjustment Challenges', value: 'Adaptation & Social Adjustment Challenges' },
+    { label: 'Academic Challenges', value: 'Academic Challenges' },
+    { label: 'Scheduling & Transportation Disruption', value: 'Scheduling & Transportation Disruption' },
+    { label: 'Personal or Family Reasons', value: 'Personal or Family Reasons' },
+    { label: 'Financial or Work Responsibilities', value: 'Financial or Work Responsibilities' },
+    { label: 'Administrative or Technical Issues', value: 'Administrative or Technical Issues' },
+    { label: 'Other', value: 'Other' }
+  ];
+
   // Pagination properties
   currentPage: number = 1;
   pageSize: number = 6;
@@ -122,7 +134,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       meetingType: [null, Validators.required],
       mailType: [null, Validators.required],
       date: [new Date(), Validators.required],
-      comment: [null, Validators.required]
+      comment: [null, Validators.required],
+      categories: [[]] // New categories field (optional, multi-select)
     });
   }
   
@@ -217,6 +230,12 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     });
   
     this.subscriptions.push(sub);
+  }
+
+  // Helper: Convert array to comma-separated string
+  arrayToString(arr: string[]): string {
+    if (!arr || arr.length === 0) return '';
+    return arr.join(',');
   }
 
   // Set view mode and save preference
@@ -350,7 +369,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       meetingType: null,
       mailType: null,
       date: new Date(),
-      comment: null
+      comment: null,
+      categories: []
     });
     Object.keys(this.contactForm.controls).forEach(key => {
       this.contactForm.get(key)?.markAsUntouched();
@@ -383,6 +403,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     const meetingType = formValue.meetingType;
     const mailType = formValue.mailType;
     const meetingComment = formValue.comment;
+    const categories = formValue.categories || []; // Get selected categories array
 
     // Create tracking records for each selected student
     let ids: string[] = [];
@@ -394,7 +415,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         createdAt: meetingDate,
         meetingType: meetingType,
         mailType: mailType,
-        comment: meetingComment
+        comment: meetingComment,
+        categories: categories
       };
       if (!ids.includes(student.id)) {
         ids.push(student.id);

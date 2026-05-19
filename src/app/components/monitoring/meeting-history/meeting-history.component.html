@@ -65,7 +65,7 @@
         #dt
         [value]="filteredStudents" 
         stripedRows 
-        [tableStyle]="{'min-width': '800px'}"
+        [tableStyle]="{'min-width': '900px'}"
         [paginator]="true"
         [rows]="10"
         [rowsPerPageOptions]="[5, 10, 20, 50]"
@@ -89,6 +89,7 @@
                 </th>
                 <th style="min-width: 180px;">Meeting Type</th>
                 <th style="min-width: 180px;">Mailing Type</th>
+                <th style="min-width: 200px;">Categories</th>
                 <th style="min-width: 250px;">Comments / Notes</th>
                 <th style="width: 80px;">Actions</th>
             </tr>
@@ -146,6 +147,19 @@
                         ></p-tag>
                     </div>
                 </td>
+                <!-- Categories column -->
+                <td>
+                    <div class="types-cell">
+                        <p-tag 
+                            *ngFor="let category of student.categoryArray"
+                            severity="warning" 
+                            [value]="category" 
+                            [rounded]="true"
+                            styleClass="mr-1 mb-1"
+                        ></p-tag>
+                        <span *ngIf="!student.categoryArray?.length" class="no-types">No categories</span>
+                    </div>
+                </td>
                 <td>
                     <div class="comment-cell" [title]="student.comment">
                         <i class="pi pi-comment"></i>
@@ -175,7 +189,7 @@
 
         <ng-template #emptymessage>
             <tr>
-                <td colspan="7" class="empty-table-message">
+                <td colspan="8" class="empty-table-message">
                     <i class="pi pi-inbox"></i>
                     <p>No meeting records found</p>
                     <p class="empty-sub">Click "New Meeting" to schedule your first meeting</p>
@@ -190,7 +204,7 @@
     [header]="selectedMeeting ? 'Edit Meeting' : 'New Meeting'" 
     [modal]="true" 
     [(visible)]="visible" 
-    [style]="{ width: '500px', 'max-width': '90vw' }"
+    [style]="{ width: '550px', 'max-width': '90vw' }"
     [draggable]="false"
     [resizable]="false"
     styleClass="meeting-dialog"
@@ -266,9 +280,6 @@
                 <small class="error-message" *ngIf="globalFormGroup.get('meetingType')?.invalid && globalFormGroup.get('meetingType')?.touched">
                     Please select a meeting type
                 </small>
-                <small class="helper-text" *ngIf="globalFormGroup.get('meetingType')?.value?.length > 0">
-                    Selected: {{ globalFormGroup.get('meetingType')?.value?.length }} type(s)
-                </small>
             </div>
 
             <div class="form-field">
@@ -291,8 +302,30 @@
                 <small class="error-message" *ngIf="globalFormGroup.get('mailType')?.invalid && globalFormGroup.get('mailType')?.touched">
                     Please select a mailing type
                 </small>
-                <small class="helper-text" *ngIf="globalFormGroup.get('mailType')?.value?.length > 0">
-                    Selected: {{ globalFormGroup.get('mailType')?.value?.length }} type(s)
+            </div>
+
+            <!-- New Categories Multi-Select -->
+            <div class="form-field">
+                <label for="categories">Categories (optional)</label>
+                <p-multiSelect 
+                    id="categories"
+                    [options]="categoriesOptions"
+                    placeholder="Select categories"
+                    appendTo="body"
+                    formControlName="categories"
+                    display="chip"
+                >
+                    <ng-template let-category pTemplate="item">
+                        <div class="type-select-item">
+                            <span>{{ category.label }}</span>
+                        </div>
+                    </ng-template>
+                </p-multiSelect>
+                <small class="helper-text" *ngIf="globalFormGroup.get('categories')?.value?.length > 0">
+                    Selected: {{ globalFormGroup.get('categories')?.value?.length }} category(s)
+                </small>
+                <small class="helper-text" *ngIf="!globalFormGroup.get('categories')?.value?.length">
+                    Categorize the student's challenges or reasons for the meeting
                 </small>
             </div>
 

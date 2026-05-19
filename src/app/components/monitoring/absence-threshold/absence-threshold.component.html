@@ -1,4 +1,4 @@
-<!-- absence-threshold.component.html - Updated with grid/row view toggle -->
+<!-- absence-threshold.component.html - Updated with categories field in contact dialog -->
 <p-card [style]="{'height': '800px', 'overflow-y': 'auto'}" styleClass="threshold-card">
     <div class="card-header">
       <div class="title-section">
@@ -26,7 +26,7 @@
           </p-button>
         </div>
 
-        <!-- NEW: Dot color filter dropdown -->
+        <!-- Dot color filter dropdown -->
         <div class="filter-controls" *ngIf="students.length">
           <p-dropdown
             [options]="dotFilterOptions"
@@ -72,7 +72,7 @@
         </div>
 
         <div class="contact-header-actions" *ngIf="students.length">
-          <!-- NEW: Select All button -->
+          <!-- Select All button -->
           <p-button
             *ngIf="displayedStudents.length > 0"
             label="Select All"
@@ -256,12 +256,12 @@
   </ng-container>
 </p-dialog>
 
-<!-- Contact Dialog (unchanged) -->
+<!-- Contact Dialog (Updated with Categories) -->
 <p-dialog 
     [header]="contactSelectedStudents.length === 1 ? 'Contact Student' : 'Contact Selected Students (' + contactSelectedStudents.length + ')'" 
     [modal]="true" 
     [(visible)]="displayContactDialog" 
-    [style]="{ width: '500px', 'max-width': '90vw' }"
+    [style]="{ width: '550px', 'max-width': '90vw' }"
     [draggable]="false"
     [resizable]="false"
     styleClass="meeting-dialog"
@@ -331,6 +331,31 @@
                 />
                 <small class="error-message" *ngIf="contactForm.get('date')?.invalid && contactForm.get('date')?.touched">
                     Date and time are required
+                </small>
+            </div>
+
+            <!-- New Categories Multi-Select (optional) -->
+            <div class="form-field">
+                <label for="categories">Categories (optional)</label>
+                <p-multiSelect 
+                    id="categories"
+                    [options]="categoriesOptions"
+                    placeholder="Select categories"
+                    appendTo="body"
+                    formControlName="categories"
+                    display="chip"
+                >
+                    <ng-template let-category pTemplate="item">
+                        <div class="type-select-item">
+                            <span>{{ category.label }}</span>
+                        </div>
+                    </ng-template>
+                </p-multiSelect>
+                <small class="helper-text" *ngIf="contactForm.get('categories')?.value?.length > 0">
+                    Selected: {{ contactForm.get('categories')?.value?.length }} category(s)
+                </small>
+                <small class="helper-text" *ngIf="!contactForm.get('categories')?.value?.length">
+                    Categorize the student's challenges or reasons for the meeting
                 </small>
             </div>
 

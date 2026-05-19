@@ -341,7 +341,8 @@
 .form-field input,
 .form-field textarea,
 .form-field ::ng-deep .p-datepicker,
-.form-field ::ng-deep .p-select {
+.form-field ::ng-deep .p-select,
+.form-field ::ng-deep .p-multiselect {
     width: 100%;
 }
 

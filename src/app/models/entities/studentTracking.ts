@@ -6,5 +6,6 @@ export interface StudentTracking {
     createdAt?: Date;
     meetingType?: string;
     mailType?: string;
+    categories?: string[];
     comment?: string;
 }

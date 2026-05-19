@@ -47,6 +47,18 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     { label: '🔔 First Reminder', value: 'first reminder' },
     { label: '⚠️ Last Reminder', value: 'last reminder' }
   ];
+
+  // New categories options
+  categoriesOptions = [
+    { label: 'Health & Well-Being', value: 'Health & Well-Being' },
+    { label: 'Adaptation & Social Adjustment Challenges', value: 'Adaptation & Social Adjustment Challenges' },
+    { label: 'Academic Challenges', value: 'Academic Challenges' },
+    { label: 'Scheduling & Transportation Disruption', value: 'Scheduling & Transportation Disruption' },
+    { label: 'Personal or Family Reasons', value: 'Personal or Family Reasons' },
+    { label: 'Financial or Work Responsibilities', value: 'Financial or Work Responsibilities' },
+    { label: 'Administrative or Technical Issues', value: 'Administrative or Technical Issues' },
+    { label: 'Other', value: 'Other' }
+  ];
   
   typeFilterOptions = this.meetingTypes;
   subscriptions: Subscription[] = [];
@@ -73,11 +85,12 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   initForm(): void {
     this.globalFormGroup = this.fb.group({
       studentId: [null, Validators.required],
-      courseId: [[], this.multiSelectRequired], // Changed to array multi-select
+      courseId: [[], this.multiSelectRequired],
       date: [null, Validators.required],
       meetingType: [null, this.multiSelectRequired],
       mailType: [null, this.multiSelectRequired],
-      comment: [null]
+      comment: [null],
+      categories: [[]] // New multi-select field (optional)
     });
   }
 
@@ -93,10 +106,12 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     return arr.join(',');
   }
 
-  // Process students after load: add typeArray and courseArray for display
+  // Process students after load: add courseArray, categoryArray for display
   processStudents(data: StudentTracking[]): StudentTracking[] {
     return data.map(student => {
       (student as any).courseArray = student.coursSisId;
+      // Parse categories from stored string to array
+      (student as any).categoryArray = this.stringToArray((student as any).categories);
       return student;
     });
   }
@@ -126,16 +141,23 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     
     if (student) {
       const courseArray = (student as any).courseArray || student.coursSisId;
+      const categoryArray = (student as any).categoryArray || this.stringToArray((student as any).categories);
       this.globalFormGroup.patchValue({
         studentId: student.studentSisId,
         courseId: courseArray,
         date: student.createdAt ? new Date(student.createdAt) : new Date(),
         meetingType: student.meetingType,
         mailType: student.mailType,
-        comment: student.comment || ''
+        comment: student.comment || '',
+        categories: categoryArray
       });
     } else {
-      this.globalFormGroup.patchValue({ courseId: [], meetingType: [], mailType: [] });
+      this.globalFormGroup.patchValue({ 
+        courseId: [], 
+        meetingType: [], 
+        mailType: [],
+        categories: []
+      });
     }
     this.visible = true;
   }
@@ -165,12 +187,13 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     
     const formData: StudentTracking = {
       studentSisId: formValue.studentId,
-      coursSisId: formValue.courseId,  // Convert array to string
+      coursSisId: formValue.courseId,
       createdAt: formValue.date,
-      meetingType: formValue.meetingType,            // Convert array to string
+      meetingType: formValue.meetingType,
       mailType: formValue.mailType,
       comment: formValue.comment || '',
-      studentName: `Student ${formValue.studentId}`
+      studentName: `Student ${formValue.studentId}`,
+      categories: formValue.categories
     };
     
     const sub = this.attendanceService.trackStudent(formData).pipe(
@@ -223,6 +246,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       const updatedMeetingTypeArray = this.globalFormGroup.value.meetingType;
       const updatedMailTypeArray = this.globalFormGroup.value.mailType;
       const updatedComment = this.globalFormGroup.value.comment;
+      const updatedCategories = this.globalFormGroup.value.categories;
       
       if (!updatedCourseArray?.length || !updatedMeetingTypeArray?.length) {
         this.messageService.add({
@@ -240,7 +264,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       this.selectedMeeting.mailType = updatedMailTypeArray;
       this.selectedMeeting.comment = updatedComment || this.selectedMeeting.comment;
       (this.selectedMeeting as any).courseArray = updatedCourseArray;
-      (this.selectedMeeting as any).meetingTypeArray = updatedMeetingTypeArray;
+      (this.selectedMeeting as any).categoryArray = updatedCategories;
+      (this.selectedMeeting as any).categories = this.arrayToString(updatedCategories);
       
       const sub = this.attendanceService.updateTracking(this.selectedMeeting).subscribe({
         next: (res) => {
@@ -248,7 +273,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
           if (index !== -1) {
             this.students[index] = { ...res, id: this.selectedMeeting!.id };
             (this.students[index] as any).courseArray = updatedCourseArray;
-            (this.students[index] as any).meetingTypeArray = updatedMeetingTypeArray;
+            (this.students[index] as any).categoryArray = updatedCategories;
           }
           this.filterMeetings();
           this.cancelDialog();
@@ -383,7 +408,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Define CSV headers
+    // Define CSV headers - added Categories column
     const headers = [
       'Student SIS ID',
       'Student Name',
@@ -391,6 +416,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       'Meeting Date',
       'Meeting Type',
       'Mailing Type',
+      'Categories',
       'Comments / Notes'
     ];
 
@@ -405,6 +431,10 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       const courses = (student as any).courseArray || [];
       const coursesStr = courses.join(', ');
 
+      // Get categories array
+      const categories = (student as any).categoryArray || [];
+      const categoriesStr = categories.join(', ');
+
       // Build row data
       const row = [
         student.studentSisId || '',
@@ -413,6 +443,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
         meetingDate,
         student.meetingType || '',
         student.mailType || '',
+        categoriesStr,
         student.comment || ''
       ];
 
