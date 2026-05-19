@@ -97,6 +97,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   processStudents(data: StudentTracking[]): StudentTracking[] {
     return data.map(student => {
       (student as any).meetingTypeArray = student.meetingType;
+      (student as any).mailTypeArray = student.mailType;
       (student as any).courseArray = student.coursSisId;
       return student;
     });
@@ -358,6 +359,10 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
 
   getMeetingTypeLabel(type: string): string {
     return this.meetingTypes.find(t => t.value === type)?.label || type;
+  }
+
+  getMailTypeLabel(type: string): string {
+    return this.mailTypes.find(t => t.value === type)?.label || type;
   }
 
   getMailingTypeLabel(type: string): string {
