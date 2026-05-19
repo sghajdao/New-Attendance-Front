@@ -285,21 +285,35 @@
 
         <form [formGroup]="contactForm" (ngSubmit)="submitContact()">
             <div class="form-field">
-                <label for="contactType" class="required-field">Meeting Types (select one or more)</label>
-                <p-multiSelect
+                <label for="contactType" class="required-field">Meeting Type</label>
+                <p-select
                     [options]="meetingTypes"
                     optionLabel="label"
                     optionValue="value"
                     placeholder="Select meeting types"
-                    formControlName="type"
-                    [showToggleAll]="true"
+                    formControlName="meetingType"
                     [filter]="true"
                     filterPlaceholder="Search types"
                     appendTo="body"
-                    display="chip"
-                ></p-multiSelect>
-                <small class="error-message" *ngIf="contactForm.get('type')?.invalid && contactForm.get('type')?.touched">
-                    Please select at least one meeting type
+                ></p-select>
+                <small class="error-message" *ngIf="contactForm.get('meetingType')?.invalid && contactForm.get('meetingType')?.touched">
+                    Please select a meeting type
+                </small>
+            </div>
+            <div class="form-field">
+                <label for="contactType" class="required-field">Mailing Type</label>
+                <p-select
+                    [options]="mailingTypes"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select a mailing type"
+                    formControlName="mailType"
+                    [filter]="true"
+                    filterPlaceholder="Search types"
+                    appendTo="body"
+                ></p-select>
+                <small class="error-message" *ngIf="contactForm.get('mailType')?.invalid && contactForm.get('mailType')?.touched">
+                    Please select a mailing type
                 </small>
             </div>
 
@@ -340,7 +354,7 @@
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
-                    [disabled]="!(contactForm.value.type.length > 0 && contactForm.value.date) || isContactSaving"
+                    [disabled]="!(contactForm.value.meetingType && contactForm.value.date) || isContactSaving"
                     [loading]="isContactSaving"
                 />
             </div>

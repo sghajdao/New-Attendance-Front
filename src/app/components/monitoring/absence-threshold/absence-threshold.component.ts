@@ -84,6 +84,9 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     { label: '🖥️ Team Call', value: 'team call' },
     { label: '📞 Phone Call', value: 'phone call' },
     { label: '✉️ By Email', value: 'by email' },
+  ];
+
+  mailingTypes = [
     { label: '📨 First Email', value: 'first email' },
     { label: '🔔 First Reminder', value: 'first reminder' },
     { label: '⚠️ Last Reminder', value: 'last reminder' }
@@ -116,7 +119,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
 
   initContactForm(): void {
     this.contactForm = this.fb.group({
-      type: [[], Validators.required],
+      meetingType: [null, Validators.required],
+      mailType: [null, Validators.required],
       date: [new Date(), Validators.required],
       comment: [null, Validators.required]
     });
@@ -343,7 +347,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
 
   resetContactForm(): void {
     this.contactForm.reset({
-      type: [],
+      meetingType: null,
+      mailType: null,
       date: new Date(),
       comment: null
     });
@@ -375,7 +380,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     this.isContactSaving = true;
     const formValue = this.contactForm.value;
     const meetingDate = formValue.date;
-    const meetingType = formValue.type;
+    const meetingType = formValue.meetingType;
+    const mailType = formValue.mailType;
     const meetingComment = formValue.comment;
 
     // Create tracking records for each selected student
@@ -387,7 +393,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         coursSisId: [...this.contactSelectedStudents.filter(s => s.id === student.id).map(s => s.course)],
         createdAt: meetingDate,
         meetingType: meetingType,
-        mailType: meetingType,
+        mailType: mailType,
         comment: meetingComment
       };
       if (!ids.includes(student.id)) {
@@ -442,6 +448,11 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
 
   getContactTypeLabel(type: string): string {
     const found = this.meetingTypes.find(t => t.value === type);
+    return found ? found.label.replace(/^[^a-zA-Z]+/, '') : type;
+  }
+
+  getMailTypeLabel(type: string): string {
+    const found = this.mailingTypes.find(t => t.value === type);
     return found ? found.label.replace(/^[^a-zA-Z]+/, '') : type;
   }
 
