@@ -96,8 +96,6 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   // Process students after load: add typeArray and courseArray for display
   processStudents(data: StudentTracking[]): StudentTracking[] {
     return data.map(student => {
-      (student as any).meetingTypeArray = student.meetingType;
-      (student as any).mailTypeArray = student.mailType;
       (student as any).courseArray = student.coursSisId;
       return student;
     });

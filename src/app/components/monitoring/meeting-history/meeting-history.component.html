@@ -129,9 +129,8 @@
                 <td>
                     <div class="types-cell">
                         <p-tag 
-                            *ngFor="let type of student.meetingTypeArray"
-                            [severity]="getTypeSeverity(type)" 
-                            [value]="getMeetingTypeLabel(type)" 
+                            [severity]="getTypeSeverity(student.meetingType)" 
+                            [value]="getMeetingTypeLabel(student.meetingType)" 
                             [rounded]="true"
                             styleClass="mr-1 mb-1"
                         ></p-tag>
@@ -139,9 +138,8 @@
                     </div>
                     <div class="types-cell">
                         <p-tag 
-                            *ngFor="let type of student.mailTypeArray"
-                            [severity]="getTypeSeverity(type)" 
-                            [value]="getMailTypeLabel(type)" 
+                            [severity]="getTypeSeverity(student.mailType)" 
+                            [value]="getMailTypeLabel(student.mailType)" 
                             [rounded]="true"
                             styleClass="mr-1 mb-1"
                         ></p-tag>
