@@ -198,12 +198,8 @@ export class StatsComponent implements OnInit, OnDestroy {
       studentEntry.courses += courseCount;
       totalCoursesTemp += courseCount;
 
-      const types = tracking.type || [];
-      for (const type of types) {
-        if (type && type.trim()) {
-          typeMap.set(type, (typeMap.get(type) || 0) + 1);
-        }
-      }
+      if (tracking.meetingType && tracking.meetingType.trim())
+        typeMap.set(tracking.meetingType, (typeMap.get(tracking.meetingType) || 0) + 1);
     }
 
     this.totalEvents = this.students.length;
@@ -694,12 +690,9 @@ export class StatsComponent implements OnInit, OnDestroy {
 
     const typeMap = new Map<string, number>();
     for (const tracking of this.students) {
-      const types = tracking.type || [];
-      for (const type of types) {
-        if (type && type.trim()) {
-          typeMap.set(type, (typeMap.get(type) || 0) + 1);
+      if (tracking.meetingType && tracking.meetingType.trim()) {
+          typeMap.set(tracking.meetingType, (typeMap.get(tracking.meetingType) || 0) + 1);
         }
-      }
     }
 
     const rows = Array.from(typeMap.entries()).map(([type, count]) => [type, count]);
