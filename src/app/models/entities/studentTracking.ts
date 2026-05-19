@@ -4,6 +4,7 @@ export interface StudentTracking {
     studentName?: string;
     coursSisId?: string[];
     createdAt?: Date;
-    type?: string[];
+    meetingType?: string;
+    mailType?: string;
     comment?: string;
 }

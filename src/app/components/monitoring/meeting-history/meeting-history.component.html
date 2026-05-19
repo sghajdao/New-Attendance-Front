@@ -52,7 +52,6 @@
             >
                 <ng-template let-type pTemplate="item">
                     <div class="type-select-item">
-                        <i [class]="getTypeIcon(type.value)"></i>
                         <span>{{ type.label }}</span>
                     </div>
                 </ng-template>
@@ -131,9 +130,8 @@
                         <p-tag 
                             *ngFor="let type of student.typeArray"
                             [severity]="getTypeSeverity(type)" 
-                            [value]="getTypeLabel(type)" 
+                            [value]="getMeetingTypeLabel(type)" 
                             [rounded]="true"
-                            [icon]="getTypeIcon(type)"
                             styleClass="mr-1 mb-1"
                         ></p-tag>
                         <span *ngIf="!student.typeArray?.length" class="no-types">No types</span>
@@ -240,29 +238,52 @@
             </div>
 
             <div class="form-field">
-                <label for="type" class="required-field">Meeting Types (select one or more)</label>
-                <p-multiSelect 
-                    id="type"
+                <label for="meetingType" class="required-field">Meeting Types</label>
+                <p-select 
+                    id="meetingType"
                     [options]="meetingTypes"
                     placeholder="Select meeting types"
                     appendTo="body"
-                    formControlName="type"
+                    formControlName="meetingType"
                     optionLabel="label"
                     optionValue="value"
-                    display="chip"
                 >
                     <ng-template let-type pTemplate="item">
                         <div class="type-select-item">
-                            <i [class]="getTypeIcon(type.value)"></i>
                             <span>{{ type.label }}</span>
                         </div>
                     </ng-template>
-                </p-multiSelect>
-                <small class="error-message" *ngIf="globalFormGroup.get('type')?.invalid && globalFormGroup.get('type')?.touched">
-                    Please select at least one meeting type
+                </p-select>
+                <small class="error-message" *ngIf="globalFormGroup.get('meetingType')?.invalid && globalFormGroup.get('meetingType')?.touched">
+                    Please select a meeting type
                 </small>
-                <small class="helper-text" *ngIf="globalFormGroup.get('type')?.value?.length > 0">
-                    Selected: {{ globalFormGroup.get('type')?.value?.length }} type(s)
+                <small class="helper-text" *ngIf="globalFormGroup.get('meetingType')?.value?.length > 0">
+                    Selected: {{ globalFormGroup.get('meetingType')?.value?.length }} type(s)
+                </small>
+            </div>
+
+            <div class="form-field">
+                <label for="mailType" class="required-field">Mailing Types</label>
+                <p-select 
+                    id="mailType"
+                    [options]="mailTypes"
+                    placeholder="Select mailing types"
+                    appendTo="body"
+                    formControlName="mailType"
+                    optionLabel="label"
+                    optionValue="value"
+                >
+                    <ng-template let-type pTemplate="item">
+                        <div class="type-select-item">
+                            <span>{{ type.label }}</span>
+                        </div>
+                    </ng-template>
+                </p-select>
+                <small class="error-message" *ngIf="globalFormGroup.get('mailType')?.invalid && globalFormGroup.get('mailType')?.touched">
+                    Please select a mailing type
+                </small>
+                <small class="helper-text" *ngIf="globalFormGroup.get('mailType')?.value?.length > 0">
+                    Selected: {{ globalFormGroup.get('mailType')?.value?.length }} type(s)
                 </small>
             </div>
 

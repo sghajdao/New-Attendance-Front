@@ -36,13 +36,16 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   courses: string[] = [];
   
   meetingTypes = [
-    { label: '👤 Face to Face', value: 'face to face', icon: 'pi pi-users' },
-    { label: '🖥️ Team Call', value: 'team call', icon: 'pi pi-desktop' },
-    { label: '📞 Phone Call', value: 'phone call', icon: 'pi pi-phone' },
-    { label: '✉️ By Email', value: 'by email', icon: 'pi pi-envelope' },
-    { label: '📨 First Email', value: 'first email', icon: 'pi pi-envelope' },
-    { label: '🔔 First Reminder', value: 'first reminder', icon: 'pi pi-bell' },
-    { label: '⚠️ Last Reminder', value: 'last reminder', icon: 'pi pi-exclamation-triangle' }
+    { label: '👤 Face to Face', value: 'face to face' },
+    { label: '🖥️ Team Call', value: 'team call' },
+    { label: '📞 Phone Call', value: 'phone call' },
+    { label: '✉️ By Email', value: 'by email' },
+  ];
+
+  mailTypes = [
+    { label: '📨 First Email', value: 'first email' },
+    { label: '🔔 First Reminder', value: 'first reminder' },
+    { label: '⚠️ Last Reminder', value: 'last reminder' }
   ];
   
   typeFilterOptions = this.meetingTypes;
@@ -72,7 +75,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       studentId: [null, Validators.required],
       courseId: [[], this.multiSelectRequired], // Changed to array multi-select
       date: [null, Validators.required],
-      type: [[], this.multiSelectRequired],
+      meetingType: [null, this.multiSelectRequired],
+      mailType: [null, this.multiSelectRequired],
       comment: [null]
     });
   }
@@ -92,7 +96,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   // Process students after load: add typeArray and courseArray for display
   processStudents(data: StudentTracking[]): StudentTracking[] {
     return data.map(student => {
-      (student as any).typeArray = student.type;
+      (student as any).meetingTypeArray = student.meetingType;
       (student as any).courseArray = student.coursSisId;
       return student;
     });
@@ -122,17 +126,17 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     this.selectedMeeting = student;
     
     if (student) {
-      const typeArray = (student as any).typeArray || student.type;
       const courseArray = (student as any).courseArray || student.coursSisId;
       this.globalFormGroup.patchValue({
         studentId: student.studentSisId,
         courseId: courseArray,
         date: student.createdAt ? new Date(student.createdAt) : new Date(),
-        type: typeArray,
+        meetingType: student.meetingType,
+        mailType: student.mailType,
         comment: student.comment || ''
       });
     } else {
-      this.globalFormGroup.patchValue({ courseId: [], type: [] });
+      this.globalFormGroup.patchValue({ courseId: [], meetingType: [], mailType: [] });
     }
     this.visible = true;
   }
@@ -164,7 +168,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       studentSisId: formValue.studentId,
       coursSisId: formValue.courseId,  // Convert array to string
       createdAt: formValue.date,
-      type: formValue.type,            // Convert array to string
+      meetingType: formValue.meetingType,            // Convert array to string
+      mailType: formValue.mailType,
       comment: formValue.comment || '',
       studentName: `Student ${formValue.studentId}`
     };
@@ -216,10 +221,11 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   updateMeeting(): void {
     if (this.selectedMeeting && this.selectedMeeting.id) {
       const updatedCourseArray = this.globalFormGroup.value.courseId;
-      const updatedTypeArray = this.globalFormGroup.value.type;
+      const updatedMeetingTypeArray = this.globalFormGroup.value.meetingType;
+      const updatedMailTypeArray = this.globalFormGroup.value.mailType;
       const updatedComment = this.globalFormGroup.value.comment;
       
-      if (!updatedCourseArray?.length || !updatedTypeArray?.length) {
+      if (!updatedCourseArray?.length || !updatedMeetingTypeArray?.length) {
         this.messageService.add({
           severity: 'warn',
           summary: 'Validation Error',
@@ -231,10 +237,11 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       
       // Update local object with stringified values
       this.selectedMeeting.coursSisId = updatedCourseArray;
-      this.selectedMeeting.type = updatedTypeArray;
+      this.selectedMeeting.meetingType = updatedMeetingTypeArray;
+      this.selectedMeeting.mailType = updatedMailTypeArray;
       this.selectedMeeting.comment = updatedComment || this.selectedMeeting.comment;
       (this.selectedMeeting as any).courseArray = updatedCourseArray;
-      (this.selectedMeeting as any).typeArray = updatedTypeArray;
+      (this.selectedMeeting as any).meetingTypeArray = updatedMeetingTypeArray;
       
       const sub = this.attendanceService.updateTracking(this.selectedMeeting).subscribe({
         next: (res) => {
@@ -242,7 +249,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
           if (index !== -1) {
             this.students[index] = { ...res, id: this.selectedMeeting!.id };
             (this.students[index] as any).courseArray = updatedCourseArray;
-            (this.students[index] as any).typeArray = updatedTypeArray;
+            (this.students[index] as any).meetingTypeArray = updatedMeetingTypeArray;
           }
           this.filterMeetings();
           this.cancelDialog();
@@ -301,8 +308,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       
       let matchesType = true;
       if (this.selectedTypes?.length) {
-        const studentTypes = (student as any).typeArray || student.type;
-        matchesType = this.selectedTypes.some(selected => studentTypes.includes(selected));
+        matchesType = this.selectedTypes.some(selected => student.meetingType === selected);
       }
       return matchesSearch && matchesType;
     });
@@ -350,19 +356,12 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     return map[type] || 'info';
   }
 
-  getTypeIcon(type: string): string {
-    const map: Record<string, string> = {
-      'face to face': 'pi pi-users',
-      'team call': 'pi pi-phone',
-      'by email': 'pi pi-envelope',
-      'first reminder': 'pi pi-bell',
-      'last reminder': 'pi pi-exclamation-triangle'
-    };
-    return map[type] || 'pi pi-calendar';
+  getMeetingTypeLabel(type: string): string {
+    return this.meetingTypes.find(t => t.value === type)?.label || type;
   }
 
-  getTypeLabel(type: string): string {
-    return this.meetingTypes.find(t => t.value === type)?.label || type;
+  getMailingTypeLabel(type: string): string {
+    return this.mailTypes.find(t => t.value === type)?.label || type;
   }
 
   truncateComment(comment: string, maxLength: number = 50): string {
@@ -387,7 +386,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       'Student Name',
       'Course SIS ID(s)',
       'Meeting Date',
-      'Meeting Type(s)',
+      'Meeting Type',
+      'Mailing Type',
       'Comments / Notes'
     ];
 
@@ -402,17 +402,14 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       const courses = (student as any).courseArray || [];
       const coursesStr = courses.join(', ');
 
-      // Get type array (already processed as .typeArray)
-      const types = (student as any).typeArray || [];
-      const typesStr = types.map((t: string) => this.getTypeLabel(t)).join(', ');
-
       // Build row data
       const row = [
         student.studentSisId || '',
         student.studentName || '',
         coursesStr,
         meetingDate,
-        typesStr,
+        student.meetingType || '',
+        student.mailType || '',
         student.comment || ''
       ];
 
