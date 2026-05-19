@@ -33,6 +33,8 @@ export interface StudentCourseAggregate {
   midtermGrade: string;
   major: string;
   hold: string;
+  trmGpa: string;
+  wfReason: string;
   meetings: StudentTracking[];
 }
 
@@ -232,6 +234,8 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
           midtermGrade: record.midtermGrade,
           major: record.major,
           hold: record.hold? record.hold.trim() : 'No Hold',
+          trmGpa: record.trmGpa,
+          wfReason: record.wfReason,
           meetings: record.meetings || []
         });
       }

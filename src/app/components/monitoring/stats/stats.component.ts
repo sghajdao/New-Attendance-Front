@@ -515,7 +515,7 @@ export class StatsComponent implements OnInit, OnDestroy {
 
     const studentsGpa: Map<string, number> = new Map();
     for (const i of this.info) {
-      const gpa = parseFloat(i.localGpa);
+      const gpa = parseFloat(i.trmGpa || '0');
       if (!isNaN(gpa)) {
         studentsGpa.set(i.idNum, gpa);
       }

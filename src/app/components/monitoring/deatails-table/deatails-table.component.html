@@ -23,7 +23,7 @@
     stripedRows
     [tableStyle]="{'min-width': '100%'}"
     [paginator]="true"
-    [rows]="10"
+    [rows]="5"
     [rowsPerPageOptions]="[5, 10, 20, 30]"
     [showCurrentPageReport]="true"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
@@ -77,6 +77,9 @@
         <th pSortableColumn="midtermGrade" style="min-width: 90px;">
           Midterm Grade <p-sortIcon field="midtermGrade"></p-sortIcon>
         </th>
+        <th pSortableColumn="trmGpa" style="min-width: 90px;">
+          Term GPA <p-sortIcon field="trmGpa"></p-sortIcon>
+        </th>
         <th style="min-width: 100px;">Grade Changed Date</th>
         <th style="min-width: 100px;">Schedule</th>
         <th pSortableColumn="crsDiv" style="min-width: 70px;">
@@ -90,6 +93,7 @@
         </th>
         <th style="min-width: 100px;">Major</th>
         <th style="min-width: 100px;">Hold</th>
+        <th style="min-width: 100px;">WF Reason</th>
       </tr>
     </ng-template>
 
@@ -145,6 +149,7 @@
           <p-tag [severity]="getGradeSeverity(student.grade)" [value]="student.grade || '-'" [rounded]="true" />
         </td>
         <td>{{ student.midtermGrade || '-' }}</td>
+        <td>{{ student.trmGpa || '-' }}</td>
         <td>{{ student.gradeChangeDate || '-' }}</td>
         <td>{{ student.schedule || '-' }}</td>
         <td>
@@ -165,12 +170,15 @@
         <td> 
           <strong>{{ student.hold }}</strong>
         </td>
+        <td>
+          <strong>{{ student.wfReason }}</strong>
+        </td>
       </tr>
     </ng-template>
 
     <ng-template #emptymessage>
       <tr>
-        <td colspan="24" class="empty-message">
+        <td colspan="25" class="empty-message">
           <i class="pi pi-inbox mr-2"></i> No students found.
         </td>
       </tr>
