@@ -72,31 +72,21 @@ export class StatsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loading = true;
-    const sub = combineLatest([
-      this.attendanceService.getRedFlagStudents(),
-      this.attendanceService.attendanceFilter$
-    ])
+    const sub = this.attendanceService.attendanceFilter$
 
     .pipe(
 
-      switchMap(([redFlagStudents, filter]) => {
+    switchMap((filter) => {
 
-        const studentIds = new Set(
-          redFlagStudents.map(r => r.student_sis_id)
-        );
-
-        return from(
-          this.indexeddbService.getData(
-            filter.trmCde || 'SP'
-          )
+      return from(
+        this.indexeddbService.getData(
+          filter.trmCde || 'SP'
+        )
         ).pipe(
 
           map(data => {
 
-            // Keep only red-flag students
-            let filteredInfo = data.filter(student =>
-              studentIds.has(student.idNum)
-            );
+            let filteredInfo = data;
 
             // Fast lookup sets
             const coursesSet = new Set(filter.courses || []);
@@ -134,9 +124,7 @@ export class StatsComponent implements OnInit, OnDestroy {
 
         );
       })
-
     )
-
     .subscribe({
 
       next: filteredData => {
