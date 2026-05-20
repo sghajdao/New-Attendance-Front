@@ -283,7 +283,9 @@
             </ul>
         </div>
 
-        <div class="form-field">
+        <form [formGroup]="contactForm" (ngSubmit)="submitContact()">
+
+          <div class="form-field">
                 <label for="contactType" class="required-field">Mailing Type</label>
                 <p-select
                     [options]="mailingTypes"
@@ -298,9 +300,7 @@
                 <small class="error-message" *ngIf="contactForm.get('mailType')?.invalid && contactForm.get('mailType')?.touched">
                     Please select a mailing type
                 </small>
-        </div>
-
-        <form [formGroup]="contactForm" (ngSubmit)="submitContact()">
+            </div>
             <div class="form-field">
                 <label for="contactType" class="required-field">Meeting Type</label>
                 <p-select
@@ -360,7 +360,7 @@
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
-                    [disabled]="!contactForm.value.mailType"
+                    [disabled]="!contactForm.value.mailType || isContactSaving"
                     [loading]="isContactSaving"
                 />
             </div>
