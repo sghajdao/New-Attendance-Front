@@ -317,23 +317,6 @@
                 </small>
             </div>
 
-            <div class="form-field">
-                <label for="contactDate" class="required-field">Meeting Date & Time</label>
-                <p-datepicker 
-                    id="contactDate"
-                    [showTime]="true"
-                    [showIcon]="true"
-                    [iconDisplay]="'input'"
-                    appendTo="body"
-                    placeholder="Select date and time"
-                    formControlName="date"
-                    dateFormat="yy-mm-dd"
-                />
-                <small class="error-message" *ngIf="contactForm.get('date')?.invalid && contactForm.get('date')?.touched">
-                    Date and time are required
-                </small>
-            </div>
-
             <!-- New Categories Multi-Select (optional) -->
             <div class="form-field">
                 <label for="categories">Categories (optional)</label>
@@ -353,9 +336,6 @@
                 </p-multiSelect>
                 <small class="helper-text" *ngIf="contactForm.get('categories')?.value?.length > 0">
                     Selected: {{ contactForm.get('categories')?.value?.length }} category(s)
-                </small>
-                <small class="helper-text" *ngIf="!contactForm.get('categories')?.value?.length">
-                    Categorize the student's challenges or reasons for the meeting
                 </small>
             </div>
 
@@ -379,7 +359,7 @@
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
-                    [disabled]="!(contactForm.value.meetingType && contactForm.value.date) || isContactSaving"
+                    [disabled]="!contactForm.value.meetingType || isContactSaving"
                     [loading]="isContactSaving"
                 />
             </div>

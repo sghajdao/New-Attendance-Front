@@ -57,6 +57,7 @@ export class StatsComponent implements OnInit, OnDestroy {
   studentsAttendanceReport: any
 
   subscriptions: Subscription[] = [];
+  loading: boolean = false;
 
   constructor(
     private attendanceService: AttendanceService,
@@ -70,6 +71,7 @@ export class StatsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.loading = true;
     const sub = combineLatest([
       this.attendanceService.getRedFlagStudents(),
       this.attendanceService.attendanceFilter$
@@ -143,10 +145,12 @@ export class StatsComponent implements OnInit, OnDestroy {
         this.infoBackup = [...filteredData];
         this.loadTrackingData();
         this.computeAttendanceCharts();
+        this.loading = false;
       },
 
       error: err => {
         console.error(err);
+        this.loading = false;
       }
 
     });
@@ -160,11 +164,13 @@ export class StatsComponent implements OnInit, OnDestroy {
         this.students = res || [];
         this.backup = [...this.students];
         this.computeAllStatsAndCharts();
+        this.loading = false;
       },
       error: (err) => {
         console.error('Error loading tracking data:', err);
         this.students = [];
         this.computeAllStatsAndCharts();
+        this.loading = false;
       }
     });
     this.subscriptions.push(sub);

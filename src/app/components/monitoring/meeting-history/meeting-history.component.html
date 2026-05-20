@@ -244,23 +244,6 @@
             </div>
 
             <div class="form-field">
-                <label for="date" class="required-field">Meeting Date & Time</label>
-                <p-datepicker 
-                    id="date"
-                    [showTime]="true"
-                    [showIcon]="true"
-                    [iconDisplay]="'input'"
-                    appendTo="body"
-                    placeholder="Select date and time"
-                    formControlName="date"
-                    dateFormat="yy-mm-dd"
-                />
-                <small class="error-message" *ngIf="globalFormGroup.get('date')?.invalid && globalFormGroup.get('date')?.touched">
-                    Date and time are required
-                </small>
-            </div>
-
-            <div class="form-field">
                 <label for="meetingType" class="required-field">Meeting Types</label>
                 <p-select 
                     id="meetingType"

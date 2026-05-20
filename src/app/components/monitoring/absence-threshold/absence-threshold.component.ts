@@ -62,8 +62,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   dotFilterOptions = [
     { label: '🟢 No contact yet', value: 'green' },
     { label: '🟡 Emailed (1st time)', value: 'yellow' },
-    { label: '🔴 Emailed (2nd time)', value: 'orange' },
-    { label: '⚫ Emailed (3rd time)', value: 'red' }
+    { label: '🔴 Emailed (2nd time)', value: 'red' },
+    { label: '⚫ Emailed (3rd time)', value: 'black' }
   ];
 
   percentageFilter: string | null = null;
@@ -133,7 +133,6 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     this.contactForm = this.fb.group({
       meetingType: [null, Validators.required],
       mailType: [null, Validators.required],
-      date: [new Date(), Validators.required],
       comment: [null, Validators.required],
       categories: [[]] // New categories field (optional, multi-select)
     });
@@ -327,8 +326,13 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       this.selectedStudents.delete(student);
       student._selected = false;
     } else {
-      this.selectedStudents.add(student);
-      student._selected = true;
+      // this.selectedStudents.add(student);
+      // student._selected = true;
+      
+      for (let item  of this.students.filter(s => s.id === student.id)) {
+        this.selectedStudents.add(item);
+        item._selected = true;
+      }
     }
   }
 
@@ -368,7 +372,6 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     this.contactForm.reset({
       meetingType: null,
       mailType: null,
-      date: new Date(),
       comment: null,
       categories: []
     });
@@ -384,7 +387,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   }
 
   submitContact(): void {
-    if (!this.contactForm.value.meetingType || !this.contactForm.value.mailType || !this.contactForm.value.date) {
+    if (!this.contactForm.value.meetingType || !this.contactForm.value.mailType) {
       Object.keys(this.contactForm.controls).forEach(key => {
         this.contactForm.get(key)?.markAsTouched();
       });
@@ -399,7 +402,6 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
 
     this.isContactSaving = true;
     const formValue = this.contactForm.value;
-    const meetingDate = formValue.date;
     const meetingType = formValue.meetingType;
     const mailType = formValue.mailType;
     const meetingComment = formValue.comment;
@@ -412,7 +414,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         studentSisId: student.id,
         studentName: student.name,
         coursSisId: [...this.contactSelectedStudents.filter(s => s.id === student.id).map(s => s.course)],
-        createdAt: meetingDate,
+        createdAt: new Date(),
         meetingType: meetingType,
         mailType: mailType,
         comment: meetingComment,

@@ -86,7 +86,6 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     this.globalFormGroup = this.fb.group({
       studentId: [null, Validators.required],
       courseId: [[], this.multiSelectRequired],
-      date: [null, Validators.required],
       meetingType: [null, this.multiSelectRequired],
       mailType: [null, this.multiSelectRequired],
       comment: [null],
@@ -145,7 +144,6 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       this.globalFormGroup.patchValue({
         studentId: student.studentSisId,
         courseId: courseArray,
-        date: student.createdAt ? new Date(student.createdAt) : new Date(),
         meetingType: student.meetingType,
         mailType: student.mailType,
         comment: student.comment || '',
@@ -169,7 +167,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   }
 
   onSave(): void {
-    if (!this.globalFormGroup.valid) {
+    if (!this.globalFormGroup.value.studentId || !this.globalFormGroup.value.meetingType || !this.globalFormGroup.value.mailType || !this.globalFormGroup.value.courseId?.length) {
       Object.keys(this.globalFormGroup.controls).forEach(key => {
         this.globalFormGroup.get(key)?.markAsTouched();
       });
@@ -188,7 +186,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     const formData: StudentTracking = {
       studentSisId: formValue.studentId,
       coursSisId: formValue.courseId,
-      createdAt: formValue.date,
+      createdAt: new Date(),
       meetingType: formValue.meetingType,
       mailType: formValue.mailType,
       comment: formValue.comment || '',

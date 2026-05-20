@@ -72,6 +72,11 @@
     </div>
   </div>
 
+  <div *ngIf="loading" class="loading-container">
+        <p-progress-spinner ariaLabel="loading" strokeWidth="4" />
+        <p class="loading-text">Loading attendance data...</p>
+  </div>
+
   <div class="footer-note" *ngIf="students.length === 0">
     <p>⚠️ No data available. Please check your connection.</p>
   </div>

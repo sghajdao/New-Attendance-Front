@@ -171,6 +171,15 @@
   border-left: 3px solid #e67e22;
 }
 
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 500px;
+    gap: 1rem;
+}
+
 @media (max-width: 768px) {
   :host ::ng-deep .stats-card .p-card-body {
     padding: 1rem;
