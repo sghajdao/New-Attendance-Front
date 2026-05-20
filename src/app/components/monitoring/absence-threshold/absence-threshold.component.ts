@@ -387,7 +387,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   }
 
   submitContact(): void {
-    if (!this.contactForm.value.meetingType || !this.contactForm.value.mailType) {
+    if (!this.contactForm.value.mailType) {
       Object.keys(this.contactForm.controls).forEach(key => {
         this.contactForm.get(key)?.markAsTouched();
       });

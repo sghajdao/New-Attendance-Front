@@ -283,6 +283,23 @@
             </ul>
         </div>
 
+        <div class="form-field">
+                <label for="contactType" class="required-field">Mailing Type</label>
+                <p-select
+                    [options]="mailingTypes"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select a mailing type"
+                    formControlName="mailType"
+                    [filter]="true"
+                    filterPlaceholder="Search types"
+                    appendTo="body"
+                ></p-select>
+                <small class="error-message" *ngIf="contactForm.get('mailType')?.invalid && contactForm.get('mailType')?.touched">
+                    Please select a mailing type
+                </small>
+        </div>
+
         <form [formGroup]="contactForm" (ngSubmit)="submitContact()">
             <div class="form-field">
                 <label for="contactType" class="required-field">Meeting Type</label>
@@ -298,22 +315,6 @@
                 ></p-select>
                 <small class="error-message" *ngIf="contactForm.get('meetingType')?.invalid && contactForm.get('meetingType')?.touched">
                     Please select a meeting type
-                </small>
-            </div>
-            <div class="form-field">
-                <label for="contactType" class="required-field">Mailing Type</label>
-                <p-select
-                    [options]="mailingTypes"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Select a mailing type"
-                    formControlName="mailType"
-                    [filter]="true"
-                    filterPlaceholder="Search types"
-                    appendTo="body"
-                ></p-select>
-                <small class="error-message" *ngIf="contactForm.get('mailType')?.invalid && contactForm.get('mailType')?.touched">
-                    Please select a mailing type
                 </small>
             </div>
 
@@ -359,7 +360,7 @@
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
-                    [disabled]="!contactForm.value.meetingType || isContactSaving"
+                    [disabled]="!contactForm.value.mailType || isContactSaving"
                     [loading]="isContactSaving"
                 />
             </div>
