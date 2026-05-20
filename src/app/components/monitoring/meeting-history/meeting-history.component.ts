@@ -93,12 +93,6 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Helper: Convert comma-separated string to array
-  stringToArray(str?: string): string[] {
-    if (!str) return [];
-    return str.split(',').map(s => s.trim()).filter(s => s.length > 0);
-  }
-
   // Helper: Convert array to comma-separated string
   arrayToString(arr: string[]): string {
     if (!arr || arr.length === 0) return '';
@@ -110,7 +104,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     return data.map(student => {
       (student as any).courseArray = student.coursSisId;
       // Parse categories from stored string to array
-      (student as any).categoryArray = this.stringToArray((student as any).categories);
+      (student as any).categoryArray = student.categories;
       return student;
     });
   }
@@ -140,7 +134,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     
     if (student) {
       const courseArray = (student as any).courseArray || student.coursSisId;
-      const categoryArray = (student as any).categoryArray || this.stringToArray((student as any).categories);
+      const categoryArray = (student as any).categoryArray || student.categories;
       this.globalFormGroup.patchValue({
         studentId: student.studentSisId,
         courseId: courseArray,
