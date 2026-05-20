@@ -260,7 +260,7 @@
                         </div>
                     </ng-template>
                 </p-select>
-                <small class="error-message" *ngIf="globalFormGroup.get('meetingType')?.invalid && globalFormGroup.get('meetingType')?.touched">
+                <small class="error-message" *ngIf="!globalFormGroup.get('meetingType')?.value && globalFormGroup.get('meetingType')?.touched">
                     Please select a meeting type
                 </small>
             </div>
@@ -307,7 +307,7 @@
                 <small class="helper-text" *ngIf="globalFormGroup.get('categories')?.value?.length > 0">
                     Selected: {{ globalFormGroup.get('categories')?.value?.length }} category(s)
                 </small>
-                <small class="helper-text" *ngIf="!globalFormGroup.get('categories')?.value?.length">
+                <small class="helper-text" *ngIf="!globalFormGroup.get('categories')?.value">
                     Categorize the student's challenges or reasons for the meeting
                 </small>
             </div>

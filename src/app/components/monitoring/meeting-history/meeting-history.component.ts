@@ -138,10 +138,10 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       this.globalFormGroup.patchValue({
         studentId: student.studentSisId,
         courseId: courseArray,
-        meetingType: student.meetingType,
+        meetingType: null,
         mailType: student.mailType,
-        comment: student.comment || '',
-        categories: categoryArray
+        comment: null,
+        categories: null
       });
     } else {
       this.globalFormGroup.patchValue({ 
