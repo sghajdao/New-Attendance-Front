@@ -301,58 +301,6 @@
                     Please select a mailing type
                 </small>
             </div>
-            <div class="form-field">
-                <label for="contactType" class="required-field">Meeting Type</label>
-                <p-select
-                    [options]="meetingTypes"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Select meeting types"
-                    formControlName="meetingType"
-                    [filter]="true"
-                    filterPlaceholder="Search types"
-                    appendTo="body"
-                ></p-select>
-                <small class="error-message" *ngIf="contactForm.get('meetingType')?.invalid && contactForm.get('meetingType')?.touched">
-                    Please select a meeting type
-                </small>
-            </div>
-
-            <!-- New Categories Multi-Select (optional) -->
-            <div class="form-field">
-                <label for="categories" class="required-field">Categories (optional)</label>
-                <p-multiSelect 
-                    id="categories"
-                    [options]="categoriesOptions"
-                    placeholder="Select categories"
-                    appendTo="body"
-                    formControlName="categories"
-                    display="chip"
-                >
-                    <ng-template let-category pTemplate="item">
-                        <div class="type-select-item">
-                            <span>{{ category.label }}</span>
-                        </div>
-                    </ng-template>
-                </p-multiSelect>
-                <small class="helper-text" *ngIf="contactForm.get('categories')?.value?.length > 0">
-                    Selected: {{ contactForm.get('categories')?.value?.length }} category(s)
-                </small>
-            </div>
-
-            <div class="form-field">
-                <label for="contactComment" class="required-field">Comments / Notes</label>
-                <textarea 
-                    id="contactComment"
-                    formControlName="comment"
-                    rows="4"
-                    pTextarea
-                    placeholder="Add meeting notes, discussion points, or follow-up items..."
-                ></textarea>
-                <small class="error-message" *ngIf="contactForm.get('comment')?.invalid && contactForm.get('comment')?.touched">
-                    Comments are required
-                </small>
-            </div>
 
             <div class="dialog-actions">
                 <p-button label="Cancel" severity="secondary" (click)="cancelContactDialog()" />

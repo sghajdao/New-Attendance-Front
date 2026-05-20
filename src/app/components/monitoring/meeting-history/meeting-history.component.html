@@ -282,7 +282,7 @@
                         </div>
                     </ng-template>
                 </p-select>
-                <small class="error-message" *ngIf="globalFormGroup.get('mailType')?.invalid && globalFormGroup.get('mailType')?.touched">
+                <small class="error-message" *ngIf="!globalFormGroup.get('mailType')?.value && globalFormGroup.get('mailType')?.touched">
                     Please select a mailing type
                 </small>
             </div>
@@ -330,7 +330,7 @@
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
-                    [disabled]="!globalFormGroup.valid"
+                    [disabled]="!globalFormGroup.value.studentId || !globalFormGroup.value.meetingType?.length || !globalFormGroup.value.mailType?.length || !globalFormGroup.value.courseId?.length || globalFormGroup.value.comment"
                     [loading]="isSaving"
                 />
                 <p-button 
