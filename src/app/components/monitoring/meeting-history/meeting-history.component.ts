@@ -342,9 +342,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       this.selectedMeeting.meetingType = updatedMeetingTypeArray;
       this.selectedMeeting.mailType = updatedMailTypeArray;
       this.selectedMeeting.comment = updatedComment || this.selectedMeeting.comment;
-      (this.selectedMeeting as any).courseArray = updatedCourseArray;
-      (this.selectedMeeting as any).categoryArray = updatedCategories;
-      (this.selectedMeeting as any).categories = this.arrayToString(updatedCategories);
+      this.selectedMeeting.coursSisId = updatedCourseArray;
+      this.selectedMeeting.categories = updatedCategories;
       
       const sub = this.attendanceService.updateTracking(this.selectedMeeting).subscribe({
         next: (res) => {
