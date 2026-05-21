@@ -338,6 +338,30 @@
     margin-left: 4px;
 }
 
+.other-category-container {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.other-label {
+    font-weight: normal;
+    font-size: 0.875rem;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+.custom-category-input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.custom-category-input input {
+    width: 100%;
+}
+
 .form-field input,
 .form-field textarea,
 .form-field ::ng-deep .p-datepicker,

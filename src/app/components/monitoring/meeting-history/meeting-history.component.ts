@@ -57,8 +57,11 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     { label: 'Personal or Family Reasons', value: 'Personal or Family Reasons' },
     { label: 'Financial or Work Responsibilities', value: 'Financial or Work Responsibilities' },
     { label: 'Administrative or Technical Issues', value: 'Administrative or Technical Issues' },
-    { label: 'Other', value: 'Other' }
   ];
+
+  // For the "Other" checkbox and custom input
+  showOtherCategory: boolean = false;
+  customCategoryText: string = '';
   
   typeFilterOptions = this.meetingTypes;
   subscriptions: Subscription[] = [];
@@ -91,6 +94,85 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       comment: [null],
       categories: [[]] // New multi-select field (optional)
     });
+  }
+
+  // A computed property for the dropdown (could also just use categoriesOptions directly)
+  get categoriesOptionsWithoutOther() {
+      return this.categoriesOptions;
+  }
+
+  // Call this after loading a meeting to check if any custom category exists
+  private syncOtherCategoryFromCategories(categories: string[]): void {
+      if (!categories || categories.length === 0) {
+          this.showOtherCategory = false;
+          this.customCategoryText = '';
+          return;
+      }
+      // Find any category that is NOT in the predefined list
+      const predefinedValues = this.categoriesOptions.map(opt => opt.value);
+      const custom = categories.find(cat => !predefinedValues.includes(cat));
+      if (custom) {
+          this.showOtherCategory = true;
+          this.customCategoryText = custom;
+      } else {
+          this.showOtherCategory = false;
+          this.customCategoryText = '';
+      }
+  }
+  
+  // Called when the checkbox toggles
+  onOtherCategoryToggle(checked: boolean): void {
+      const currentCategories = this.globalFormGroup.get('categories')?.value || [];
+      if (!checked) {
+          // Remove any custom category from the array
+          const predefinedValues = this.categoriesOptions.map(opt => opt.value);
+          const filtered = currentCategories.filter((cat: {label: string, value: string}) => predefinedValues.includes(cat.value));
+          this.globalFormGroup.patchValue({ categories: filtered });
+          this.customCategoryText = '';
+      } else {
+          // If we already have a custom text, add it immediately
+          if (this.customCategoryText.trim()) {
+              this.addCustomCategoryToForm();
+          }
+      }
+  }
+  
+  // Add the current custom category text to the form control (if valid and not already present)
+  private addCustomCategoryToForm(): void {
+      const newCustom = this.customCategoryText.trim();
+      if (!newCustom) return;
+      
+      const current = this.globalFormGroup.get('categories')?.value || [];
+      // Avoid duplicates
+      if (!current.includes(newCustom)) {
+          this.globalFormGroup.patchValue({ categories: [...current, newCustom] });
+      }
+  }
+  
+  // Remove the custom category from the form control (usually when input is cleared)
+  private removeCustomCategoryFromForm(): void {
+      const current = this.globalFormGroup.get('categories')?.value || [];
+      if (this.customCategoryText) {
+          const filtered = current.filter((cat: {label: string, value: string}) => cat.value !== this.customCategoryText);
+          this.globalFormGroup.patchValue({ categories: filtered });
+      }
+  }
+  
+  // Called when the custom input loses focus or user presses Enter
+  updateCustomCategory(): void {
+      const trimmed = this.customCategoryText.trim();
+      if (!trimmed) {
+          // If empty, remove the custom category and optionally uncheck the box
+          this.removeCustomCategoryFromForm();
+          if (this.showOtherCategory) {
+              // Optionally uncheck "Other" if the input is cleared
+              this.showOtherCategory = false;
+          }
+          return;
+      }
+      
+      // If we have a non‑empty custom category, add it to the form
+      this.addCustomCategoryToForm();
   }
 
   // Helper: Convert array to comma-separated string
@@ -131,23 +213,28 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   showDialog(student?: StudentTracking): void {
     this.globalFormGroup.reset();
     this.selectedMeeting = student;
-    
+
     if (student) {
-      this.globalFormGroup.patchValue({
-        studentId: student.studentSisId,
-        courseId: student.coursSisId,
-        meetingType: null,
-        mailType: student.mailType,
-        comment: null,
-        categories: []
-      });
+        const categoriesArray = (student as any).categoryArray || [];
+        this.globalFormGroup.patchValue({
+            studentId: student.studentSisId,
+            courseId: student.coursSisId,
+            meetingType: null,
+            mailType: student.mailType,
+            comment: null,
+            categories: categoriesArray
+        });
+        // Sync "Other" checkbox state based on existing categories
+        this.syncOtherCategoryFromCategories(categoriesArray);
     } else {
-      this.globalFormGroup.patchValue({ 
-        courseId: [], 
-        meetingType: null, 
-        mailType: null,
-        categories: []
-      });
+        this.globalFormGroup.patchValue({ 
+            courseId: [], 
+            meetingType: null, 
+            mailType: null,
+            categories: []
+        });
+        this.showOtherCategory = false;
+        this.customCategoryText = '';
     }
     this.visible = true;
   }
@@ -156,6 +243,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     this.visible = false;
     this.selectedMeeting = undefined;
     this.globalFormGroup.reset();
+    this.showOtherCategory = false;
+    this.customCategoryText = '';
   }
 
   onSave(): void {
