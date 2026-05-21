@@ -223,6 +223,10 @@
                     Student ID is required
                 </small>
             </div>
+            <div *ngIf="selectedMeeting" class="form-field">
+                <label for="studentId" class="required-field">Student Name</label>
+                <input pInputText [disabled]="true" [(ngModel)]="selectedMeeting.studentName"/>
+            </div>
 
             <!-- Multi-select for courses -->
             <div class="form-field">
