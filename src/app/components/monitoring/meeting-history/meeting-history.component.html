@@ -283,13 +283,13 @@
                     </ng-template>
                 </p-select>
                 <small class="error-message" *ngIf="!globalFormGroup.get('mailType')?.value && globalFormGroup.get('mailType')?.touched">
-                    Please select a mailing type
+                    Please select a mail type
                 </small>
             </div>
 
             <!-- Categories Multi-Select (without "Other") -->
             <div class="form-field">
-                <label for="categories">Categories (optional)</label>
+                <label for="categories" class="required-field">Categories</label>
                 <p-multiSelect 
                     id="categories"
                     [options]="categoriesOptionsWithoutOther"
@@ -315,7 +315,7 @@
                         [ngModelOptions]="{standalone: true}">
                     </p-checkbox>
                     <label for="otherCategoryCheckbox" class="other-label">Other (custom category)</label>
-                    
+
                     <div *ngIf="showOtherCategory" class="custom-category-input">
                         <input 
                             type="text" 

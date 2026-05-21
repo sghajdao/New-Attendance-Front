@@ -89,10 +89,10 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     this.globalFormGroup = this.fb.group({
       studentId: [null, Validators.required],
       courseId: [[], this.multiSelectRequired],
-      meetingType: [null, this.multiSelectRequired],
-      mailType: [[], this.multiSelectRequired],
+      meetingType: [null, Validators.required],
+      mailType: [null, Validators.required],
       comment: [null],
-      categories: [[]] // New multi-select field (optional)
+      categories: [[], this.multiSelectRequired] // New multi-select field (optional)
     });
   }
 
