@@ -86,7 +86,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     this.globalFormGroup = this.fb.group({
       studentId: [null, Validators.required],
       courseId: [[], this.multiSelectRequired],
-      meetingType: [[], this.multiSelectRequired],
+      meetingType: [null, this.multiSelectRequired],
       mailType: [[], this.multiSelectRequired],
       comment: [null],
       categories: [[]] // New multi-select field (optional)
@@ -136,7 +136,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       this.globalFormGroup.patchValue({
         studentId: student.studentSisId,
         courseId: student.coursSisId,
-        meetingType: [],
+        meetingType: null,
         mailType: student.mailType,
         comment: null,
         categories: []
@@ -144,8 +144,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     } else {
       this.globalFormGroup.patchValue({ 
         courseId: [], 
-        meetingType: [], 
-        mailType: [],
+        meetingType: null, 
+        mailType: null,
         categories: []
       });
     }
