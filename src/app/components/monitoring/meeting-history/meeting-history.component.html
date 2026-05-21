@@ -337,7 +337,7 @@
                     *ngIf="selectedMeeting"
                     label="Update Meeting" 
                     severity="contrast" 
-                    [disabled]="!globalFormGroup.valid"
+                    [disabled]="!globalFormGroup.value.studentId || !globalFormGroup.value.meetingType?.length || !globalFormGroup.value.mailType?.length || !globalFormGroup.value.courseId?.length || globalFormGroup.value.comment"
                     [loading]="isSaving"
                     (click)="updateMeeting()"
                 />
