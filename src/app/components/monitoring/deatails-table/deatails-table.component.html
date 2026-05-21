@@ -49,37 +49,23 @@
         <th pSortableColumn="firstName" style="min-width: 140px;">
           Full Name <p-sortIcon field="firstName"></p-sortIcon>
         </th>
-        <th pSortableColumn="entanceYr" style="min-width: 100px;">
-          Entrance Year <p-sortIcon field="entanceYr"></p-sortIcon>
-        </th>
-        <th style="min-width: 70px;">
-          Entrance Term
-        </th>
-        <th style="min-width: 90px;">Division</th>
-        <th style="min-width: 100px;">Visa Type</th>
-        <th pSortableColumn="crsCde" style="min-width: 90px;">
-          Course <p-sortIcon field="crsCde"></p-sortIcon>
-        </th>
-        <th style="min-width: 90px;">Status</th>
         <th pSortableColumn="seniority" style="min-width: 90px;">
           Seniority <p-sortIcon field="seniority"></p-sortIcon>
+        </th>
+        <th style="min-width: 90px;">Division</th>
+        <th pSortableColumn="crsCde" style="min-width: 90px;">
+          Course <p-sortIcon field="crsCde"></p-sortIcon>
         </th>
         <!-- Aggregated attendance columns -->
         <th style="min-width: 100px;">Total Presences</th>
         <th style="min-width: 100px;">Total Absences</th>
         <th style="min-width: 100px;">Total Latenesses</th>
         <th style="min-width: 100px;">Absence Limit</th>
-        <th style="min-width: 120px;">Meeting Requests</th>
-        <th style="min-width: 90px;">Meetings</th>
+        <th style="min-width: 90px;">Status</th>
         <th pSortableColumn="grade" style="min-width: 70px;">
           Grade <p-sortIcon field="grade"></p-sortIcon>
         </th>
-        <th pSortableColumn="midtermGrade" style="min-width: 90px;">
-          Midterm Grade <p-sortIcon field="midtermGrade"></p-sortIcon>
-        </th>
-        <th pSortableColumn="trmGpa" style="min-width: 90px;">
-          Term GPA <p-sortIcon field="trmGpa"></p-sortIcon>
-        </th>
+
         <th style="min-width: 100px;">Grade Changed Date</th>
         <th style="min-width: 100px;">Schedule</th>
         <th pSortableColumn="crsDiv" style="min-width: 70px;">
@@ -91,8 +77,23 @@
         <th pSortableColumn="teacherName" style="min-width: 140px;">
           Professor Name <p-sortIcon field="teacherName"></p-sortIcon>
         </th>
+        <th pSortableColumn="midtermGrade" style="min-width: 90px;">
+          Midterm Grade <p-sortIcon field="midtermGrade"></p-sortIcon>
+        </th>
+        <th pSortableColumn="trmGpa" style="min-width: 90px;">
+          Term GPA <p-sortIcon field="trmGpa"></p-sortIcon>
+        </th>
         <th style="min-width: 100px;">Major</th>
+        <th style="min-width: 100px;">Visa Type</th>
+        <th style="min-width: 120px;">Meeting Requests</th>
+        <th style="min-width: 90px;">Meetings</th>
         <th style="min-width: 100px;">Hold</th>
+        <th pSortableColumn="entanceYr" style="min-width: 100px;">
+          Entrance Year <p-sortIcon field="entanceYr"></p-sortIcon>
+        </th>
+        <th style="min-width: 70px;">
+          Entrance Term
+        </th>
         <th style="min-width: 100px;">WF Reason</th>
       </tr>
     </ng-template>
@@ -112,8 +113,9 @@
             {{ student.firstName }} {{ student.lastName }}
           </div>
         </td>
-        <td>{{ student.entanceYr }}</td>
-        <td>{{ student.entanceTrm }}</td>
+        <td> 
+          <span class="seniority-badge">{{ student.seniority }}</span>
+        </td>
         <td>
           <p-tag
             severity="contrast"
@@ -123,33 +125,18 @@
           />
         </td>
         <td>
-          <p-tag
-            severity="contrast"
-            [style]="{'border-radius': '20px', 'background': '#eef2ff', 'color': '#3b5bdb'}"
-            [value]="student.visaType"
-            [rounded]="true"
-          />
-        </td>
-        <td>
           <span class="course-code">{{ student.crsCde }}</span>
-        </td>
-        <td>
-          <p-tag [severity]="getStatusSeverity(student.status)" [value]="student.status" [rounded]="true" />
-        </td>
-        <td> 
-          <span class="seniority-badge">{{ student.seniority }}</span>
         </td>
         <td><strong>{{ student.totalPresences }}</strong></td>
         <td><strong>{{ student.totalAbsences }}</strong></td>
         <td><strong>{{ student.totalLatenesses }}</strong></td>
         <td><p-badge severity="danger" [value]="student.absentLimit" /></td>
-        <td><strong>{{ student.meetings.length }}</strong></td>
-        <td><strong>{{ getDoneMeetings(student) }}</strong></td>
+        <td>
+          <p-tag [severity]="getStatusSeverity(student.status)" [value]="student.status" [rounded]="true" />
+        </td>
         <td>
           <p-tag [severity]="getGradeSeverity(student.grade)" [value]="student.grade || '-'" [rounded]="true" />
         </td>
-        <td>{{ student.midtermGrade || '-' }}</td>
-        <td>{{ student.trmGpa || '-' }}</td>
         <td>{{ student.gradeChangeDate || '-' }}</td>
         <td>{{ student.schedule || '-' }}</td>
         <td>
@@ -164,12 +151,26 @@
             {{ student.teacherName }}
           </div>
         </td>
+        <td>{{ student.midtermGrade || '-' }}</td>
+        <td>{{ student.trmGpa || '-' }}</td>
         <td> 
           <span class="seniority-badge">{{ student.major }}</span>
         </td>
+        <td>
+          <p-tag
+            severity="contrast"
+            [style]="{'border-radius': '20px', 'background': '#eef2ff', 'color': '#3b5bdb'}"
+            [value]="student.visaType"
+            [rounded]="true"
+          />
+        </td>
+        <td><strong>{{ student.meetings.length }}</strong></td>
+        <td><strong>{{ getDoneMeetings(student) }}</strong></td>
         <td> 
           <strong>{{ student.hold }}</strong>
         </td>
+        <td>{{ student.entanceYr }}</td>
+        <td>{{ student.entanceTrm }}</td>
         <td>
           <strong>{{ student.wfReason }}</strong>
         </td>

@@ -40,7 +40,9 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   @Input() searchDto?: SearchDto;
   students: Student[] = [];
   studentsBackup: Student[] = [];
+  rawRedFlagData: RedFlagStudents[] = [];
   subscriptions: Subscription[] = [];
+
   loading: boolean = false;
 
   // View mode: 'grid' or 'list' (row view)
@@ -170,6 +172,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
           })
         );
       
+        this.rawRedFlagData = studentsRes;
         this.studentsBackup = allStudents;
       
         // Sets for faster lookup
@@ -594,6 +597,108 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  exportToCSV(): void {
+    const filteredRaw = this.getFilteredRawData();
+    if (!filteredRaw.length) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'No Data',
+        detail: 'No students match the current filters.',
+        life: 3000
+      });
+      return;
+    }
+  
+    // Define CSV headers matching the fields we want
+    const headers = [
+      'First Name', 'Last Name', 'Student SIS ID', 'Course SIS ID', 'Course Name',
+      'Instructor', 'Status', 'Grade', 'Term Code', 'Seniority',
+      'Absence Count', 'Absence Limit', 'Absence Percentage',
+      'Meetings Count', 'Marked By SIS ID'
+    ];
+  
+    const rows = filteredRaw.map(student => {
+      const percentage = ((student.count / student.absentLimit) * 100).toFixed(2);
+      return [
+        student.firstName,
+        student.lastName,
+        student.student_sis_id,
+        student.course_sis_id,
+        student.course_name,
+        student.instructor_name,
+        student.status,
+        student.grade,
+        student.trmCde,
+        student.seniority,
+        student.count,
+        student.absentLimit,
+        `${percentage}%`,
+        student.meetings?.length || 0,
+        student.marked_by_sis_id
+      ];
+    });
+  
+    // Build CSV content (escape quotes and commas)
+    const escapeCSV = (cell: any) => {
+      if (cell === null || cell === undefined) return '';
+      const str = String(cell);
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
+  
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(escapeCSV).join(','))
+    ].join('\n');
+  
+    // Download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute('download', `red_flag_students_${new Date().toISOString().slice(0,19)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+  
+  // Helper: get raw data after applying current filters (dot color + percentage)
+  private getFilteredRawData(): RedFlagStudents[] {
+    let result = [...this.rawRedFlagData];
+  
+    // Dot color filter based on pending meetings count (same logic as in displayedStudents)
+    if (this.dotColorFilter) {
+      result = result.filter(student => {
+        const pendingCount = this.countPendingMeetings(student.meetings || []);
+        if (this.dotColorFilter === 'green') return pendingCount === 0;
+        if (this.dotColorFilter === 'yellow') return pendingCount === 1;
+        if (this.dotColorFilter === 'red') return pendingCount === 2;
+        if (this.dotColorFilter === 'black') return pendingCount >= 3;
+        return true;
+      });
+    }
+  
+    // Percentage filter
+    if (this.percentageFilter) {
+      const minValue = parseInt(this.percentageFilter, 10);
+      result = result.filter(student => {
+        const percentage = (student.count / student.absentLimit) * 100;
+        return percentage >= minValue;
+      });
+    }
+  
+    return result;
+  }
+  
+  // Helper to count pending meetings (no comment or empty comment)
+  private countPendingMeetings(meetings: any[]): number {
+    if (!meetings) return 0;
+    return meetings.filter(m => !m.comment || !m.comment.trim().length).length;
   }
 
   ngOnDestroy(): void {

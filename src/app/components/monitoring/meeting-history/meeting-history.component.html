@@ -356,14 +356,14 @@
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
-                    [disabled]="!globalFormGroup.value.studentId || !globalFormGroup.value.meetingType?.length || !globalFormGroup.value.mailType?.length || !globalFormGroup.value.courseId?.length || globalFormGroup.value.comment"
+                    [disabled]="!globalFormGroup.value.studentId || !globalFormGroup.value.meetingType || !globalFormGroup.value.mailType || !globalFormGroup.value.courseId?.length || globalFormGroup.value.comment"
                     [loading]="isSaving"
                 />
                 <p-button 
                     *ngIf="selectedMeeting"
                     label="Update Meeting" 
                     severity="contrast" 
-                    [disabled]="!globalFormGroup.value.studentId || !globalFormGroup.value.meetingType?.length || !globalFormGroup.value.mailType?.length || !globalFormGroup.value.courseId?.length || globalFormGroup.value.comment"
+                    [disabled]="!globalFormGroup.value.studentId || !globalFormGroup.value.meetingType || !globalFormGroup.value.mailType || !globalFormGroup.value.courseId?.length || globalFormGroup.value.comment"
                     [loading]="isSaving"
                     (click)="updateMeeting()"
                 />
