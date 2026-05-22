@@ -411,7 +411,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     const categories = formValue.categories || []; // Get selected categories array
 
     // Create tracking records for each selected student
-    let ids: string[] = [];
+    let ids: {id: string, course: string}[] = [];
     const trackingRequests = this.contactSelectedStudents.map(student => {
       const trackingData: StudentTracking = {
         studentSisId: student.id,
@@ -424,8 +424,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         comment: meetingComment,
         categories: categories
       };
-      if (!ids.includes(student.id)) {
-        ids.push(student.id);
+      if (!ids.includes({id: student.id, course: student.course})) {
+        ids.push({id: student.id, course: student.course});
         return this.attendanceService.trackStudent(trackingData);
       }
       return null as any; // This will be filtered out later
