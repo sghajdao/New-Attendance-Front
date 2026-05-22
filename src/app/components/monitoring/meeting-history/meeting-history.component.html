@@ -112,13 +112,12 @@
                 <td>
                     <div class="types-cell">
                         <p-tag 
-                            *ngFor="let course of student.courseArray"
                             severity="info" 
-                            [value]="course" 
+                            [value]="student.coursSisId" 
                             [rounded]="true"
                             styleClass="mr-1 mb-1"
                         ></p-tag>
-                        <span *ngIf="!student.courseArray?.length" class="no-types">No courses</span>
+                        <span *ngIf="!student.coursSisId" class="no-types">No courses</span>
                     </div>
                 </td>
                 <td>

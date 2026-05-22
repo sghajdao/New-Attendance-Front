@@ -416,7 +416,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       const trackingData: StudentTracking = {
         studentSisId: student.id,
         studentName: student.name,
-        coursSisId: [...this.contactSelectedStudents.filter(s => s.id === student.id).map(s => s.course)],
+        coursSisId: student.course,
+        // coursSisId: [...this.contactSelectedStudents.filter(s => s.id === student.id).map(s => s.course)],
         createdAt: new Date(),
         meetingType: meetingType,
         mailType: mailType,
@@ -446,7 +447,6 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         
         // Refresh the data to show updated meetings
         this.loadData();
-        
         // Clear selection and close dialog
         this.clearSelection();
         this.cancelContactDialog();

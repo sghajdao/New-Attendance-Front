@@ -88,7 +88,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   initForm(): void {
     this.globalFormGroup = this.fb.group({
       studentId: [null, Validators.required],
-      courseId: [[], this.multiSelectRequired],
+      courseId: [null, this.multiSelectRequired],
       meetingType: [null, Validators.required],
       mailType: [null, Validators.required],
       comment: [null],
@@ -184,7 +184,6 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   // Process students after load: add courseArray, categoryArray for display
   processStudents(data: StudentTracking[]): StudentTracking[] {
     return data.map(student => {
-      (student as any).courseArray = student.coursSisId;
       // Parse categories from stored string to array
       (student as any).categoryArray = student.categories;
       return student;
@@ -228,7 +227,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
         this.syncOtherCategoryFromCategories(categoriesArray);
     } else {
         this.globalFormGroup.patchValue({ 
-            courseId: [], 
+            courseId: null, 
             meetingType: null, 
             mailType: null,
             categories: []
@@ -248,7 +247,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   }
 
   onSave(): void {
-    if (!this.globalFormGroup.value.studentId || !this.globalFormGroup.value.meetingType || !this.globalFormGroup.value.mailType || !this.globalFormGroup.value.courseId?.length) {
+    if (!this.globalFormGroup.value.studentId || !this.globalFormGroup.value.meetingType || !this.globalFormGroup.value.mailType || !this.globalFormGroup.value.courseId) {
       Object.keys(this.globalFormGroup.controls).forEach(key => {
         this.globalFormGroup.get(key)?.markAsTouched();
       });
@@ -321,13 +320,13 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
 
   updateMeeting(): void {
     if (this.selectedMeeting && this.selectedMeeting.id) {
-      const updatedCourseArray = this.globalFormGroup.value.courseId;
+      const updatedCourse = this.globalFormGroup.value.courseId;
       const updatedMeetingTypeArray = this.globalFormGroup.value.meetingType;
       const updatedMailTypeArray = this.globalFormGroup.value.mailType;
       const updatedComment = this.globalFormGroup.value.comment;
       const updatedCategories = this.globalFormGroup.value.categories;
       
-      if (!updatedCourseArray?.length || !updatedMeetingTypeArray?.length) {
+      if (!updatedCourse || !updatedMeetingTypeArray?.length) {
         this.messageService.add({
           severity: 'warn',
           summary: 'Validation Error',
@@ -338,11 +337,11 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       }
       
       // Update local object with stringified values
-      this.selectedMeeting.coursSisId = updatedCourseArray;
+      this.selectedMeeting.coursSisId = updatedCourse;
       this.selectedMeeting.meetingType = updatedMeetingTypeArray;
       this.selectedMeeting.mailType = updatedMailTypeArray;
       this.selectedMeeting.comment = updatedComment || this.selectedMeeting.comment;
-      this.selectedMeeting.coursSisId = updatedCourseArray;
+      this.selectedMeeting.coursSisId = updatedCourse;
       this.selectedMeeting.categories = updatedCategories;
       
       const sub = this.attendanceService.updateTracking(this.selectedMeeting).subscribe({
@@ -350,7 +349,6 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
           const index = this.students.findIndex(s => s.id === this.selectedMeeting?.id);
           if (index !== -1) {
             this.students[index] = { ...res, id: this.selectedMeeting!.id };
-            (this.students[index] as any).courseArray = updatedCourseArray;
             (this.students[index] as any).categoryArray = updatedCategories;
           }
           this.filterMeetings();
@@ -505,10 +503,6 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
         ? new Date(student.createdAt).toLocaleString() 
         : '';
 
-      // Get course array (already processed as .courseArray)
-      const courses = (student as any).courseArray || [];
-      const coursesStr = courses.join(', ');
-
       // Get categories array
       const categories = (student as any).categoryArray || [];
       const categoriesStr = categories.join(', ');
@@ -517,7 +511,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       const row = [
         student.studentSisId || '',
         student.studentName || '',
-        coursesStr,
+        student.coursSisId || '',
         meetingDate,
         student.meetingType || '',
         student.mailType || '',
