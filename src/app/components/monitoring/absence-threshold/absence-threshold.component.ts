@@ -411,21 +411,20 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     const categories = formValue.categories || []; // Get selected categories array
 
     // Create tracking records for each selected student
-    let ids: {id: string, course: string}[] = [];
+    let ids: string[] = [];
     const trackingRequests = this.contactSelectedStudents.map(student => {
       const trackingData: StudentTracking = {
         studentSisId: student.id,
         studentName: student.name,
-        coursSisId: student.course,
-        // coursSisId: [...this.contactSelectedStudents.filter(s => s.id === student.id).map(s => s.course)],
+        coursSisId: [...this.contactSelectedStudents.filter(s => s.id === student.id).map(s => s.course)],
         createdAt: new Date(),
         meetingType: meetingType,
         mailType: mailType,
         comment: meetingComment,
         categories: categories
       };
-      if (!ids.includes({id: student.id, course: student.course})) {
-        ids.push({id: student.id, course: student.course});
+      if (!ids.includes(student.id)) {
+        ids.push(student.id);
         return this.attendanceService.trackStudent(trackingData);
       }
       return null as any; // This will be filtered out later
@@ -447,6 +446,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         
         // Refresh the data to show updated meetings
         this.loadData();
+        
         // Clear selection and close dialog
         this.clearSelection();
         this.cancelContactDialog();

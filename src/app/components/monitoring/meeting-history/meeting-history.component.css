@@ -29,7 +29,6 @@
     flex-shrink: 0;
 }
 
-/* Optional: ensure buttons have consistent height */
 .header-actions .p-button {
     white-space: nowrap;
 }
@@ -291,6 +290,133 @@
     margin-top: 0.5rem !important;
 }
 
+/* Grid View Styles */
+.grid-view {
+    margin-top: 1rem;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 1.25rem;
+}
+
+.student-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid #eef2f6;
+    transition: all 0.2s;
+    overflow: hidden;
+}
+
+.student-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.student-card.highlighted {
+    background-color: #eff6ff;
+    border-color: #3b82f6;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1rem 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.student-avatar-lg {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.student-info {
+    flex: 1;
+}
+
+.student-info h3 {
+    margin: 0 0 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.student-info .student-id {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.card-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.card-body {
+    padding: 0.75rem 1rem 1rem;
+}
+
+.card-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.813rem;
+}
+
+.card-label {
+    font-weight: 600;
+    color: #1e293b;
+    min-width: 90px;
+    flex-shrink: 0;
+}
+
+.course-tags, .category-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.comment-row {
+    align-items: flex-start;
+}
+
+.comment-row .comment-text {
+    white-space: normal;
+    word-break: break-word;
+    margin: 0;
+    color: #475569;
+    line-height: 1.4;
+}
+
+.empty-grid-message {
+    text-align: center;
+    padding: 3rem;
+    color: #94a3b8;
+}
+
+.empty-grid-message i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.empty-grid-message p {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
 /* Dialog Styling */
 :host ::ng-deep .meeting-dialog .p-dialog-header {
     padding: 1.5rem 1.5rem 0.5rem;
@@ -413,7 +539,6 @@
     font-style: italic;
 }
 
-/* Multi-select styling improvements */
 :host ::ng-deep .p-multiselect {
     width: 100%;
     min-width: 180px;
@@ -433,7 +558,6 @@
     padding: 0.5rem 1rem;
 }
 
-/* Helper text styling */
 .helper-text {
     display: block;
     margin-top: 0.25rem;
@@ -441,14 +565,12 @@
     color: #64748b;
 }
 
-/* Tag spacing in table */
 :host ::ng-deep .p-tag {
     margin-right: 4px;
     margin-bottom: 2px;
     display: inline-flex;
 }
 
-/* Filter bar multi-select */
 .filter-group .p-multiselect {
     min-width: 180px;
 }
@@ -500,5 +622,18 @@
     
     .header-actions .p-button {
         flex: 1;
+    }
+
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .card-row {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .card-label {
+        min-width: auto;
     }
 }

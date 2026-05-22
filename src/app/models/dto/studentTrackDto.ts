@@ -1,4 +1,4 @@
-export interface StudentTracking {
+export interface StudentTrackDto {
     id?: number;
     studentSisId?: string;
     studentName?: string;

@@ -35,6 +35,9 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   selectedTypes: string[] = [];
   courses: string[] = [];
   
+  // View mode: 'table' (each row = one course) or 'grid' (cards, one per student)
+  viewMode: 'table' | 'grid' = 'table';
+  
   meetingTypes = [
     { label: '👤 Face to Face', value: 'face to face' },
     { label: '🖥️ Team Call', value: 'team call' },
@@ -48,7 +51,6 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     { label: '⚠️ Last Reminder', value: 'last reminder' }
   ];
 
-  // New categories options
   categoriesOptions = [
     { label: 'Health & Well-Being', value: 'Health & Well-Being' },
     { label: 'Adaptation & Social Adjustment Challenges', value: 'Adaptation & Social Adjustment Challenges' },
@@ -59,14 +61,39 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     { label: 'Administrative or Technical Issues', value: 'Administrative or Technical Issues' },
   ];
 
-  // For the "Other" checkbox and custom input
   showOtherCategory: boolean = false;
   customCategoryText: string = '';
   
   typeFilterOptions = this.meetingTypes;
   subscriptions: Subscription[] = [];
 
-  // Custom validator for multi-select: at least one item selected
+  // Helper: get all rows flattened (one per course) for table view
+  get flattenedRows(): any[] {
+    const rows: any[] = [];
+    this.filteredStudents.forEach(student => {
+      const courses = student.coursSisId || [];
+      if (courses.length === 0) {
+        // No courses: still show a row with empty course
+        rows.push({
+          ...student,
+          singleCourse: '',
+          originalStudent: student,
+          courseArray: [] // for display
+        });
+      } else {
+        courses.forEach(course => {
+          rows.push({
+            ...student,
+            singleCourse: course,
+            originalStudent: student,
+            courseArray: [course] // override for template display
+          });
+        });
+      }
+    });
+    return rows;
+  }
+
   multiSelectRequired(control: AbstractControl): ValidationErrors | null {
     const value = control.value;
     if (!value || !Array.isArray(value) || value.length === 0) {
@@ -88,103 +115,86 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   initForm(): void {
     this.globalFormGroup = this.fb.group({
       studentId: [null, Validators.required],
-      courseId: [null, this.multiSelectRequired],
+      courseId: [[], this.multiSelectRequired],
       meetingType: [null, Validators.required],
       mailType: [null, Validators.required],
       comment: [null],
-      categories: [[], this.multiSelectRequired] // New multi-select field (optional)
+      categories: [[], this.multiSelectRequired]
     });
   }
 
-  // A computed property for the dropdown (could also just use categoriesOptions directly)
   get categoriesOptionsWithoutOther() {
-      return this.categoriesOptions;
+    return this.categoriesOptions;
   }
 
-  // Call this after loading a meeting to check if any custom category exists
   private syncOtherCategoryFromCategories(categories: string[]): void {
-      if (!categories || categories.length === 0) {
-          this.showOtherCategory = false;
-          this.customCategoryText = '';
-          return;
-      }
-      // Find any category that is NOT in the predefined list
-      const predefinedValues = this.categoriesOptions.map(opt => opt.value);
-      const custom = categories.find(cat => !predefinedValues.includes(cat));
-      if (custom) {
-          this.showOtherCategory = true;
-          this.customCategoryText = custom;
-      } else {
-          this.showOtherCategory = false;
-          this.customCategoryText = '';
-      }
+    if (!categories || categories.length === 0) {
+      this.showOtherCategory = false;
+      this.customCategoryText = '';
+      return;
+    }
+    const predefinedValues = this.categoriesOptions.map(opt => opt.value);
+    const custom = categories.find(cat => !predefinedValues.includes(cat));
+    if (custom) {
+      this.showOtherCategory = true;
+      this.customCategoryText = custom;
+    } else {
+      this.showOtherCategory = false;
+      this.customCategoryText = '';
+    }
   }
   
-  // Called when the checkbox toggles
   onOtherCategoryToggle(checked: boolean): void {
-      const currentCategories = this.globalFormGroup.get('categories')?.value || [];
-      if (!checked) {
-          // Remove any custom category from the array
-          const predefinedValues = this.categoriesOptions.map(opt => opt.value);
-          const filtered = currentCategories.filter((cat: {label: string, value: string}) => predefinedValues.includes(cat.value));
-          this.globalFormGroup.patchValue({ categories: filtered });
-          this.customCategoryText = '';
-      } else {
-          // If we already have a custom text, add it immediately
-          if (this.customCategoryText.trim()) {
-              this.addCustomCategoryToForm();
-          }
+    const currentCategories = this.globalFormGroup.get('categories')?.value || [];
+    if (!checked) {
+      const predefinedValues = this.categoriesOptions.map(opt => opt.value);
+      const filtered = currentCategories.filter((cat: string) => predefinedValues.includes(cat));
+      this.globalFormGroup.patchValue({ categories: filtered });
+      this.customCategoryText = '';
+    } else {
+      if (this.customCategoryText.trim()) {
+        this.addCustomCategoryToForm();
       }
+    }
   }
   
-  // Add the current custom category text to the form control (if valid and not already present)
   private addCustomCategoryToForm(): void {
-      const newCustom = this.customCategoryText.trim();
-      if (!newCustom) return;
-      
-      const current = this.globalFormGroup.get('categories')?.value || [];
-      // Avoid duplicates
-      if (!current.includes(newCustom)) {
-          this.globalFormGroup.patchValue({ categories: [...current, newCustom] });
-      }
+    const newCustom = this.customCategoryText.trim();
+    if (!newCustom) return;
+    const current = this.globalFormGroup.get('categories')?.value || [];
+    if (!current.includes(newCustom)) {
+      this.globalFormGroup.patchValue({ categories: [...current, newCustom] });
+    }
   }
   
-  // Remove the custom category from the form control (usually when input is cleared)
   private removeCustomCategoryFromForm(): void {
-      const current = this.globalFormGroup.get('categories')?.value || [];
-      if (this.customCategoryText) {
-          const filtered = current.filter((cat: {label: string, value: string}) => cat.value !== this.customCategoryText);
-          this.globalFormGroup.patchValue({ categories: filtered });
-      }
+    const current = this.globalFormGroup.get('categories')?.value || [];
+    if (this.customCategoryText) {
+      const filtered = current.filter((cat: string) => cat !== this.customCategoryText);
+      this.globalFormGroup.patchValue({ categories: filtered });
+    }
   }
   
-  // Called when the custom input loses focus or user presses Enter
   updateCustomCategory(): void {
-      const trimmed = this.customCategoryText.trim();
-      if (!trimmed) {
-          // If empty, remove the custom category and optionally uncheck the box
-          this.removeCustomCategoryFromForm();
-          if (this.showOtherCategory) {
-              // Optionally uncheck "Other" if the input is cleared
-              this.showOtherCategory = false;
-          }
-          return;
+    const trimmed = this.customCategoryText.trim();
+    if (!trimmed) {
+      this.removeCustomCategoryFromForm();
+      if (this.showOtherCategory) {
+        this.showOtherCategory = false;
       }
-      
-      // If we have a non‑empty custom category, add it to the form
-      this.addCustomCategoryToForm();
+      return;
+    }
+    this.addCustomCategoryToForm();
   }
 
-  // Helper: Convert array to comma-separated string
   arrayToString(arr: string[]): string {
     if (!arr || arr.length === 0) return '';
     return arr.join(',');
   }
 
-  // Process students after load: add courseArray, categoryArray for display
   processStudents(data: StudentTracking[]): StudentTracking[] {
     return data.map(student => {
-      // Parse categories from stored string to array
+      (student as any).courseArray = student.coursSisId;
       (student as any).categoryArray = student.categories;
       return student;
     });
@@ -214,26 +224,25 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     this.selectedMeeting = student;
 
     if (student) {
-        const categoriesArray = (student as any).categoryArray || [];
-        this.globalFormGroup.patchValue({
-            studentId: student.studentSisId,
-            courseId: student.coursSisId,
-            meetingType: null,
-            mailType: student.mailType,
-            comment: null,
-            categories: categoriesArray
-        });
-        // Sync "Other" checkbox state based on existing categories
-        this.syncOtherCategoryFromCategories(categoriesArray);
+      const categoriesArray = (student as any).categoryArray || [];
+      this.globalFormGroup.patchValue({
+        studentId: student.studentSisId,
+        courseId: student.coursSisId,
+        meetingType: student.meetingType,
+        mailType: student.mailType,
+        comment: student.comment,
+        categories: categoriesArray
+      });
+      this.syncOtherCategoryFromCategories(categoriesArray);
     } else {
-        this.globalFormGroup.patchValue({ 
-            courseId: null, 
-            meetingType: null, 
-            mailType: null,
-            categories: []
-        });
-        this.showOtherCategory = false;
-        this.customCategoryText = '';
+      this.globalFormGroup.patchValue({ 
+        courseId: [], 
+        meetingType: null, 
+        mailType: null,
+        categories: []
+      });
+      this.showOtherCategory = false;
+      this.customCategoryText = '';
     }
     this.visible = true;
   }
@@ -247,7 +256,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   }
 
   onSave(): void {
-    if (!this.globalFormGroup.value.studentId || !this.globalFormGroup.value.meetingType || !this.globalFormGroup.value.mailType || !this.globalFormGroup.value.courseId) {
+    if (!this.globalFormGroup.value.studentId || !this.globalFormGroup.value.meetingType || !this.globalFormGroup.value.mailType || !this.globalFormGroup.value.courseId?.length) {
       Object.keys(this.globalFormGroup.controls).forEach(key => {
         this.globalFormGroup.get(key)?.markAsTouched();
       });
@@ -278,7 +287,6 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       finalize(() => { this.isSaving = false; })
     ).subscribe({
       next: (res: StudentTracking) => {
-        // Process response to include arrays
         const processed = this.processStudents([res])[0];
         if (this.selectedMeeting) {
           const index = this.students.findIndex(s => s.id === this.selectedMeeting?.id);
@@ -320,28 +328,26 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
 
   updateMeeting(): void {
     if (this.selectedMeeting && this.selectedMeeting.id) {
-      const updatedCourse = this.globalFormGroup.value.courseId;
-      const updatedMeetingTypeArray = this.globalFormGroup.value.meetingType;
-      const updatedMailTypeArray = this.globalFormGroup.value.mailType;
+      const updatedCourseArray = this.globalFormGroup.value.courseId;
+      const updatedMeetingType = this.globalFormGroup.value.meetingType;
+      const updatedMailType = this.globalFormGroup.value.mailType;
       const updatedComment = this.globalFormGroup.value.comment;
       const updatedCategories = this.globalFormGroup.value.categories;
       
-      if (!updatedCourse || !updatedMeetingTypeArray?.length) {
+      if (!updatedCourseArray?.length || !updatedMeetingType) {
         this.messageService.add({
           severity: 'warn',
           summary: 'Validation Error',
-          detail: 'Please select at least one course and one meeting type',
+          detail: 'Please select at least one course and a meeting type',
           life: 3000
         });
         return;
       }
       
-      // Update local object with stringified values
-      this.selectedMeeting.coursSisId = updatedCourse;
-      this.selectedMeeting.meetingType = updatedMeetingTypeArray;
-      this.selectedMeeting.mailType = updatedMailTypeArray;
+      this.selectedMeeting.coursSisId = updatedCourseArray;
+      this.selectedMeeting.meetingType = updatedMeetingType;
+      this.selectedMeeting.mailType = updatedMailType;
       this.selectedMeeting.comment = updatedComment || this.selectedMeeting.comment;
-      this.selectedMeeting.coursSisId = updatedCourse;
       this.selectedMeeting.categories = updatedCategories;
       
       const sub = this.attendanceService.updateTracking(this.selectedMeeting).subscribe({
@@ -349,6 +355,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
           const index = this.students.findIndex(s => s.id === this.selectedMeeting?.id);
           if (index !== -1) {
             this.students[index] = { ...res, id: this.selectedMeeting!.id };
+            (this.students[index] as any).courseArray = updatedCourseArray;
             (this.students[index] as any).categoryArray = updatedCategories;
           }
           this.filterMeetings();
@@ -375,7 +382,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     }
   }
 
-  deleteMeeting(meeting: StudentTracking, index: number): void {    
+  deleteMeeting(meeting: StudentTracking, event: Event): void {
+    event.stopPropagation();
     const sub = this.attendanceService.deleteTracking(meeting.id || 0).subscribe({
       next: () => {
         this.students = this.students.filter(s => s.id !== meeting.id);
@@ -431,6 +439,10 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     });
   }
 
+  toggleViewMode(): void {
+    this.viewMode = this.viewMode === 'table' ? 'grid' : 'table';
+  }
+
   // Helper methods for UI
   getInitials(name?: string): string {
     if (!name) return '?';
@@ -450,6 +462,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       'face to face': 'info',
       'team call': 'success',
       'by email': 'secondary',
+      'first email': 'warning',
       'first reminder': 'warning',
       'last reminder': 'danger'
     };
@@ -464,17 +477,15 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     return this.mailTypes.find(t => t.value === type)?.label || type;
   }
 
-  getMailingTypeLabel(type: string): string {
-    return this.mailTypes.find(t => t.value === type)?.label || type;
-  }
-
   truncateComment(comment: string, maxLength: number = 50): string {
     if (!comment) return 'No comments';
     return comment.length > maxLength ? comment.substring(0, maxLength) + '...' : comment;
   }
 
   exportToCSV(): void {
-    if (!this.filteredStudents || this.filteredStudents.length === 0) {
+    let dataToExport = this.viewMode === 'table' ? this.flattenedRows : this.filteredStudents;
+    
+    if (!dataToExport || dataToExport.length === 0) {
       this.messageService.add({
         severity: 'warn',
         summary: 'No Data',
@@ -484,11 +495,10 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Define CSV headers - added Categories column
     const headers = [
       'Student SIS ID',
       'Student Name',
-      'Course SIS ID(s)',
+      'Course SIS ID',
       'Meeting Date',
       'Meeting Type',
       'Mailing Type',
@@ -496,48 +506,34 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       'Comments / Notes'
     ];
 
-    // Convert each student to a CSV row
-    const rows = this.filteredStudents.map(student => {
-      // Format date
-      const meetingDate = student.createdAt 
-        ? new Date(student.createdAt).toLocaleString() 
-        : '';
-
-      // Get categories array
-      const categories = (student as any).categoryArray || [];
-      const categoriesStr = categories.join(', ');
-
-      // Build row data
-      const row = [
-        student.studentSisId || '',
-        student.studentName || '',
-        student.coursSisId || '',
+    const rows = dataToExport.map(item => {
+      const meetingDate = item.createdAt ? new Date(item.createdAt).toLocaleString() : '';
+      const courseId = this.viewMode === 'table' ? item.singleCourse : (item.coursSisId || []).join(', ');
+      const categories = (item.categoryArray || item.categories || []).join(', ');
+      
+      return [
+        item.studentSisId || '',
+        item.studentName || '',
+        courseId,
         meetingDate,
-        student.meetingType || '',
-        student.mailType || '',
-        categoriesStr,
-        student.comment || ''
-      ];
-
-      // Escape each field: wrap in quotes and replace internal quotes
-      return row.map(cell => this.escapeCSVCell(cell)).join(',');
+        item.meetingType || '',
+        item.mailType || '',
+        categories,
+        item.comment || ''
+      ].map(cell => this.escapeCSVCell(cell)).join(',');
     });
 
-    // Combine header and rows
     const csvContent = [
       headers.map(h => this.escapeCSVCell(h)).join(','),
       ...rows
     ].join('\n');
 
-    // Add BOM for UTF-8 special characters
     const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
-
     link.setAttribute('href', url);
     link.setAttribute('download', `meeting_history_${new Date().toISOString().slice(0,19)}.csv`);
     link.style.visibility = 'hidden';
-
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -551,14 +547,11 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Helper method to escape CSV fields (handles commas, quotes, newlines)
   private escapeCSVCell(cell: any): string {
     if (cell === null || cell === undefined) return '""';
-
     let stringCell = String(cell);
-    // If the cell contains commas, quotes, or newlines, wrap in quotes and escape existing quotes
     if (stringCell.includes(',') || stringCell.includes('"') || stringCell.includes('\n') || stringCell.includes('\r')) {
-      stringCell = stringCell.replace(/"/g, '""'); // Escape double quotes
+      stringCell = stringCell.replace(/"/g, '""');
       return `"${stringCell}"`;
     }
     return stringCell;
