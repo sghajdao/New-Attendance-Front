@@ -572,22 +572,23 @@ export class StatsComponent implements OnInit, OnDestroy {
     if (!this.students.length) return;
 
     // Recompute student event counts from full data
-    const studentMap = new Map<string, { id: string; name: string; count: number }>();
+    const studentMap = new Map<string, { id: string; firstname: string; lastname: string; count: number }>();
     for (const tracking of this.students) {
       const studentId = tracking.studentSisId || tracking.studentName || 'unknown';
       const studentName = tracking.studentName || studentId;
       studentMap.set(studentId, {
         id: studentId,
-        name: studentName,
+        firstname: tracking.studentName || '',
+        lastname: tracking.studentName || '',
         count: (studentMap.get(studentId)?.count || 0) + 1
       });
     }
 
     const rows = Array.from(studentMap.entries())
-      .map(([id, data]) => [data.id, data.name, data.count])
-      .sort((a, b) => (b[2] as number) - (a[2] as number)); // sort descending
+      .map(([id, data]) => [data.id, data.firstname, data.lastname, data.count])
+      .sort((a, b) => (b[3] as number) - (a[3] as number)); // sort descending
 
-    this.downloadCSV([['Student ID', 'Student Name', 'Number of Tracking Events'], ...rows], 'all_notified_students');
+    this.downloadCSV([['Student ID', 'First Name', 'Last Name', 'Number of Tracking Events'], ...rows], 'all_notified_students');
   }
 
   /**
@@ -650,12 +651,12 @@ export class StatsComponent implements OnInit, OnDestroy {
   exportStudentAttendance(): void {
     if (!this.info || !this.info.length) return;
 
-    const studentMap = new Map<string, { id: string; name: string; present: number; late: number; absent: number }>();
+    const studentMap = new Map<string, { id: string; firstname: string; lastname: string; present: number; late: number; absent: number }>();
     for (const record of this.info) {
       const studentId = record.idNum;
       const fullName = `${record.firstName || ''} ${record.lastName || ''}`.trim() || studentId;
       if (!studentMap.has(studentId)) {
-        studentMap.set(studentId, { id: studentId, name: fullName, present: 0, late: 0, absent: 0 });
+        studentMap.set(studentId, { id: studentId, firstname: record.firstName || '', lastname: record.lastName || '', present: 0, late: 0, absent: 0 });
       }
       const stats = studentMap.get(studentId)!;
       const att = (record.attendance || '').toLowerCase();
@@ -666,14 +667,15 @@ export class StatsComponent implements OnInit, OnDestroy {
 
     const rows = Array.from(studentMap.entries()).map(([id, data]) => [
       data.id,
-      data.name,
+      data.firstname,
+      data.lastname,
       data.present,
       data.late,
       data.absent,
       data.present + data.late + data.absent
     ]).sort((a, b) => (b[4] as number) - (a[4] as number));
 
-    this.downloadCSV([['Student ID', 'Student Name', 'Present', 'Late', 'Absent', 'Total'], ...rows], 'all_student_attendance');
+    this.downloadCSV([['Student ID', 'First Name', 'Last Name', 'Present', 'Late', 'Absent', 'Total'], ...rows], 'all_student_attendance');
   }
 
   /**

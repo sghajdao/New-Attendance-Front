@@ -351,50 +351,7 @@
                 </small>
             </div>
 
-            <div class="form-field">
-                <label for="categories" class="required-field">Categories</label>
-                <p-multiSelect 
-                    id="categories"
-                    [options]="categoriesOptionsWithoutOther"
-                    placeholder="Select categories"
-                    appendTo="body"
-                    formControlName="categories"
-                    display="chip">
-                    <ng-template let-category pTemplate="item">
-                        <div class="type-select-item">
-                            <span>{{ category.label }}</span>
-                        </div>
-                    </ng-template>
-                </p-multiSelect>
             
-                <div class="other-category-container">
-                    <p-checkbox 
-                        binary="true"
-                        [(ngModel)]="showOtherCategory" 
-                        (ngModelChange)="onOtherCategoryToggle($event)"
-                        inputId="otherCategoryCheckbox"
-                        [ngModelOptions]="{standalone: true}">
-                    </p-checkbox>
-                    <label for="otherCategoryCheckbox" class="other-label">Other (custom category)</label>
-
-                    <div *ngIf="showOtherCategory" class="custom-category-input">
-                        <input 
-                            type="text" 
-                            pInputText 
-                            [(ngModel)]="customCategoryText" 
-                            (blur)="updateCustomCategory()"
-                            (keyup.enter)="updateCustomCategory()"
-                            placeholder="Enter custom category name"
-                            [ngModelOptions]="{standalone: true}" />
-                        <small class="helper-text">Type a custom category and press Enter or tab out</small>
-                    </div>
-                </div>
-            
-                <small class="helper-text" *ngIf="globalFormGroup.get('categories')?.value?.length > 0">
-                    Selected: {{ globalFormGroup.get('categories')?.value?.length }} category(s)
-                </small>
-            </div>
-
             <div class="form-field" *ngIf="selectedMeeting">
                 <label for="comment">Comments / Notes</label>
                 <textarea 
