@@ -54,7 +54,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     { label: '📅 Follow-Up Meeting', value: 'follow up meeting' },
     { label: '🟢 Check-In 1', value: 'check-in 1' },
     { label: '🟡 Check-In 2', value: 'check-in 2' },
-    { label: '🔴 Check-In 3', value: 'check-in 3' }
+    { label: '🔴 Check-In 1 2 3', value: 'check-in 1 2 3' }
   ];
 
   categoriesOptions = [
