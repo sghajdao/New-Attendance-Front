@@ -50,7 +50,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     { label: '📨 First Email', value: 'first email' },
     { label: '🔔 First Reminder', value: 'first reminder' },
     { label: '⚠️ Last Reminder', value: 'last reminder' },
-    
+
     { label: '📅 Follow-Up Meeting', value: 'follow up meeting' },
     { label: '🟢 Check-In 1', value: 'check-in 1' },
     { label: '🟡 Check-In 2', value: 'check-in 2' },
@@ -263,14 +263,14 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   }
 
   onSave(): void {
-    if (!this.globalFormGroup.value.studentId || !this.globalFormGroup.value.meetingType || !this.globalFormGroup.value.mailType || !this.globalFormGroup.value.courseId?.length) {
+    if (!this.globalFormGroup.value.studentId || !this.globalFormGroup.value.mailType || !this.globalFormGroup.value.comment) {
       Object.keys(this.globalFormGroup.controls).forEach(key => {
         this.globalFormGroup.get(key)?.markAsTouched();
       });
       this.messageService.add({
         severity: 'warn',
         summary: 'Validation Error',
-        detail: 'Please fill all required fields (including at least one course and one meeting type)',
+        detail: 'Please fill all required fields (including at least one course and one mailing type)',
         life: 3000
       });
       return;
