@@ -291,6 +291,8 @@
                 </small>
             </div>
 
+            <p *ngIf="selectedMeeting && studentName" style="margin-top: 10px;margin-bottom: 10px;"><strong>Student Name: {{ studentName }}</strong></p>
+
             <div class="form-field" *ngIf="selectedMeeting">
                 <label for="courseId" class="required-field">Course SIS ID (select one or more)</label>
                 <p-multiSelect 

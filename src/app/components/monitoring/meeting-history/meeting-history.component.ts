@@ -38,6 +38,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   
   // View mode: 'table' (each row = one course) or 'grid' (cards, one per student)
   viewMode: 'table' | 'grid' = 'table';
+
+  studentName?: string;
   
   meetingTypes = [
     { label: '👤 Face to Face', value: 'face to face' },
@@ -117,6 +119,14 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       this.courses = init.filter(c => c.trmCde === 'SP').at(0)?.courses || [];
       this.studentsIds = init.filter(c => c.trmCde === 'SP').at(0)?.students || []
     }
+
+    this.globalFormGroup.get('studentId')?.valueChanges.subscribe(value => {
+      this.onGetStudentName(value);
+    });
+  }
+
+  onGetStudentName(value: string) {
+    this.studentName = this.students.find(s => s.studentSisId === value)?.studentName || value;
   }
 
   initForm(): void {
