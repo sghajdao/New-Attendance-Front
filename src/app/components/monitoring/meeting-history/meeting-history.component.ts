@@ -126,7 +126,17 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   }
 
   onGetStudentName(value: string) {
-    this.studentName = this.students.find(s => s.studentSisId === value)?.studentName || value;
+    this.indexedDbService.getByStudentId(value, 'SP').then(records => {
+      if (records && records.length > 0) {
+        const record = records[0];
+        this.studentName = record.firstName + ' ' + record.lastName;
+      } else {
+        this.studentName = value; // fallback to ID if no record found
+      }
+    }).catch(err => {
+      console.error('Error fetching student name from IndexedDB:', err);
+      this.studentName = value; // fallback to ID on error
+    });
   }
 
   initForm(): void {
@@ -244,6 +254,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       const categoriesArray = (student as any).categoryArray || [];
       this.globalFormGroup.patchValue({
         studentId: student.studentSisId,
+        firstName: student.firstName,
+        lastName: student.lastName,
         courseId: student.coursSisId,
         meetingType: student.meetingType,
         mailType: student.mailType,
@@ -296,7 +308,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       meetingType: formValue.meetingType,
       mailType: formValue.mailType,
       comment: formValue.comment || '',
-      studentName: `Student ${formValue.studentId}`,
+      firstName: formValue.firstName || '',
+      lastName: formValue.lastName || '',
       categories: formValue.categories
     };
     
@@ -428,7 +441,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   filterMeetings(): void {
     this.filteredStudents = this.students.filter(student => {
       const matchesSearch = !this.searchTerm || 
-        student.studentName?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        student.firstName?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        student.lastName?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         student.studentSisId?.toLowerCase().includes(this.searchTerm.toLowerCase());
       
       let matchesType = true;
@@ -514,7 +528,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
 
     const headers = [
       'Student SIS ID',
-      'Student Name',
+      'First Name',
+      'Last Name',
       'Course SIS ID',
       'Meeting Date',
       'Meeting Type',
@@ -530,7 +545,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       
       return [
         item.studentSisId || '',
-        item.studentName || '',
+        item.firstName || '',
+        item.lastName || '',
         courseId,
         meetingDate,
         item.meetingType || '',

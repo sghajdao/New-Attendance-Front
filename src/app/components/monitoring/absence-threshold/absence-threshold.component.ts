@@ -15,7 +15,8 @@ export interface Student {
   label: string; 
   value: number; 
   color: string; 
-  name: string; 
+  firstName: string; 
+  lastName: string; 
   course: string; 
   seniority: string; 
   id: string; 
@@ -166,6 +167,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
             name: `${student.firstName} ${student.lastName}`,
             course: student.course_sis_id,
             seniority: student.seniority,
+            firstName: student.firstName,
+            lastName: student.lastName,
             id: student.student_sis_id,
             meetings: student.meetings || [],
             _selected: false
@@ -415,7 +418,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     const trackingRequests = this.contactSelectedStudents.map(student => {
       const trackingData: StudentTracking = {
         studentSisId: student.id,
-        studentName: student.name,
+        firstName: student.firstName,
+        lastName: student.lastName,
         coursSisId: [...this.contactSelectedStudents.filter(s => s.id === student.id).map(s => s.course)],
         createdAt: new Date(),
         meetingType: meetingType,

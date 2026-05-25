@@ -139,10 +139,10 @@
             <div class="card-header-section">
                 <div class="student-info">
                     <div class="student-avatar" [ngClass]="getRiskClass(student.value)">
-                        {{ getInitials(student.name) }}
+                        {{ getInitials(student.firstName + ' ' + student.lastName) }}
                     </div>
                     <div class="info-details">
-                        <p class="student-name">{{ student.name }} <{{ student.id }}></p>
+                        <p class="student-name">{{ student.firstName }} {{ student.lastName }} <{{ student.id }}></p>
                         <div class="student-meta">
                             <span class="course-code">{{ student.course }}</span>
                             <span class="divider">•</span>
@@ -231,7 +231,7 @@
           [modal]="true" [style]="{width: '550px'}" [draggable]="false" [resizable]="false">
   <ng-container *ngIf="selectedStudentForHistory">
     <div class="history-header">
-      <h3>{{ selectedStudentForHistory.name }}</h3>
+      <h3>{{ selectedStudentForHistory.firstName }} {{ selectedStudentForHistory.lastName }}</h3>
       <p><strong>Course:</strong> {{ selectedStudentForHistory.course }}</p>
       <p><strong>Absence rate:</strong> {{ selectedStudentForHistory.value }}%</p>
     </div>
@@ -284,7 +284,7 @@
             <h4>Selected Students ({{ contactSelectedStudents.length }})</h4>
             <ul>
                 <li *ngFor="let student of contactSelectedStudents">
-                    {{ student.name }} 
+                    {{ student.firstName }} {{ student.lastName }}
                     <span class="course-code">{{ student.course }}</span>
                 </li>
             </ul>

@@ -1,7 +1,8 @@
 export interface StudentTracking {
     id?: number;
     studentSisId?: string;
-    studentName?: string;
+    firstName?: string;
+    lastName?: string;
     coursSisId?: string[];
     createdAt?: Date;
     meetingType?: string;

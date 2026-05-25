@@ -154,7 +154,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
   }
 
   fetchData() {
-    const lastUpdate = localStorage.getItem('lastUpdate');
+    const lastUpdate = localStorage.getItem('trackLastUpdate');
     const initData = localStorage.getItem('init');
     let shouldFetch = !(lastUpdate && new Date().getDate() <= new Date(JSON.parse(lastUpdate)).getDate() && new Date().getMonth() <= new Date(JSON.parse(lastUpdate)).getMonth()) || !initData;
 
@@ -174,7 +174,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
             this.backup = res;
             this.students = this.buildAggregatedData(res.filter(r => r.trmCde === 'SP'));
             this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
-            localStorage.setItem('lastUpdate', JSON.stringify(new Date()));
+            localStorage.setItem('trackLastUpdate', JSON.stringify(new Date()));
             this.isLoading = false;
           },
           error: (err) => {
