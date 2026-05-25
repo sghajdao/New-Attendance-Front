@@ -291,8 +291,8 @@
                 </small>
             </div>
 
-            <div class="form-field">
-                <label for="courseId" class="required-field" *ngIf="selectedMeeting">Course SIS ID (select one or more)</label>
+            <div class="form-field" *ngIf="selectedMeeting">
+                <label for="courseId" class="required-field">Course SIS ID (select one or more)</label>
                 <p-multiSelect 
                     id="courseId"
                     [options]="courses"
@@ -309,8 +309,8 @@
                 </small>
             </div>
 
-            <div class="form-field">
-                <label for="meetingType" class="required-field" *ngIf="selectedMeeting">Meeting Types</label>
+            <div class="form-field" *ngIf="selectedMeeting">
+                <label for="meetingType" class="required-field">Meeting Types</label>
                 <p-select 
                     id="meetingType"
                     [options]="meetingTypes"
@@ -405,9 +405,9 @@
                     placeholder="Add meeting notes, discussion points, or follow-up items..."></textarea>
             </div>
 
-            <div class="form-field" *ngIf="!selectedMeeting">
-                <p-editor formControlName="comment" [style]="{ height: '100%' }" />
-            </div>
+            <!-- <div class="form-field" *ngIf="!selectedMeeting"> -->
+                <p-editor *ngIf="!selectedMeeting" formControlName="comment" [style]="{ height: '100%' }" />
+            <!-- </div> -->
 
             <div class="dialog-actions">
                 <p-button label="Cancel" severity="secondary" (click)="cancelDialog()" />
