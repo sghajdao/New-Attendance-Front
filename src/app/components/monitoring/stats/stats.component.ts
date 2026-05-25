@@ -179,8 +179,8 @@ export class StatsComponent implements OnInit, OnDestroy {
     let totalCoursesTemp = 0;
 
     for (const tracking of this.students) {
-      const studentId = tracking.studentSisId || tracking.studentName || 'unknown';
-      const studentName = tracking.studentName || studentId;
+      const studentId = tracking.studentSisId || tracking.firstName + ' ' + tracking.lastName || 'unknown';
+      const studentName = tracking.firstName + ' ' + tracking.lastName || studentId;
 
       if (!studentMap.has(studentId)) {
         studentMap.set(studentId, { name: studentName, count: 0, courses: 0 });
@@ -238,7 +238,7 @@ export class StatsComponent implements OnInit, OnDestroy {
 
     const courseStudentMap = new Map<string, Set<string>>();
     for (const student of this.students) {
-      const studentId = student.studentSisId || student.studentName || 'unknown';
+      const studentId = student.studentSisId || student.firstName + ' ' + student.lastName || 'unknown';
       const courses = student.coursSisId || [];
       for (const course of courses) {
         if (!course) continue;
@@ -574,12 +574,12 @@ export class StatsComponent implements OnInit, OnDestroy {
     // Recompute student event counts from full data
     const studentMap = new Map<string, { id: string; firstname: string; lastname: string; count: number }>();
     for (const tracking of this.students) {
-      const studentId = tracking.studentSisId || tracking.studentName || 'unknown';
-      const studentName = tracking.studentName || studentId;
+      const studentId = tracking.studentSisId || tracking.firstName + ' ' + tracking.lastName || 'unknown';
+      const studentName = tracking.firstName + ' ' + tracking.lastName || studentId;
       studentMap.set(studentId, {
         id: studentId,
-        firstname: tracking.studentName || '',
-        lastname: tracking.studentName || '',
+        firstname: tracking.firstName || '',
+        lastname: tracking.lastName || '',
         count: (studentMap.get(studentId)?.count || 0) + 1
       });
     }
@@ -599,7 +599,7 @@ export class StatsComponent implements OnInit, OnDestroy {
 
     const courseStudentMap = new Map<string, Set<string>>();
     for (const student of this.students) {
-      const studentId = student.studentSisId || student.studentName || 'unknown';
+      const studentId = student.studentSisId || student.firstName + ' ' + student.lastName || 'unknown';
       const courses = student.coursSisId || [];
       for (const course of courses) {
         if (!course) continue;
