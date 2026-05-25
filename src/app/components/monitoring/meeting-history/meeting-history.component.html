@@ -285,14 +285,14 @@
         <form [formGroup]="globalFormGroup" (ngSubmit)="onSave()">
             <div class="form-field">
                 <label for="studentId" class="required-field">Student ID</label>
-                <input pInputText id="studentId" formControlName="studentId" placeholder="Enter student SIS ID" />
+                <p-select id="studentId" formControlName="studentId" [options]="studentsIds" placeholder="Select a Student ID" />
                 <small class="error-message" *ngIf="globalFormGroup.get('studentId')?.invalid && globalFormGroup.get('studentId')?.touched">
                     Student ID is required
                 </small>
             </div>
 
             <div class="form-field">
-                <label for="courseId" class="required-field">Course SIS ID (select one or more)</label>
+                <label for="courseId" class="required-field" *ngIf="selectedMeeting">Course SIS ID (select one or more)</label>
                 <p-multiSelect 
                     id="courseId"
                     [options]="courses"
@@ -310,7 +310,7 @@
             </div>
 
             <div class="form-field">
-                <label for="meetingType" class="required-field">Meeting Types</label>
+                <label for="meetingType" class="required-field" *ngIf="selectedMeeting">Meeting Types</label>
                 <p-select 
                     id="meetingType"
                     [options]="meetingTypes"
@@ -395,7 +395,7 @@
                 </small>
             </div>
 
-            <div class="form-field">
+            <div class="form-field" *ngIf="selectedMeeting">
                 <label for="comment">Comments / Notes</label>
                 <textarea 
                     id="comment"
@@ -405,6 +405,10 @@
                     placeholder="Add meeting notes, discussion points, or follow-up items..."></textarea>
             </div>
 
+            <div class="form-field" *ngIf="!selectedMeeting">
+                <p-editor formControlName="comment" [style]="{ height: '100%' }" />
+            </div>
+
             <div class="dialog-actions">
                 <p-button label="Cancel" severity="secondary" (click)="cancelDialog()" />
                 <p-button 
@@ -412,7 +416,7 @@
                     label="Save Meeting" 
                     severity="contrast" 
                     type="submit" 
-                    [disabled]="!globalFormGroup.value.studentId || !globalFormGroup.value.meetingType || !globalFormGroup.value.mailType || !globalFormGroup.value.courseId?.length"
+                    [disabled]="!globalFormGroup.value.studentId || !globalFormGroup.value.comment || !globalFormGroup.value.mailType"
                     [loading]="isSaving" />
                 <p-button 
                     *ngIf="selectedMeeting"

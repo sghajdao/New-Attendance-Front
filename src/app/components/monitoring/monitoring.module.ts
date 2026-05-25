@@ -33,6 +33,7 @@ import { PaginatorModule } from 'primeng/paginator';
 import { CheckboxModule } from 'primeng/checkbox';
 import { StatsComponent } from './stats/stats.component';
 import { ChartModule } from 'primeng/chart';
+import { EditorModule } from 'primeng/editor';
 
 
 @NgModule({
@@ -73,6 +74,7 @@ import { ChartModule } from 'primeng/chart';
     PaginatorModule,
     CheckboxModule,
     ChartModule,
+    EditorModule,
   ],
   providers: [MessageService]
 })

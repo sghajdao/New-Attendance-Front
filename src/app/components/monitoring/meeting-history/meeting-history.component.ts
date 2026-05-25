@@ -34,6 +34,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   searchTerm: string = '';
   selectedTypes: string[] = [];
   courses: string[] = [];
+  studentsIds: string[] = []
   
   // View mode: 'table' (each row = one course) or 'grid' (cards, one per student)
   viewMode: 'table' | 'grid' = 'table';
@@ -109,6 +110,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     if (storage) {
       const init: InitData[] = JSON.parse(storage);
       this.courses = init.filter(c => c.trmCde === 'SP').at(0)?.courses || [];
+      this.studentsIds = init.filter(c => c.trmCde === 'SP').at(0)?.students || []
     }
   }
 
