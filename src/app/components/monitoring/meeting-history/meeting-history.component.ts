@@ -232,6 +232,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       next: (data: StudentTracking[]) => {
         this.students = this.processStudents(data);
         this.filteredStudents = [...this.students];
+        console.log('Loaded tracking data:', this.filteredStudents);
       },
       error: (err) => {
         console.error('Error loading tracking data:', err);
