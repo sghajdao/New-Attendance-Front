@@ -564,8 +564,11 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     }
 
     // Define CSV headers and field mappings
-    const headers = ['Attendance Status', 'Attendance Date', 'Attendance Time', 'Course'];
+    const headers = ['ID', 'First Name', 'Last Name', 'Attendance Status', 'Attendance Date', 'Attendance Time', 'Course'];
     const rows = this.modalRecords.map(record => [
+      record.idNum || '',
+      record.firstName || '',
+      record.lastName || '',
       record.attendance?.toUpperCase() || '',
       this.formatDateToYYYYMMDD(record.attendanceDate),
       record.attendanceTime || '',
