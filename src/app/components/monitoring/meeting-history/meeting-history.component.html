@@ -334,7 +334,7 @@
                 <label for="mailType" class="required-field">Mailing Types</label>
                 <p-select 
                     id="mailType"
-                    [options]="mailTypes"
+                    [options]="selectedMeeting? mailTypes.slice(0, 4) : mailTypes.slice(3, 7)"
                     placeholder="Select mailing types"
                     appendTo="body"
                     formControlName="mailType"

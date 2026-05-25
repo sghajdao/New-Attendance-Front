@@ -49,7 +49,12 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   mailTypes = [
     { label: '📨 First Email', value: 'first email' },
     { label: '🔔 First Reminder', value: 'first reminder' },
-    { label: '⚠️ Last Reminder', value: 'last reminder' }
+    { label: '⚠️ Last Reminder', value: 'last reminder' },
+    
+    { label: '📅 Follow-Up Meeting', value: 'follow up meeting' },
+    { label: '🟢 Check-In 1', value: 'check-in 1' },
+    { label: '🟡 Check-In 2', value: 'check-in 2' },
+    { label: '🔴 Check-In 3', value: 'check-in 3' }
   ];
 
   categoriesOptions = [
