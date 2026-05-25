@@ -405,9 +405,9 @@
                     placeholder="Add meeting notes, discussion points, or follow-up items..."></textarea>
             </div>
 
-            <!-- <div class="form-field" *ngIf="!selectedMeeting"> -->
-                <p-editor *ngIf="!selectedMeeting" formControlName="comment" [style]="{ height: '100%' }" />
-            <!-- </div> --> 
+            <div class="form-field" *ngIf="!selectedMeeting">
+                <p-editor formControlName="comment" [style]="{ height: '200px' }" />
+            </div>
 
             <div class="dialog-actions">
                 <p-button label="Cancel" severity="secondary" (click)="cancelDialog()" />
