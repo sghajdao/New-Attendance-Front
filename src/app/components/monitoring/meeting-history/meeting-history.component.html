@@ -110,10 +110,10 @@
                     </td>
                     <td>
                         <div class="student-cell">
-                            <div class="student-avatar" [style.background-color]="getAvatarColor(row.studentName)">
-                                {{ getInitials(row.studentName) }}
+                            <div class="student-avatar" [style.background-color]="getAvatarColor(row.firstName + ' ' + row.lastName)">
+                                {{ getInitials(row.firstName + ' ' + row.lastName) }}
                             </div>
-                            <span class="student-name">{{ row.studentName || row.studentSisId }}</span>
+                            <span class="student-name">{{ row.firstName + ' ' + row.lastName || row.studentSisId }}</span>
                         </div>
                     </td>
                     <td>
