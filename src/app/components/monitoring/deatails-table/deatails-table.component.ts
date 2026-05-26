@@ -321,11 +321,15 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const headers = ['Attendance Status', 'Attendance Date', 'Attendance Time'];
+    const headers = ['Attendance Status', 'Attendance Date', 'Attendance Time', 'Course', 'First Name', 'Last Name', 'Seniority'];
     const rows = this.modalRecords.map(record => [
       record.attendance?.toUpperCase() || '',
       this.formatDateToYYYYMMDD(record.attendanceDate),
-      record.attendanceTime || ''
+      record.attendanceTime || '',
+      record.crsCde || '',
+      record.firstName || '',
+      record.lastName || '',
+      record.seniority || ''
     ]);
 
     const csvContent = [
