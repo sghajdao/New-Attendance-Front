@@ -163,7 +163,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
       if (!data.length || shouldFetch) {
         const sub = this.attendanceService.getStudentsInfo().subscribe({
           next: (res: StudentAttendanceDetails[]) => {
-            console.log('Fetched raw records:', res.length);
+            console.log('Fetched raw records:', res);
             this.indexeddbService.clearData('WI');
             this.indexeddbService.addData(res.filter(r => r.trmCde === 'WI'), 'WI');
             this.indexeddbService.clearData('FA');
