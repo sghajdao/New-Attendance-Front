@@ -80,7 +80,7 @@ export class StatsComponent implements OnInit, OnDestroy {
 
       return from(
         this.indexeddbService.getData(
-          filter.trmCde || 'SP'
+          filter.trmCde || 'SI'
         )
         ).pipe(
 

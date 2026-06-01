@@ -81,7 +81,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
       
         switchMap(filter => {
         
-          const term = filter.trmCde || 'SP';
+          const term = filter.trmCde || 'SI';
         
           return from(
             this.indexeddbService.getData(term)
@@ -110,7 +110,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
               if (coursesSet.size) {
                 filteredRawData = filteredRawData.filter(i =>
                   coursesSet.has(
-                    'SP26-' + i.crsCde.replace(/\s/g, '')
+                    'SI26-' + i.crsCde.replace(/\s/g, '')
                   )
                 );
               }
@@ -159,7 +159,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
     let shouldFetch = !(lastUpdate && new Date().getDate() <= new Date(JSON.parse(lastUpdate)).getDate() && new Date().getMonth() <= new Date(JSON.parse(lastUpdate)).getMonth()) || !initData;
 
     this.isLoading = true;
-    this.indexeddbService.getData('SP').then((data: StudentAttendanceDetails[]) => {
+    this.indexeddbService.getData('SI').then((data: StudentAttendanceDetails[]) => {
       if (!data.length || shouldFetch) {
         const sub = this.attendanceService.getStudentsInfo().subscribe({
           next: (res: StudentAttendanceDetails[]) => {
@@ -171,8 +171,11 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
             this.indexeddbService.clearData('SP');
             this.indexeddbService.addData(res.filter(r => r.trmCde === 'SP'), 'SP');
             this.rawAttendanceData = res.filter(r => r.trmCde === 'SP');
+            this.indexeddbService.clearData('SI');
+            this.indexeddbService.addData(res.filter(r => r.trmCde === 'SI'), 'SI');
+            this.rawAttendanceData = res.filter(r => r.trmCde === 'SI');
             this.backup = res;
-            this.students = this.buildAggregatedData(res.filter(r => r.trmCde === 'SP'));
+            this.students = this.buildAggregatedData(res.filter(r => r.trmCde === 'SI'));
             this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
             localStorage.setItem('trackLastUpdate', JSON.stringify(new Date()));
             this.isLoading = false;

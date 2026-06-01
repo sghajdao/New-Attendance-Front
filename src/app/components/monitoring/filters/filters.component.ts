@@ -23,7 +23,7 @@ export class FiltersComponent implements OnInit, OnDestroy {
   students: string[] = []
   courses: string[] = []
   seniorities: string[] = ['FR', 'SO', 'JR', 'SR', 'GR']
-  semesters: string[] = ['SP', 'FA', 'WI']
+  semesters: string[] = ['SP', 'FA', 'WI', 'SI']
   dataBackup: InitData[] = []
 
   subscriptions: Subscription[] = []
@@ -33,12 +33,12 @@ export class FiltersComponent implements OnInit, OnDestroy {
     if (storage) {
       const init: InitData[] = JSON.parse(storage);
       this.dataBackup = init;
-      this.courses = this.dataBackup.filter(c => c.trmCde === 'SP').at(0)?.courses || []
-      this.students = this.dataBackup.filter(c => c.trmCde === 'SP').at(0)?.students || []
+      this.courses = this.dataBackup.filter(c => c.trmCde === 'SI').at(0)?.courses || []
+      this.students = this.dataBackup.filter(c => c.trmCde === 'SI').at(0)?.students || []
     }
 
     this.globalFormGroup = this.fb.group({
-      trmCde: 'SP',
+      trmCde: 'SI',
       studentIds: [[]],
       courses: [[]],
       seniorities: [[]],
@@ -57,6 +57,10 @@ export class FiltersComponent implements OnInit, OnDestroy {
         this.courses = this.dataBackup.filter(c => c.trmCde === 'SP').at(0)?.courses || []
         this.students = this.dataBackup.filter(c => c.trmCde === 'SP').at(0)?.students || []
       }
+      else if (session && session === 'SI') {
+        this.courses = this.dataBackup.filter(c => c.trmCde === 'SI').at(0)?.courses || []
+        this.students = this.dataBackup.filter(c => c.trmCde === 'SI').at(0)?.students || []
+      }
     });
     if (sub)
       this.subscriptions.push(sub);
@@ -68,7 +72,7 @@ export class FiltersComponent implements OnInit, OnDestroy {
 
   onClear() {
     this.globalFormGroup.reset()
-    this.globalFormGroup.get('trmCde')?.setValue('SP');
+    this.globalFormGroup.get('trmCde')?.setValue('SI');
     this.attendanceService.attendanceFilterSource.next(this.globalFormGroup.value);
   }
 

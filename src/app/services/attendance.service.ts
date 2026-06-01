@@ -25,7 +25,7 @@ export class AttendanceService {
   attendanceSource = new BehaviorSubject<Attendance[]>([])
   attendance$ = this.attendanceSource.asObservable()
 
-  attendanceFilterSource = new BehaviorSubject<SearchDto>({trmCde: 'SP', studentIds: [], courses: [], seniorities: []})
+  attendanceFilterSource = new BehaviorSubject<SearchDto>({trmCde: 'SI', studentIds: [], courses: [], seniorities: []})
   attendanceFilter$ = this.attendanceFilterSource.asObservable()
 
   filterAttendance(filter: FilrterRequest) {

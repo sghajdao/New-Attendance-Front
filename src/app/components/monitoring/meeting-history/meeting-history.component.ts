@@ -116,8 +116,8 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     const storage = localStorage.getItem('init');
     if (storage) {
       const init: InitData[] = JSON.parse(storage);
-      this.courses = init.filter(c => c.trmCde === 'SP').at(0)?.courses || [];
-      this.studentsIds = init.filter(c => c.trmCde === 'SP').at(0)?.students || []
+      this.courses = init.filter(c => c.trmCde === 'SI').at(0)?.courses || [];
+      this.studentsIds = init.filter(c => c.trmCde === 'SI').at(0)?.students || []
     }
 
     this.globalFormGroup.get('studentId')?.valueChanges.subscribe(value => {
@@ -126,7 +126,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   }
 
   onGetStudentName(value: string) {
-    this.indexedDbService.getByStudentId(value, 'SP').then(records => {
+    this.indexedDbService.getByStudentId(value, 'SI').then(records => {
       if (records && records.length > 0) {
         const record = records[0];
         this.studentName = record.firstName + ' ' + record.lastName;
