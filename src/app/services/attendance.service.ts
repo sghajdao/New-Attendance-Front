@@ -79,8 +79,8 @@ export class AttendanceService {
     return this.http.delete<boolean>(environment.trackingUrl + '/delete/' + id)
   }
 
-  getStudentsInfo() {
-    return this.http.get<StudentAttendanceDetails[]>(environment.trackingUrl + '/info')
+  getStudentsInfo(trm: string) {
+    return this.http.get<StudentAttendanceDetails[]>(environment.trackingUrl + '/info/' + trm)
   }
 
   getRedFlagStudents() {
