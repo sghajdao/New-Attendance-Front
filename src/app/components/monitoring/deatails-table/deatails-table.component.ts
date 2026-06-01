@@ -1,6 +1,6 @@
 // deatails-table.component.ts
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { catchError, EMPTY, forkJoin, from, Subscription, switchMap, tap } from 'rxjs';
+import { catchError, concatMap, EMPTY, forkJoin, from, Subscription, switchMap, tap } from 'rxjs';
 import { AttendanceService } from '../../../services/attendance.service';
 import { IndexeddbService } from '../../../services/indexeddb.service';
 import { StudentAttendanceDetails } from '../../../models/dto/studentAttendanceDetails';
@@ -161,35 +161,38 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.indexeddbService.getData('SI').then((data: StudentAttendanceDetails[]) => {
       if (!data.length || shouldFetch) {
-        const sub = forkJoin({
-          WI: this.attendanceService.getStudentsInfo('WI'),
-          FA: this.attendanceService.getStudentsInfo('FA'),
-          SP: this.attendanceService.getStudentsInfo('SP'),
-          SI: this.attendanceService.getStudentsInfo('SI')
-        }).subscribe({
-          next: ({ WI, FA, SP, SI }) => {
-          
-            this.indexeddbService.clearData('WI');
-            this.indexeddbService.addData(WI, 'WI');
-          
-            this.indexeddbService.clearData('FA');
-            this.indexeddbService.addData(FA, 'FA');
-          
-            this.indexeddbService.clearData('SP');
-            this.indexeddbService.addData(SP, 'SP');
-          
-            this.indexeddbService.clearData('SI');
-            this.indexeddbService.addData(SI, 'SI');
-          
-            const allData = [...WI, ...FA, ...SP, ...SI];
-          
-            this.backup = allData;
-            this.rawAttendanceData = SI;
-            this.students = this.buildAggregatedData(SI);
-          
-            this.isLoading = false;
-          }
-        });
+        const sub = from(['WI', 'FA', 'SP', 'SI'])
+          .pipe(
+            concatMap(trm =>
+              this.attendanceService.getStudentsInfo(trm).pipe(
+                tap(res => {
+                  this.indexeddbService.clearData(trm);
+                  this.indexeddbService.addData(res, trm);
+                
+                  if (trm === 'SI') {
+                    this.rawAttendanceData = res;
+                    this.students = this.buildAggregatedData(res);
+                    this.numberOfStudents = new Set(
+                      this.students.map(s => s.idNum)
+                    ).size;
+                  }
+                })
+              )
+            )
+          )
+          .subscribe({
+            complete: () => {
+              localStorage.setItem(
+                'trackLastUpdate',
+                JSON.stringify(new Date())
+              );
+              this.isLoading = false;
+            },
+            error: err => {
+              console.error(err);
+              this.isLoading = false;
+            }
+          });
         this.subscriptions.push(sub);
       }
       else {
