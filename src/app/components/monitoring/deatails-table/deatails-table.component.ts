@@ -192,6 +192,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
         this.rawAttendanceData = data;
         this.students = this.buildAggregatedData(data);
         this.numberOfStudents = new Set(this.students.map(s => s.idNum)).size;
+        localStorage.setItem('trackLastUpdate', JSON.stringify(new Date()));
         this.isLoading = false;
       }
     }).catch((err) => {
