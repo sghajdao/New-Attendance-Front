@@ -35,6 +35,7 @@ import { StatsComponent } from './stats/stats.component';
 import { ChartModule } from 'primeng/chart';
 import { EditorModule } from 'primeng/editor';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 
 
 @NgModule({
@@ -78,6 +79,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     EditorModule,
     ConfirmDialogModule,
   ],
-  providers: [MessageService]
+  providers: [MessageService, ConfirmationService]
 })
 export class MonitoringModule { }
