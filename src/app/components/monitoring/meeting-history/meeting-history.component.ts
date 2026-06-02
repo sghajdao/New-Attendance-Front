@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors }
 import { AttendanceService } from '../../../services/attendance.service';
 import { StudentTracking } from '../../../models/entities/studentTracking';
 import { finalize, Subscription } from 'rxjs';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { IndexeddbService } from '../../../services/indexeddb.service';
 import { InitData } from '../../../models/dto/initData';
 
@@ -20,6 +20,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     private attendanceService: AttendanceService,
     private messageService: MessageService,
     private indexedDbService: IndexeddbService,
+    private confirmationService: ConfirmationService,
   ) { }
 
   @Input() searchDto?: any;
@@ -414,30 +415,60 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   }
 
   deleteMeeting(meeting: StudentTracking, event: Event): void {
-    console.log('Attempting to delete meeting with ID:', meeting);
-    event.stopPropagation();
-    const sub = this.attendanceService.deleteTracking(meeting.id || 0).subscribe({
-      next: () => {
-        this.students = this.students.filter(s => s.id !== meeting.id);
-        this.filterMeetings();
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Deleted',
-          detail: 'Meeting record deleted successfully',
-          life: 3000
+    event.stopPropagation(); // Prevent row click from interfering
+    
+    if (!meeting || !meeting.id) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Cannot delete: Meeting record is missing an ID.',
+        life: 3000
+      });
+      return;
+    }
+  
+    this.confirmationService.confirm({
+      message: `Are you sure you want to delete the meeting record for ${meeting.firstName} ${meeting.lastName} (${meeting.studentSisId})?`,
+      header: 'Confirm Deletion',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Yes, Delete',
+      rejectLabel: 'Cancel',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        // Proceed with deletion
+        const sub = this.attendanceService.deleteTracking(meeting.id!).subscribe({
+          next: () => {
+            this.students = this.students.filter(s => s.id !== meeting.id);
+            this.filterMeetings();
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Deleted',
+              detail: 'Meeting record deleted successfully',
+              life: 3000
+            });
+          },
+          error: (err) => {
+            console.error('Error deleting meeting:', err);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Failed to delete meeting record',
+              life: 3000
+            });
+          }
         });
+        this.subscriptions.push(sub);
       },
-      error: (err) => {
-        console.error('Error deleting meeting:', err);
+      reject: () => {
+        // User cancelled – do nothing
         this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to delete meeting record',
-          life: 3000
+          severity: 'info',
+          summary: 'Cancelled',
+          detail: 'Deletion was cancelled',
+          life: 2000
         });
       }
     });
-    this.subscriptions.push(sub);
   }
 
   filterMeetings(): void {

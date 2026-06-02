@@ -34,6 +34,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { StatsComponent } from './stats/stats.component';
 import { ChartModule } from 'primeng/chart';
 import { EditorModule } from 'primeng/editor';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 
 @NgModule({
@@ -75,6 +76,7 @@ import { EditorModule } from 'primeng/editor';
     CheckboxModule,
     ChartModule,
     EditorModule,
+    ConfirmDialogModule,
   ],
   providers: [MessageService]
 })
