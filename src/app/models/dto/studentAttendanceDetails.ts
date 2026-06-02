@@ -5,6 +5,7 @@ export interface StudentAttendanceDetails {
     firstName: string;
     lastName: string;
     crsCde: string;
+    schoolCde: string;
     yrCde: string;
     trmCde: string;
     crsDiv: string;

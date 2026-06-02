@@ -17,6 +17,7 @@ export interface StudentCourseAggregate {
   visaType: string;
   studentDiv: string;
   crsCde: string;
+  schoolCde: string;
   crsDiv: string;
   trmCde: string;
   status: string;
@@ -32,6 +33,7 @@ export interface StudentCourseAggregate {
   absentLimit: number;
   midtermGrade: string;
   major: string;
+  faculty: string;
   hold: string;
   trmGpa: string;
   wfReason: string;
@@ -229,6 +231,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
           entanceTrm: record.entanceTrm,
           studentDiv: record.studentDiv,
           crsCde: record.crsCde,
+          schoolCde: record.schoolCde,
           crsDiv: record.crsDiv,
           trmCde: record.trmCde,
           status: record.status,
@@ -246,6 +249,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
           visaType: record.visaType,
           midtermGrade: record.midtermGrade,
           major: record.major,
+          faculty: record.schoolCde,
           hold: record.hold? record.hold.trim() : 'No Hold',
           trmGpa: record.trmGpa,
           wfReason: record.wfReason,
@@ -388,6 +392,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
       'Student ID', 'First Name', 'Last Name', 'Entrance Year', 'Entrance Term',
       'Division', 'Visa Type', 'Course', 'Status', 'Seniority', 'Grade',
       'WF Reason', 'Term GPA', 'Midterm Grade', 'Drop Date', 'Withdraw Date', 'Schedule', 'Level',
+      'Faculty', 'Major',
       'Professor ID', 'Professor Name', 'Total Presences', 'Total Absences',
       'Total Latenesses', 'Absence Limit', 'Meeting Requests', 'Meetings'
     ];
@@ -432,6 +437,8 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
         escape(withdrawDate),
         escape(student.schedule || '-'),
         escape(student.crsDiv),
+        escape(student.schoolCde),
+        escape(student.major),
         escape(student.teacherId),
         escape(student.teacherName),
         escape(student.totalPresences),
