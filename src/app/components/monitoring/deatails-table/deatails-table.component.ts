@@ -166,6 +166,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
             concatMap(trm =>
               this.attendanceService.getStudentsInfo(trm).pipe(
                 tap(res => {
+                  this.isLoading = true;
                   this.indexeddbService.clearData(trm);
                   this.indexeddbService.addData(res, trm);
                 

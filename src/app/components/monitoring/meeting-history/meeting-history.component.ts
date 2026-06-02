@@ -414,6 +414,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
   }
 
   deleteMeeting(meeting: StudentTracking, event: Event): void {
+    console.log('Attempting to delete meeting with ID:', meeting);
     event.stopPropagation();
     const sub = this.attendanceService.deleteTracking(meeting.id || 0).subscribe({
       next: () => {
