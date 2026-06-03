@@ -45,8 +45,9 @@ export class QuickOverviewComponent implements OnInit, OnDestroy {
               if (this.attendanceRate === currentData?.attendanceRate) clearInterval(attendanceRateStop)
             })
             let lateArrivalsStop = setInterval(() => {
+              if (this.lateArrivals === currentData?.lateArrivals)
+                clearInterval(lateArrivalsStop)
               this.lateArrivals++
-              if (this.lateArrivals === currentData?.lateArrivals) clearInterval(lateArrivalsStop)
             })
           }
         }
@@ -68,8 +69,9 @@ export class QuickOverviewComponent implements OnInit, OnDestroy {
         if (this.attendanceRate === currentData?.attendanceRate) clearInterval(attendanceRateStop)
       })
       let lateArrivalsStop = setInterval(() => {
+        if (this.lateArrivals === currentData?.lateArrivals)
+          clearInterval(lateArrivalsStop)
         this.lateArrivals++
-        if (this.lateArrivals === currentData?.lateArrivals) clearInterval(lateArrivalsStop)
       })
     }
   }
