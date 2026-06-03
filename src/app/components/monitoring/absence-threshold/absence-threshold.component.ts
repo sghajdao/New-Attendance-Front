@@ -568,7 +568,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     }
 
     // Define CSV headers and field mappings
-    const headers = ['ID', 'First Name', 'Last Name', 'Attendance Status', 'Attendance Date', 'Attendance Time', 'Course'];
+    const headers = ['ID', 'First Name', 'Last Name', 'Attendance Status', 'Attendance Date', 'Attendance Time', 'Course', 'Faculty'];
     const rows = this.modalRecords.map(record => [
       record.idNum || '',
       record.firstName || '',
@@ -576,7 +576,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       record.attendance?.toUpperCase() || '',
       this.formatDateToYYYYMMDD(record.attendanceDate),
       record.attendanceTime || '',
-      record.crsCde
+      record.crsCde,
+      record.schoolCde
     ]);
 
     // Build CSV content
@@ -624,7 +625,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       'First Name', 'Last Name', 'Student SIS ID', 'Course SIS ID', 'Course Name',
       'Instructor', 'Status', 'Grade', 'Term Code', 'Seniority',
       'Absence Count', 'Absence Limit', 'Absence Percentage',
-      'Meetings Count', 'Marked By SIS ID'
+      'Meetings Count', 'Marked By SIS ID', 'Faculty'
     ];
   
     const rows = filteredRaw.map(student => {
