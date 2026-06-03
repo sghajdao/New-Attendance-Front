@@ -48,6 +48,13 @@ export class IndexeddbService {
           });
           store.createIndex('list', 'id');
         }
+        if (!db.objectStoreNames.contains('SU')) {
+          const store = db.createObjectStore('SU', {
+            keyPath: 'id',
+            autoIncrement: true,
+          });
+          store.createIndex('list', 'id');
+        }
       },
     });
   }

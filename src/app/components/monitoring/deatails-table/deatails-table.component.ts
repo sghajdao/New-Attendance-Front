@@ -83,7 +83,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
       
         switchMap(filter => {
         
-          const term = filter.trmCde || 'SI';
+          const term = filter.trmCde || 'SU';
         
           return from(
             this.indexeddbService.getData(term)
@@ -112,7 +112,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
               if (coursesSet.size) {
                 filteredRawData = filteredRawData.filter(i =>
                   coursesSet.has(
-                    'SI26-' + i.crsCde.replace(/\s/g, '')
+                    'SU26-' + i.crsCde.replace(/\s/g, '')
                   )
                 );
               }
@@ -161,9 +161,9 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
     let shouldFetch = !(lastUpdate && new Date().getDate() <= new Date(JSON.parse(lastUpdate)).getDate() && new Date().getMonth() <= new Date(JSON.parse(lastUpdate)).getMonth()) || !initData;
 
     this.isLoading = true;
-    this.indexeddbService.getData('SI').then((data: StudentAttendanceDetails[]) => {
+    this.indexeddbService.getData('SU').then((data: StudentAttendanceDetails[]) => {
       if (!data.length || shouldFetch) {
-        const sub = from(['WI', 'FA', 'SP', 'SI'])
+        const sub = from(['WI', 'FA', 'SP', 'SI', 'SU'])
           .pipe(
             concatMap(trm =>
               this.attendanceService.getStudentsInfo(trm).pipe(
@@ -172,7 +172,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
                   this.indexeddbService.clearData(trm);
                   this.indexeddbService.addData(res, trm);
                 
-                  if (trm === 'SI') {
+                  if (trm === 'SU') {
                     this.rawAttendanceData = res;
                     this.students = this.buildAggregatedData(res);
                     this.numberOfStudents = new Set(

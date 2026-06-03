@@ -368,7 +368,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   }
 
   openAttendanceModal(student: Student) {
-    this.indexeddbService.getByStudentId(student.id, 'SI').then(records => {
+    this.indexeddbService.getByStudentId(student.id, 'SU').then(records => {
       this.modalRecords = records;
       this.attendanceModal = true;
     });

@@ -31,7 +31,7 @@ export class QuickOverviewComponent implements OnInit, OnDestroy {
             localStorage.removeItem('init')
             localStorage.setItem('init', JSON.stringify(data))
             localStorage.setItem('lastUpdate', JSON.stringify(new Date()))
-            const currentData = data.filter(item => item.trmCde === 'SI').at(0)
+            const currentData = data.filter(item => item.trmCde === 'SU').at(0)
             let studentsStop = setInterval(() => {
               this.students++
               if (this.students === currentData?.students.length) clearInterval(studentsStop)
@@ -54,7 +54,7 @@ export class QuickOverviewComponent implements OnInit, OnDestroy {
     }
     else if (initData) {
       const data: InitData[] = JSON.parse(initData)
-      const currentData = data.filter(item => item.trmCde === 'SI').at(0)
+      const currentData = data.filter(item => item.trmCde === 'SU').at(0)
       let studentsStop = setInterval(() => {
         this.students++
         if (this.students === currentData?.students.length) clearInterval(studentsStop)

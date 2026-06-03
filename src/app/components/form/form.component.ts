@@ -17,7 +17,7 @@ export class FormComponent implements OnInit, OnDestroy {
     private attendanceService: AttendanceService,
   ) {}
   
-  seesions: string[] = ['Fall Semester', 'Winter Intersession', 'Spring Semester', 'Summer Intersession']
+  seesions: string[] = ['Fall Semester', 'Winter Intersession', 'Spring Semester', 'Summer Intersession', 'Summer Semester']
   students: string[] = []
   courses: string[] = []
   seniorities: string[] = ['FR', 'SO', 'JR', 'SR', 'GR']
@@ -89,6 +89,10 @@ export class FormComponent implements OnInit, OnDestroy {
       else if (session && session === 'Summer Intersession') {
         this.courses = this.dataBackup.filter(c => c.trmCde === 'SI').at(0)?.courses || []
         this.students = this.dataBackup.filter(c => c.trmCde === 'SI').at(0)?.students || []
+      }
+      else if (session && session === 'Summer Semester') {
+        this.courses = this.dataBackup.filter(c => c.trmCde === 'SU').at(0)?.courses || []
+        this.students = this.dataBackup.filter(c => c.trmCde === 'SU').at(0)?.students || []
       }
     });
     this.subscriptions.push(sub1!, sub2!, sub3!);
