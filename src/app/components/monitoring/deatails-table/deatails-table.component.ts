@@ -20,6 +20,7 @@ export interface StudentCourseAggregate {
   schoolCde: string;
   crsDiv: string;
   trmCde: string;
+  yrCde: string;
   status: string;
   grade: string | null;
   gradeChangeDate: string | null;
@@ -234,6 +235,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
           schoolCde: record.schoolCde,
           crsDiv: record.crsDiv,
           trmCde: record.trmCde,
+          yrCde: record.yrCde,
           status: record.status,
           grade: record.grade,
           schedule: record.schedule,
@@ -338,7 +340,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const headers = ['Attendance Status', 'Attendance Date', 'Attendance Time', 'Course', 'First Name', 'Last Name', 'Seniority', 'Faculty'];
+    const headers = ['Attendance Status', 'Attendance Date', 'Attendance Time', 'Course', 'First Name', 'Last Name', 'Seniority', 'Faculty', 'Term Code', 'Year Code'];
     const rows = this.modalRecords.map(record => [
       record.attendance?.toUpperCase() || '',
       this.formatDateToYYYYMMDD(record.attendanceDate),
@@ -347,7 +349,9 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
       record.firstName || '',
       record.lastName || '',
       record.seniority || '',
-      record.schoolCde || ''
+      record.schoolCde || '',
+      record.trmCde || '',
+      record.yrCde || ''
     ]);
 
     const csvContent = [
@@ -393,7 +397,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
       'Student ID', 'First Name', 'Last Name', 'Entrance Year', 'Entrance Term',
       'Division', 'Visa Type', 'Course', 'Status', 'Seniority', 'Grade',
       'WF Reason', 'Term GPA', 'Midterm Grade', 'Drop Date', 'Withdraw Date', 'Schedule', 'Level',
-      'Faculty', 'Major',
+      'Faculty', 'Major', 'Term Code', 'Year Code',
       'Professor ID', 'Professor Name', 'Total Presences', 'Total Absences',
       'Total Latenesses', 'Absence Limit', 'Meeting Requests', 'Meetings'
     ];
@@ -440,6 +444,8 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
         escape(student.crsDiv),
         escape(student.schoolCde),
         escape(student.major),
+        escape(student.trmCde),
+        escape(student.yrCde),
         escape(student.teacherId),
         escape(student.teacherName),
         escape(student.totalPresences),
