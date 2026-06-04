@@ -13,4 +13,5 @@ export const environment = {
     jenzabarUrl: 'https://attendance.aui.ma/jenzabar',
     trackingUrl: 'https://attendance.aui.ma/monitoring',
     wfUrl: 'https://attendance.aui.ma/wf',
+    imageUrl: 'https://attendance.aui.ma/images',
 };
