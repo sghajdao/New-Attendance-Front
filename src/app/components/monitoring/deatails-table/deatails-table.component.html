@@ -111,7 +111,7 @@
         <td>
           <div class="student-name">
             <!-- <i class="pi pi-user mr-2" style="font-size: 0.85rem; color: #4f8aff;"></i> -->
-             <img *ngIf="student.imageUrl" src="https://attendance.aui.ma/images/{{ student.idNum }}" alt="Profile Image" class="profile-image mr-2" />
+             <img src="https://attendance.aui.ma/images/{{ student.idNum }}" alt="Profile Image" class="profile-image mr-2" />
             {{ student.firstName }} {{ student.lastName }}
           </div>
         </td>
@@ -146,8 +146,7 @@
         </td>
         <td>
           <div class="student-name">
-            <!-- <i class="pi pi-user mr-2" style="font-size: 0.85rem; color: #4f8aff;"></i> -->
-             <img *ngIf="student.imageUrl" src="https://attendance.aui.ma/images/{{ student.teacherId }}" alt="Profile Image" class="profile-image mr-2" />
+            <i class="pi pi-user mr-2" style="font-size: 0.85rem; color: #4f8aff;"></i>
             {{ student.teacherName }}
           </div>
         </td>
