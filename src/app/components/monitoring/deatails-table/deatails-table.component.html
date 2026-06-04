@@ -208,6 +208,9 @@
 >
   <ng-template pTemplate="content">
     <div *ngIf="modalRecords.length > 0; else noRecords">
+    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+      <img src="https://attendance.aui.ma/images/{{ modalRecords[0]?.idNum }}" alt="Profile Image" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;" />
+    </div>
       <p-table [value]="modalRecords" [tableStyle]="{ 'min-width': '100%' }" styleClass="p-datatable-sm">
         <ng-template #header>
           <tr>
