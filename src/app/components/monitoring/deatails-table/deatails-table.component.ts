@@ -340,15 +340,16 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const headers = ['Attendance Status', 'Attendance Date', 'Attendance Time', 'Course', 'First Name', 'Last Name', 'Seniority', 'Faculty', 'Term Code', 'Year Code'];
+    const headers = ['Student ID', 'First Name', 'Last Name', 'Seniority', 'Attendance Status', 'Attendance Date', 'Attendance Time', 'Course', 'Faculty', 'Term Code', 'Year Code'];
     const rows = this.modalRecords.map(record => [
+      record.idNum || '',
+      record.firstName || '',
+      record.lastName || '',
+      record.seniority || '',
       record.attendance?.toUpperCase() || '',
       this.formatDateToYYYYMMDD(record.attendanceDate),
       record.attendanceTime || '',
       record.crsCde || '',
-      record.firstName || '',
-      record.lastName || '',
-      record.seniority || '',
       record.schoolCde || '',
       record.trmCde || '',
       record.yrCde || ''
