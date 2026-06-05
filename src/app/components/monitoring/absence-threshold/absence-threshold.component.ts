@@ -280,7 +280,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     }
 
     if (this.classificationFilter.length > 0) {
-      result = result.filter(student => this.classificationFilter.includes(student.seniority));
+      result = result.filter(student => this.classificationFilter.map((v: any) => v.value).includes(student.seniority));
     }
     return result;
   }
@@ -327,7 +327,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   }
 
   setClassificationFilter(value: any | null): void {
-    this.classificationFilter = value? value.map((v: any) => v.value) : [];
+    this.classificationFilter = value || [];
     this.currentPage = 1;
     this.updatePagination();
     this.clearSelection();
