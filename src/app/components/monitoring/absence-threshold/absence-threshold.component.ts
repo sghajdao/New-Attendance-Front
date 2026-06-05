@@ -278,7 +278,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       const minValue = parseInt(this.percentageFilter, 10);
       result = result.filter(student => student.value >= minValue);
     }
-  
+
     if (this.classificationFilter) {
       result = result.filter(student => student.seniority === this.classificationFilter);
     }
@@ -326,8 +326,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     }
   }
 
-  setClassificationFilter(value: string | null): void {
-    this.classificationFilter = value;
+  setClassificationFilter(value: any | null): void {
+    this.classificationFilter = value ? value.value : null;
     this.currentPage = 1;
     this.updatePagination();
     this.clearSelection();
