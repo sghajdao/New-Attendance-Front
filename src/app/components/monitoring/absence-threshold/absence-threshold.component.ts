@@ -55,6 +55,10 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   selectedStudentForHistory: Student | null = null;
   modalRecords: StudentAttendanceDetails[] = [];
 
+  totalPresences = 0;
+  totalAbsences = 0;
+  totalLatenesses = 0;
+
   // Contact dialog
   displayContactDialog: boolean = false;
   contactSelectedStudents: Student[] = [];
@@ -390,6 +394,9 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   openAttendanceModal(student: Student) {
     this.indexeddbService.getByStudentId(student.id, 'SU').then(records => {
       this.modalRecords = records;
+      this.totalPresences = records.filter(r => r.attendance === 'present').length;
+      this.totalAbsences = records.filter(r => r.attendance === 'absent').length;
+      this.totalLatenesses = records.filter(r => r.attendance === 'late').length;
       this.attendanceModal = true;
     });
   }
@@ -579,6 +586,9 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   closeModal(): void {
     this.attendanceModal = false;
     this.modalRecords = [];
+    this.totalPresences = 0;
+    this.totalAbsences = 0;
+    this.totalLatenesses = 0;
   }
 
   exportModalToCSV(): void {

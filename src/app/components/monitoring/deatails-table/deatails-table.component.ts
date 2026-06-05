@@ -65,6 +65,9 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
   showModal = false;
   modalRecords: StudentAttendanceDetails[] = [];
   modalTitle = '';
+  totalPresences = 0;
+  totalAbsences = 0;
+  totalLatenesses = 0;
 
   constructor(
     private attendanceService: AttendanceService,
@@ -302,12 +305,18 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
       new Date(b.attendanceDate).getTime() - new Date(a.attendanceDate).getTime()
     );
     this.modalRecords = sorted;
+    this.totalPresences = sorted.filter(r => r.attendance === 'present').length;
+    this.totalAbsences = sorted.filter(r => r.attendance === 'absent').length;
+    this.totalLatenesses = sorted.filter(r => r.attendance === 'late').length;
     this.modalTitle = `${row.firstName} ${row.lastName} - ${row.crsCde}`;
     this.showModal = true;
   }
 
   closeModal(): void {
     this.showModal = false;
+    this.totalPresences = 0;
+    this.totalAbsences = 0;
+    this.totalLatenesses = 0;
     this.modalRecords = [];
   }
 
