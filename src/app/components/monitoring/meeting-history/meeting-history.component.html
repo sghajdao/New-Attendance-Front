@@ -89,7 +89,7 @@
                     <th pSortableColumn="studentName" style="min-width: 240px;">
                         Student Name <p-sortIcon field="studentName"></p-sortIcon>
                     </th>
-                    <th pSortableColumn="singleCourse" style="min-width: 140px;">
+                    <th pSortableColumn="singleCourse" style="min-width: 160px;">
                         Course SIS ID <p-sortIcon field="singleCourse"></p-sortIcon>
                     </th>
                     <th pSortableColumn="createdAt" style="min-width: 130px;">
@@ -110,9 +110,12 @@
                     </td>
                     <td>
                         <div class="student-cell">
-                            <div class="student-avatar" [style.background-color]="getAvatarColor(row.firstName + ' ' + row.lastName)">
-                                {{ getInitials(row.firstName + ' ' + row.lastName) }}
+                            <div class="student-avatar">
+                              <img src="https://attendance.aui.ma/images/{{ row.studentSisId }}" alt="Profile Image" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;" />
                             </div>
+                            <!-- <div class="student-avatar" [style.background-color]="getAvatarColor(row.firstName + ' ' + row.lastName)">
+                                {{ getInitials(row.firstName + ' ' + row.lastName) }}
+                            </div> -->
                             <span class="student-name">{{ row.firstName + ' ' + row.lastName || row.studentSisId }}</span>
                         </div>
                     </td>

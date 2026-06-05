@@ -201,9 +201,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
+    /* font-weight: 600;
     font-size: 0.75rem;
-    color: white;
+    color: white; */
 }
 
 .student-name {
