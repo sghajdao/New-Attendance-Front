@@ -78,7 +78,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     { label: '≥ 90%', value: '90' }
   ];
 
-  classificationFilter: string | null = null;
+  classificationFilter: string[] = [];
   classificationFilterOptions = [
     { label: 'Freshmen', value: 'FR' },
     { label: 'Sophomores', value: 'SO' },
@@ -223,7 +223,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         this.clearSelection();
         this.dotColorFilter = null;
         this.percentageFilter = null;
-        this.classificationFilter = null;
+        this.classificationFilter = [];
         this.loading = false;
       },
     
@@ -279,8 +279,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       result = result.filter(student => student.value >= minValue);
     }
 
-    if (this.classificationFilter) {
-      result = result.filter(student => student.seniority === this.classificationFilter);
+    if (this.classificationFilter.length > 0) {
+      result = result.filter(student => this.classificationFilter.includes(student.seniority));
     }
     return result;
   }
@@ -327,7 +327,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   }
 
   setClassificationFilter(value: any | null): void {
-    this.classificationFilter = value ? value.value : null;
+    this.classificationFilter = value;
     this.currentPage = 1;
     this.updatePagination();
     this.clearSelection();
