@@ -327,7 +327,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   }
 
   setClassificationFilter(value: any | null): void {
-    this.classificationFilter = value;
+    this.classificationFilter = value? value.map((v: any) => v.value) : [];
     this.currentPage = 1;
     this.updatePagination();
     this.clearSelection();
