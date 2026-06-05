@@ -138,9 +138,10 @@
              (click)="toggleSelection($event, student)">
             <div class="card-header-section">
                 <div class="student-info">
-                    <div class="student-avatar" [ngClass]="getRiskClass(student.value)">
+                    <img class="student-avatar" src="https://attendance.aui.ma/images/{{ student.id }}" alt="{{ getInitials(student.firstName + ' ' + student.lastName) }}">
+                    <!-- <div class="student-avatar" [ngClass]="getRiskClass(student.value)">
                         {{ getInitials(student.firstName + ' ' + student.lastName) }}
-                    </div>
+                    </div> -->
                     <div class="info-details">
                         <p class="student-name">{{ student.firstName }} {{ student.lastName }} <{{ student.id }}></p>
                         <div class="student-meta">
