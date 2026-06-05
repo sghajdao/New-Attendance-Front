@@ -658,8 +658,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       'Meetings Count', 'Marked By SIS ID', 'Faculty'
     ];
   
-    const rows = filteredRaw.sort((a, b) => b.count - a.count).map(async student => {
-      const records = await this.indexeddbService.getByStudentId(student.student_sis_id, student.trmCde);
+    const rows = filteredRaw.sort((a, b) => b.count - a.count).map(student => {
       const percentage = ((student.count / student.absentLimit) * 100).toFixed(2);
       return [
         student.firstName,
@@ -676,8 +675,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         student.absentLimit,
         `${percentage}%`,
         student.meetings?.length || 0,
-        student.marked_by_sis_id,
-        records[0]?.firstName
+        student.marked_by_sis_id
       ];
     });
   
@@ -693,7 +691,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   
     const csvContent = [
       headers.join(','),
-      ...rows.map(async row => (await row).map(escapeCSV).join(','))
+      ...rows.map(row => row.map(escapeCSV).join(','))
     ].join('\n');
   
     // Download file
