@@ -208,9 +208,14 @@
 >
   <ng-template pTemplate="content">
     <div *ngIf="modalRecords.length > 0; else noRecords">
-    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
-      <img src="https://attendance.aui.ma/images/{{ modalRecords[0]?.idNum }}" alt="Profile Image" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;" />
-    </div>
+      <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+        <img src="https://attendance.aui.ma/images/{{ modalRecords[0]?.idNum }}" alt="Profile Image" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;" />
+      </div>
+      <div class="tags">
+            <p-tag icon="pi pi-check" severity="success" value="Presences: {{modalRecords.filter(r => r.attendance === 'present').length}}" />
+            <p-tag icon="pi pi-clock" severity="warn" value="Latenesses: {{modalRecords.filter(r => r.attendance === 'late').length}}" />
+            <p-tag icon="pi pi-times" severity="danger" value="Absences: {{modalRecords.filter(r => r.attendance === 'absent').length}}" />
+      </div>
       <p-table [value]="modalRecords" [tableStyle]="{ 'min-width': '100%' }" styleClass="p-datatable-sm">
         <ng-template #header>
           <tr>
