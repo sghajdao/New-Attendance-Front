@@ -78,6 +78,15 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     { label: '≥ 90%', value: '90' }
   ];
 
+  classificationFilter: string | null = null;
+  classificationFilterOptions = [
+    { label: 'Freshmen', value: 'FR' },
+    { label: 'Sophomores', value: 'SO' },
+    { label: 'Juniors', value: 'JR' },
+    { label: 'Seniors', value: 'SR' },
+    { label: 'Graduate', value: 'GR' }
+  ];
+
   // Selection tracking
   selectedStudents: Set<Student> = new Set();
 
@@ -214,7 +223,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         this.clearSelection();
         this.dotColorFilter = null;
         this.percentageFilter = null;
-      
+        this.classificationFilter = null;
         this.loading = false;
       },
     
@@ -253,23 +262,27 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   // Getter for students after applying dot color filter
   get displayedStudents(): Student[] {
     let result = this.students;
-  // Dot color filter
-  if (this.dotColorFilter) {
-    result = result.filter(student => {
-      const count = this.hasPendingMeeting(student);
-      if (this.dotColorFilter === 'green') return count === 0;
-      if (this.dotColorFilter === 'yellow') return count === 1;
-      if (this.dotColorFilter === 'red') return count === 2;
-      if (this.dotColorFilter === 'black') return count === 3;
-      return true;
-    });
-  }
-  // Percentage filter
-  if (this.percentageFilter) {
-    const minValue = parseInt(this.percentageFilter, 10);
-    result = result.filter(student => student.value >= minValue);
-  }
-  return result;
+    // Dot color filter
+    if (this.dotColorFilter) {
+      result = result.filter(student => {
+        const count = this.hasPendingMeeting(student);
+        if (this.dotColorFilter === 'green') return count === 0;
+        if (this.dotColorFilter === 'yellow') return count === 1;
+        if (this.dotColorFilter === 'red') return count === 2;
+        if (this.dotColorFilter === 'black') return count === 3;
+        return true;
+      });
+    }
+    // Percentage filter
+    if (this.percentageFilter) {
+      const minValue = parseInt(this.percentageFilter, 10);
+      result = result.filter(student => student.value >= minValue);
+    }
+  
+    if (this.classificationFilter) {
+      result = result.filter(student => student.seniority === this.classificationFilter);
+    }
+    return result;
   }
 
   // New: Select all currently displayed students
@@ -311,6 +324,13 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       case 'black': return 'pi pi-circle-fill black-live-dot';
       default: return 'pi pi-circle-fill';
     }
+  }
+
+  setClassificationFilter(value: string | null): void {
+    this.classificationFilter = value;
+    this.currentPage = 1;
+    this.updatePagination();
+    this.clearSelection();
   }
 
   updatePagination(): void {
