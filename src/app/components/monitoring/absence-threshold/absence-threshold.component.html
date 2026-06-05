@@ -49,14 +49,7 @@
             </ng-template>
           </p-dropdown>
 
-          <p-multiselect [options]="classificationFilterOptions" [group]="true" [(ngModel)]="classificationFilter" placeholder="Select Classification" scrollHeight="250px" display="chip" styleClass="p-button-sm" (onChange)="setClassificationFilter($event.value)">
-              <ng-template let-group #group>
-                  <div class="flex items-center">
-                      <img src="https://primefaces.org/cdn/primeng/images/demo/flag/flag_placeholder.png" [class]="'mr-2 flag flag-' + group.value" style="width: 20px" />
-                      <span>{{ group.label }}</span>
-                  </div>
-              </ng-template>
-          </p-multiselect>
+          <p-multiselect [options]="percentageFilterOptions" [(ngModel)]="classificationFilter" placeholder="Select Classification" optionLabel="label" display="chip" styleClass="p-button-sm" />
           
           <p-dropdown
             [options]="percentageFilterOptions"
