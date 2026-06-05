@@ -594,12 +594,12 @@
     height: 100%;
 }
 
-:host ::ng-deep .p-dropdown {
+:host ::ng-deep .p-dropdown .p-multiselect {
   height: 45px;
   font-size: 0.75rem;
 }
 
-:host ::ng-deep .p-dropdown .p-dropdown-label {
+:host ::ng-deep .p-dropdown .p-dropdown-label .p-multiselect .p-multiselect-label {
   padding: 0.25rem 1rem;
 }
 
