@@ -589,7 +589,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
 
     // Define CSV headers and field mappings
     const headers = ['ID', 'First Name', 'Last Name', 'Attendance Status', 'Attendance Date', 'Attendance Time', 'Course', 'Faculty'];
-    const rows = this.modalRecords.map(record => [
+    const rows = this.modalRecords.sort((a, b) => new Date(b.attendanceDate).getTime() - new Date(a.attendanceDate).getTime()).map(record => [
       record.idNum || '',
       record.firstName || '',
       record.lastName || '',
@@ -648,7 +648,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       'Meetings Count', 'Marked By SIS ID', 'Faculty'
     ];
   
-    const rows = filteredRaw.map(student => {
+    const rows = filteredRaw.sort((a, b) => b.count - a.count).map(student => {
       const percentage = ((student.count / student.absentLimit) * 100).toFixed(2);
       return [
         student.firstName,

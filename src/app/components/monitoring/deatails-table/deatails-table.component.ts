@@ -341,7 +341,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
     }
 
     const headers = ['Student ID', 'First Name', 'Last Name', 'Seniority', 'Attendance Status', 'Attendance Date', 'Attendance Time', 'Course', 'Faculty', 'Term Code', 'Year Code'];
-    const rows = this.modalRecords.map(record => [
+    const rows = this.modalRecords.sort((a, b) => new Date(b.attendanceDate).getTime() - new Date(a.attendanceDate).getTime()).map(record => [
       record.idNum || '',
       record.firstName || '',
       record.lastName || '',
@@ -404,7 +404,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
     ];
 
     // Build rows from the current students array (already filtered)
-    const rows = this.students.map(student => {
+    const rows = this.students.sort((a, b) => b.totalAbsences - a.totalAbsences).map(student => {
       // Compute conditional dates based on grade (same logic as in template)
       let dropDate = '-';
       let withdrawDate = '-';

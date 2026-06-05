@@ -336,6 +336,11 @@
 >
   <ng-template pTemplate="content">
     <div *ngIf="modalRecords.length > 0; else noRecords">
+      <div class="tags">
+          <p-tag icon="pi pi-check" severity="success" value="Presences: {{modalRecords.filter(r => r.attendance === 'present').length}}" />
+          <p-tag icon="pi pi-clock" severity="warn" value="Latenesses: {{modalRecords.filter(r => r.attendance === 'late').length}}" />
+          <p-tag icon="pi pi-times" severity="danger" value="Absences: {{modalRecords.filter(r => r.attendance === 'absent').length}}" />
+      </div>
       <p-table [value]="modalRecords" [tableStyle]="{ 'min-width': '100%' }" styleClass="p-datatable-sm">
         <ng-template #header>
           <tr>

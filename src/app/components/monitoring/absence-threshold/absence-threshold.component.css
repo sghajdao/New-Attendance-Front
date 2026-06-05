@@ -771,6 +771,13 @@
     margin-left: auto;
 }
 
+.tags {
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+    margin: 10px;
+}
+
 /* Adjust responsive behavior */
 @media (max-width: 768px) {
     .paginator-container {
