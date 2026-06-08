@@ -71,6 +71,26 @@
               </div>
             </ng-template>
           </p-dropdown>
+
+          <span class="p-inputgroup">
+            <input
+              type="text"
+              pInputText
+              placeholder="SIS ID"
+              [(ngModel)]="sisIdFilterText"
+              (input)="currentPage = 1; clearSelection()"
+              class="p-inputtext-sm"
+              style="width: 140px;"
+            />
+            <button
+              *ngIf="sisIdFilterText"
+              pButton
+              type="button"
+              icon="pi pi-times"
+              (click)="sisIdFilterText = ''; currentPage = 1; clearSelection()"
+              class="p-button-secondary p-button-sm"
+            ></button>
+          </span>
         </div>
 
         <div class="contact-header-actions" *ngIf="students.length">

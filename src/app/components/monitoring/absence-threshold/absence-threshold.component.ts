@@ -65,6 +65,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   contactForm!: FormGroup;
   isContactSaving: boolean = false;
 
+  sisIdFilterText: string = '';
+
   dotColorFilter: string | null = null;
   dotFilterOptions = [
     { label: '🟢 No contact yet', value: 'green' },
@@ -285,6 +287,13 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
 
     if (this.classificationFilter.length > 0) {
       result = result.filter(student => this.classificationFilter.map((v: any) => v.value).includes(student.seniority));
+    }
+
+    if (this.sisIdFilterText) {
+      const searchTerm = this.sisIdFilterText.toLowerCase();
+      result = result.filter(student =>
+        student.id.toLowerCase().includes(searchTerm)
+      );
     }
     return result;
   }
@@ -603,7 +612,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
 
     // Define CSV headers and field mappings
     const headers = ['ID', 'First Name', 'Last Name', 'Attendance Status', 'Attendance Date', 'Attendance Time', 'Course', 'Faculty'];
-    const rows = this.modalRecords.sort((a, b) => new Date(b.attendanceDate).getTime() - new Date(a.attendanceDate).getTime()).map(record => [
+    const rows = this.modalRecords.sort((a, b) => new Date(a.attendanceDate).getTime() - new Date(b.attendanceDate).getTime()).map(record => [
       record.idNum || '',
       record.firstName || '',
       record.lastName || '',
@@ -611,7 +620,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       this.formatDateToYYYYMMDD(record.attendanceDate),
       record.attendanceTime || '',
       record.crsCde,
-      record.schoolCde
+      record.teacherName
     ]);
 
     // Build CSV content
@@ -734,6 +743,10 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         const percentage = (student.count / student.absentLimit) * 100;
         return percentage >= minValue;
       });
+    }
+
+    if (this.classificationFilter.length > 0) {
+      result = result.filter(student => this.classificationFilter.map((v: any) => v.value).includes(student.seniority));
     }
   
     return result;
