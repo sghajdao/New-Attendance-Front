@@ -1,11 +1,12 @@
 // deatails-table.component.ts
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { catchError, concatMap, EMPTY, forkJoin, from, Subscription, switchMap, tap } from 'rxjs';
 import { AttendanceService } from '../../../services/attendance.service';
 import { IndexeddbService } from '../../../services/indexeddb.service';
 import { StudentAttendanceDetails } from '../../../models/dto/studentAttendanceDetails';
 import { SearchDto } from '../../../models/dto/searchDto';
 import { StudentTracking } from '../../../models/entities/studentTracking';
+import { Table } from 'primeng/table';
 
 // Aggregated row per student + course
 export interface StudentCourseAggregate {
@@ -68,6 +69,9 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
   totalPresences = 0;
   totalAbsences = 0;
   totalLatenesses = 0;
+
+  @ViewChild('dt') dt!: Table;
+  searchIdNum: string = '';
 
   constructor(
     private attendanceService: AttendanceService,
@@ -157,6 +161,16 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
       .subscribe();
     
     this.subscriptions.push(sub);
+  }
+
+  get filteredStudents(): StudentCourseAggregate[] {
+    if (!this.searchIdNum || this.searchIdNum.trim() === '') {
+      return this.students;
+    }
+    const searchTerm = this.searchIdNum.trim().toLowerCase();
+    return this.students.filter(student =>
+      student.idNum.toLowerCase().includes(searchTerm)
+    );
   }
 
   fetchData() {
@@ -289,6 +303,15 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
 
     // Clean up temporary fields and return array
     return Array.from(groupMap.values()).map(({ tempGrade, tempGradeChangeDate, ...rest }) => rest);
+  }
+
+  onIdSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.searchIdNum = input.value;
+    // Optional: reset paginator to first page (see note below)
+    if (this.dt && this.dt.first) {
+      this.dt.first = 0;
+    }
   }
 
   /**

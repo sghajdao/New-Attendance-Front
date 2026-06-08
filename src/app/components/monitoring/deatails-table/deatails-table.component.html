@@ -9,6 +9,20 @@
       <p class="subtitle">Attendance summary per student per course (click any row for detailed records)</p>
     </div>
     <div class="header-actions">
+      <div class="header-actions">
+        <div class="student-count-badge">
+          <i class="pi pi-users"></i>
+          <span>{{ numberOfStudents }} students</span>
+        </div>
+        <button pButton type="button" label="Export CSV" icon="pi pi-download" class="p-button-outlined export-btn" (click)="exportToCSV()"></button>
+      
+        <!-- NEW: real‑time ID search -->
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input type="text" pInputText placeholder="Filter by Student ID" 
+                 (input)="onIdSearch($event)" class="id-search-input">
+        </span>
+      </div>
       <div class="student-count-badge">
         <i class="pi pi-users"></i>
         <span>{{ numberOfStudents }} students</span>
@@ -19,7 +33,7 @@
 
   <p-table
     #dt
-    [value]="students"
+    [value]="filteredStudents"
     stripedRows
     [tableStyle]="{'min-width': '100%'}"
     [paginator]="true"

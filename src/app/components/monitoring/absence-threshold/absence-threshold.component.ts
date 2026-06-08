@@ -43,6 +43,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   studentsBackup: Student[] = [];
   rawRedFlagData: RedFlagStudents[] = [];
   subscriptions: Subscription[] = [];
+  numberOfStudents: number = 0;
 
   loading: boolean = false;
 
@@ -191,6 +192,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         );
       
         this.rawRedFlagData = studentsRes;
+        this.numberOfStudents = new Set(allStudents.map(s => s.id)).size;
         this.studentsBackup = allStudents;
       
         // Sets for faster lookup
