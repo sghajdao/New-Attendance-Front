@@ -656,18 +656,18 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   
     // Define CSV headers matching the fields we want
     const headers = [
-      'First Name', 'Last Name', 'Student SIS ID', 'Course SIS ID', 'Course Name',
+      'Student SIS ID', 'First Name', 'Last Name', 'Course SIS ID', 'Course Name',
       'Instructor', 'Status', 'Grade', 'Term Code', 'Seniority',
       'Absence Count', 'Absence Limit', 'Absence Percentage',
-      'Meetings Count', 'First Mail Date', 'Marked By SIS ID', 'Faculty'
+      'Meetings Count', 'First Mail Date', 'Marked By SIS ID'
     ];
   
     const rows = filteredRaw.sort((a, b) => b.count - a.count).map(student => {
       const percentage = ((student.count / student.absentLimit) * 100).toFixed(2);
       return [
+        student.student_sis_id,
         student.firstName,
         student.lastName,
-        student.student_sis_id,
         student.course_sis_id,
         student.course_name,
         student.instructor_name,
