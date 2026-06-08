@@ -580,7 +580,11 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   
   formatMeetingDate(date?: Date | null): string {
     if (!date) return 'No date';
-    return new Date(date).toLocaleString();
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   }
 
   closeModal(): void {
