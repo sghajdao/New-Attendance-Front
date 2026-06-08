@@ -50,6 +50,13 @@
     </div>
   </div>
 
+  <div class="charts-row">
+    <div class="chart-container">
+      <p class="chart-title">🚨 At-Risk Students by Academic Level</p>
+      <p-chart type="bar" [data]="atRiskData" [options]="atRiskOptions" class="h-[30rem]" />
+    </div>
+  </div>
+
   <!-- Row 4: Attendance charts -->
   <div class="charts-row" *ngIf="info && info.length > 0">
     <div class="chart-container">

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
 import { from, Subscription, combineLatest } from 'rxjs';
 import { AttendanceService } from '../../../services/attendance.service';
 import { StudentTracking } from '../../../models/entities/studentTracking';
@@ -8,6 +8,7 @@ import * as chartJsDataLabels from 'chartjs-plugin-datalabels';
 import { StudentAttendanceDetails } from '../../../models/dto/studentAttendanceDetails';
 import { IndexeddbService } from '../../../services/indexeddb.service';
 import { switchMap, map } from 'rxjs/operators';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-stats',
@@ -23,6 +24,10 @@ export class StatsComponent implements OnInit, OnDestroy {
   info: StudentAttendanceDetails[] = [];
   infoBackup: StudentAttendanceDetails[] = [];
   private static dataLabelsRegistered = false;
+
+  platformId = inject(PLATFORM_ID);
+  atRiskData: any;
+  atRiskOptions: any;
 
   // Original stats
   totalEvents = 0;
@@ -133,6 +138,7 @@ export class StatsComponent implements OnInit, OnDestroy {
         this.infoBackup = [...filteredData];
         this.loadTrackingData();
         this.computeAttendanceCharts();
+        this.getAtRiskStudents();
         this.loading = false;
       },
 
@@ -268,6 +274,102 @@ export class StatsComponent implements OnInit, OnDestroy {
     this.barChartOptions = this.getBarOptions('Students', 'Events', '#42A5F5');
     this.topCoursesChartOptions = this.getBarOptions('Courses', 'Notified Students', '#FFA726');
     this.statusChartOptions = this.getDoughnutOptions();
+  }
+
+  getAtRiskStudents() {
+    if (isPlatformBrowser(this.platformId)) {
+      const sub = this.attendanceService.getRedFlagStudents().subscribe({
+        next: res => {
+          const documentStyle = getComputedStyle(document.documentElement);
+          const textColor = documentStyle.getPropertyValue('--p-text-color');
+          const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
+          const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
+
+          const generateAtRiskData = (seniority : string) => {
+            const data = [];
+            const students: StudentAttendanceDetails[] = this.info.filter((s: StudentAttendanceDetails) => s.seniority === seniority);
+            const atRisk = students.filter(s => s.studentDiv === 'UG'? +s.trmGpa < 2 : + s.trmGpa < 3);
+            data.push(atRisk.filter(s => s.trmCde === 'FA').length * 100 / students.filter(s => s.trmCde === 'FA').length);
+            data.push(atRisk.filter(s => s.trmCde === 'SP').length * 100 / students.filter(s => s.trmCde === 'SP').length);
+            // data.push(atRisk.filter(s => s.trmCde === 'JR').length * 100 / students.filter(s => s.trmCde === 'JR').length);
+          }
+          
+          this.atRiskData = {
+              labels: ['Fall 2526', 'Spring 2526'],
+              datasets: [
+                  {
+                      type: 'bar',
+                      label: 'Freshmen',
+                      backgroundColor: documentStyle.getPropertyValue('--p-cyan-500'),
+                      data: generateAtRiskData('FR')
+                  },
+                  {
+                      type: 'bar',
+                      label: 'Sophomores',
+                      backgroundColor: documentStyle.getPropertyValue('--p-gray-500'),
+                      data: generateAtRiskData('SO')
+                  },
+                  {
+                      type: 'bar',
+                      label: 'Juniors',
+                      backgroundColor: documentStyle.getPropertyValue('--p-orange-500'),
+                      data: generateAtRiskData('JR')
+                  },
+                  {
+                      type: 'bar',
+                      label: 'Seniors',
+                      backgroundColor: documentStyle.getPropertyValue('--p-purple-500'),
+                      data: generateAtRiskData('SR')
+                  },
+                  {
+                      type: 'bar',
+                      label: 'Graduates',
+                      backgroundColor: documentStyle.getPropertyValue('--p-yellow-500'),
+                      data: generateAtRiskData('GR')
+                  }
+              ]
+          };
+          this.atRiskOptions = {
+              maintainAspectRatio: false,
+              aspectRatio: 0.8,
+              plugins: {
+                  tooltip: {
+                      mode: 'index',
+                      intersect: false
+                  },
+                  legend: {
+                      labels: {
+                          color: textColor
+                      }
+                  }
+              },
+              scales: {
+                  x: {
+                      stacked: true,
+                      ticks: {
+                          color: textColorSecondary
+                      },
+                      grid: {
+                          color: surfaceBorder,
+                          drawBorder: false
+                      }
+                  },
+                  y: {
+                      stacked: true,
+                      ticks: {
+                          color: textColorSecondary
+                      },
+                      grid: {
+                          color: surfaceBorder,
+                          drawBorder: false
+                      }
+                  }
+              }
+            };
+          }
+        })
+        this.subscriptions.push(sub);
+      }
   }
 
   private getPieOptions() {
