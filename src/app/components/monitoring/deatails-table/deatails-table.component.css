@@ -256,6 +256,27 @@
     margin: 10px;
 }
 
+.id-search-input {
+  border-radius: 40px;
+  padding: 0.5rem 1rem 0.5rem 2.2rem;
+  border: 1px solid #cbd5e1;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  width: 200px;
+}
+
+.id-search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+}
+
+@media (max-width: 768px) {
+  .id-search-input {
+    width: 100%;
+  }
+}
+
 .attendance-value.low-attendance {
     color: #dc2626;
 }
