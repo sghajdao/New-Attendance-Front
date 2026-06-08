@@ -287,10 +287,15 @@ export class StatsComponent implements OnInit, OnDestroy {
 
           const generateAtRiskData = (seniority : string) => {
             const data = [];
-            const students: StudentAttendanceDetails[] = this.info.filter((s: StudentAttendanceDetails) => s.seniority === seniority);
-            const atRisk = students.filter(s => s.studentDiv === 'UG'? s.trmGpa < 2 : s.trmGpa < 3);
-            data.push(atRisk.filter(s => s.trmCde === 'FA').length * 100 / students.filter(s => s.trmCde === 'FA').length);
-            data.push(atRisk.filter(s => s.trmCde === 'SP').length * 100 / students.filter(s => s.trmCde === 'SP').length);
+            // const students: StudentAttendanceDetails[] = this.info.filter((s: StudentAttendanceDetails) => s.seniority === seniority);
+            this.indexeddbService.getData('FA').then(info => {
+              const atRisk = info.filter(s => s.studentDiv === 'UG'? s.trmGpa < 2 : s.trmGpa < 3);
+              data.push(atRisk.filter(s => s.trmCde === 'FA').length * 100 / info.filter(s => s.trmCde === 'FA').length);
+            });
+            this.indexeddbService.getData('SP').then(info => {
+              const atRisk = info.filter(s => s.studentDiv === 'UG'? s.trmGpa < 2 : s.trmGpa < 3);
+              data.push(atRisk.filter(s => s.trmCde === 'SP').length * 100 / info.filter(s => s.trmCde === 'SP').length);
+            });
             // data.push(atRisk.filter(s => s.trmCde === 'JR').length * 100 / students.filter(s => s.trmCde === 'JR').length);
           }
           

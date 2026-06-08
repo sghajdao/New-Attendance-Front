@@ -407,7 +407,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
       'Student ID', 'First Name', 'Last Name', 'Entrance Year', 'Entrance Term',
       'Division', 'Visa Type', 'Course', 'Status', 'Seniority', 'Grade',
       'WF Reason', 'Term GPA', 'Midterm Grade', 'Drop Date', 'Withdraw Date', 'Schedule', 'Level',
-      'Faculty', 'Major', 'Term Code', 'Year Code',
+      'School', 'Major', 'Term Code', 'Year Code',
       'Professor ID', 'Professor Name', 'Total Presences', 'Total Absences',
       'Total Latenesses', 'Absence Limit', 'Meeting Requests', 'Meetings'
     ];
