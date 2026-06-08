@@ -578,7 +578,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     this.displayHistoryDialog = true;
   }
   
-  formatMeetingDate(date?: Date): string {
+  formatMeetingDate(date?: Date | null): string {
     if (!date) return 'No date';
     return new Date(date).toLocaleString();
   }
@@ -655,7 +655,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       'First Name', 'Last Name', 'Student SIS ID', 'Course SIS ID', 'Course Name',
       'Instructor', 'Status', 'Grade', 'Term Code', 'Seniority',
       'Absence Count', 'Absence Limit', 'Absence Percentage',
-      'Meetings Count', 'Marked By SIS ID', 'Faculty'
+      'Meetings Count', 'First Mail Date', 'Marked By SIS ID', 'Faculty'
     ];
   
     const rows = filteredRaw.sort((a, b) => b.count - a.count).map(student => {
@@ -675,6 +675,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         student.absentLimit,
         `${percentage}%`,
         student.meetings?.length || 0,
+        this.formatMeetingDate(student.meetings && student.meetings.length > 0 ? student.meetings[0].createdAt : null),
         student.marked_by_sis_id
       ];
     });

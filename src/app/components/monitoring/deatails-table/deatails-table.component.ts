@@ -36,7 +36,7 @@ export interface StudentCourseAggregate {
   major: string;
   faculty: string;
   hold: string;
-  trmGpa: string;
+  trmGpa: number;
   wfReason: string;
   meetings: StudentTracking[];
 }

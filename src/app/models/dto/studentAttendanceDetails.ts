@@ -27,7 +27,7 @@ export interface StudentAttendanceDetails {
     midtermGrade: string;
     major: string;
     hold: string;
-    trmGpa: string;
+    trmGpa: number;
     wfReason: string;
     probation: string;
     meetings: StudentTracking[];

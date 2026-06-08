@@ -288,7 +288,7 @@ export class StatsComponent implements OnInit, OnDestroy {
           const generateAtRiskData = (seniority : string) => {
             const data = [];
             const students: StudentAttendanceDetails[] = this.info.filter((s: StudentAttendanceDetails) => s.seniority === seniority);
-            const atRisk = students.filter(s => s.studentDiv === 'UG'? +s.trmGpa < 2 : + s.trmGpa < 3);
+            const atRisk = students.filter(s => s.studentDiv === 'UG'? s.trmGpa < 2 : s.trmGpa < 3);
             data.push(atRisk.filter(s => s.trmCde === 'FA').length * 100 / students.filter(s => s.trmCde === 'FA').length);
             data.push(atRisk.filter(s => s.trmCde === 'SP').length * 100 / students.filter(s => s.trmCde === 'SP').length);
             // data.push(atRisk.filter(s => s.trmCde === 'JR').length * 100 / students.filter(s => s.trmCde === 'JR').length);
@@ -607,7 +607,7 @@ export class StatsComponent implements OnInit, OnDestroy {
 
     const studentsGpa: Map<string, number> = new Map();
     for (const i of this.info) {
-      const gpa = parseFloat(i.trmGpa || '0');
+      const gpa = i.trmGpa;
       if (!isNaN(gpa)) {
         studentsGpa.set(i.idNum, gpa);
       }
