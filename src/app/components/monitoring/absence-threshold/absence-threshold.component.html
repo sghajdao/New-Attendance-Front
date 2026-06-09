@@ -1,11 +1,14 @@
 <!-- absence-threshold.component.html - Updated with categories field in contact dialog -->
 <p-card [style]="{'height': '800px', 'overflow-y': 'auto'}" styleClass="threshold-card">
     <div class="card-header">
-      <div class="title-section">
-        <i class="pi pi-exclamation-triangle mr-2 warning-icon"></i>
-        <span class="title">Absence Threshold Monitoring</span>
-        <p-tag severity="danger" [value]="'≥ 50%'" styleClass="threshold-badge"></p-tag>
-
+      <!-- Header Top Row -->
+      <div class="header-top">
+        <div class="title-section">
+          <i class="pi pi-exclamation-triangle warning-icon"></i>
+          <span class="title">Absence Threshold Monitoring</span>
+          <p-tag severity="danger" [value]="'≥ 50%'" styleClass="threshold-badge"></p-tag>
+        </div>
+        
         <!-- View Toggle Buttons -->
         <div class="view-toggle" *ngIf="students.length">
           <p-button
@@ -25,111 +28,9 @@
             styleClass="p-button-text p-button-sm">
           </p-button>
         </div>
-
-        <!-- Dot color filter dropdown -->
-        <div class="filter-controls" *ngIf="students.length">
-          <p-dropdown
-            [options]="dotFilterOptions"
-            [(ngModel)]="dotColorFilter"
-            (onChange)="setDotColorFilter($event.value)"
-            placeholder="Filter by status"
-            styleClass="p-button-sm"
-            [showClear]="true">
-            <ng-template let-option pTemplate="selectedItem">
-              <div class="filter-option">
-                <i [class]="getDotColorIcon(option.value)"></i>
-                <span>{{ option.label }}</span>
-              </div>
-            </ng-template>
-            <ng-template let-option pTemplate="item">
-              <div class="filter-option">
-                <i [class]="getDotColorIcon(option.value)"></i>
-                <span>{{ option.label }}</span>
-              </div>
-            </ng-template>
-          </p-dropdown>
-
-          <p-multiselect [options]="classificationFilterOptions" [(ngModel)]="classificationFilter" placeholder="Select Classification" optionLabel="label" display="chip" styleClass="p-button-sm" (onChange)="setClassificationFilter($event.value)"/>
-          
-          <p-dropdown
-            [options]="percentageFilterOptions"
-            [(ngModel)]="percentageFilter"
-            (onChange)="setPercentageFilter($event.value)"
-            placeholder="Threshold %"
-            styleClass="p-button-sm"
-            [showClear]="true">
-            <ng-template let-option pTemplate="selectedItem">
-              <div class="filter-option">
-                <i class="pi pi-percent"></i>
-                <span>{{ option.label }}</span>
-              </div>
-            </ng-template>
-            <ng-template let-option pTemplate="item">
-              <div class="filter-option">
-                <i class="pi pi-percent"></i>
-                <span>{{ option.label }}</span>
-              </div>
-            </ng-template>
-          </p-dropdown>
-
-          <span class="p-inputgroup">
-            <input
-              type="text"
-              pInputText
-              placeholder="SIS ID"
-              [(ngModel)]="sisIdFilterText"
-              (input)="currentPage = 1; clearSelection()"
-              class="p-inputtext-sm"
-              style="width: 140px;"
-            />
-            <button
-              *ngIf="sisIdFilterText"
-              pButton
-              type="button"
-              icon="pi pi-times"
-              (click)="sisIdFilterText = ''; currentPage = 1; clearSelection()"
-              class="p-button-secondary p-button-sm"
-            ></button>
-          </span>
-        </div>
-
-        <div class="contact-header-actions" *ngIf="students.length">
-          <!-- Select All button -->
-          <p-button
-            *ngIf="displayedStudents.length > 0"
-            label="Select All"
-            severity="secondary"
-            icon="pi pi-check-square"
-            (onClick)="selectAll()"
-            styleClass="p-button-sm p-button-outlined">
-          </p-button>
-
-          <p-button
-            *ngIf="selectedStudents.size > 0"
-            label="Contact Selected ({{selectedStudents.size}})"
-            severity="contrast"
-            icon="pi pi-envelope"
-            (onClick)="openContactDialog(getSelectedStudents())"
-            styleClass="p-button-sm">
-          </p-button>
-
-          <p-button
-            *ngIf="selectedStudents.size > 0"
-            label="Clear Selection"
-            severity="secondary"
-            icon="pi pi-times"
-            (onClick)="clearSelection()"
-            styleClass="p-button-text p-button-sm">
-          </p-button>
-
-          <p-button
-            label="Export CSV"
-            icon="pi pi-download"
-            (onClick)="exportToCSV()"
-            styleClass="p-button-sm p-button-outlined">
-          </p-button>
-        </div>
       </div>
+    
+      <!-- Subtitle -->
       <p class="subtitle">
         Students who have reached at least 50% of the absence limit
         <span class="student-count" *ngIf="displayedStudents.length">({{displayedStudents.length}} Records, {{numberOfStudents}} Students)</span>
@@ -137,6 +38,141 @@
         <span class="view-badge" *ngIf="viewMode === 'list'"> · List View</span>
         <span class="view-badge" *ngIf="viewMode === 'grid'"> · Grid View</span>
       </p>
+    
+      <!-- Filters and Actions Container -->
+      <div class="filters-actions-container" *ngIf="students.length">
+        <!-- Filter Controls -->
+        <div class="filters-group">
+          <!-- Dot Color Filter -->
+          <div class="filter-item">
+            <i class="pi pi-circle-fill filter-icon"></i>
+            <p-dropdown
+              [options]="dotFilterOptions"
+              [(ngModel)]="dotColorFilter"
+              (onChange)="setDotColorFilter($event.value)"
+              placeholder="Status"
+              styleClass="p-button-sm filter-dropdown"
+              [showClear]="true"
+              appendTo="body">
+              <ng-template let-option pTemplate="selectedItem">
+                <div class="filter-option">
+                  <i [class]="getDotColorIcon(option.value)"></i>
+                  <span>{{ option.label }}</span>
+                </div>
+              </ng-template>
+              <ng-template let-option pTemplate="item">
+                <div class="filter-option">
+                  <i [class]="getDotColorIcon(option.value)"></i>
+                  <span>{{ option.label }}</span>
+                </div>
+              </ng-template>
+            </p-dropdown>
+          </div>
+        
+          <!-- Classification Filter -->
+          <div class="filter-item">
+            <i class="pi pi-users filter-icon"></i>
+            <p-multiselect 
+              [options]="classificationFilterOptions" 
+              [(ngModel)]="classificationFilter" 
+              placeholder="Classification" 
+              optionLabel="label" 
+              display="chip" 
+              styleClass="p-button-sm filter-multiselect"
+              (onChange)="setClassificationFilter($event.value)"
+              appendTo="body"/>
+          </div>
+        
+          <!-- Percentage Filter -->
+          <div class="filter-item">
+            <i class="pi pi-percent filter-icon"></i>
+            <p-dropdown
+              [options]="percentageFilterOptions"
+              [(ngModel)]="percentageFilter"
+              (onChange)="setPercentageFilter($event.value)"
+              placeholder="Threshold %"
+              styleClass="p-button-sm filter-dropdown"
+              [showClear]="true"
+              appendTo="body">
+              <ng-template let-option pTemplate="selectedItem">
+                <div class="filter-option">
+                  <i class="pi pi-percent"></i>
+                  <span>{{ option.label }}</span>
+                </div>
+              </ng-template>
+              <ng-template let-option pTemplate="item">
+                <div class="filter-option">
+                  <i class="pi pi-percent"></i>
+                  <span>{{ option.label }}</span>
+                </div>
+              </ng-template>
+            </p-dropdown>
+          </div>
+        
+          <!-- SIS ID Search -->
+          <div class="filter-item search-item">
+            <i class="pi pi-search filter-icon"></i>
+            <span class="p-inputgroup">
+              <input
+                type="text"
+                pInputText
+                placeholder="Search SIS ID"
+                [(ngModel)]="sisIdFilterText"
+                (input)="currentPage = 1; clearSelection()"
+                class="p-inputtext-sm search-input"
+              />
+              <button
+                *ngIf="sisIdFilterText"
+                pButton
+                type="button"
+                icon="pi pi-times"
+                (click)="sisIdFilterText = ''; currentPage = 1; clearSelection()"
+                class="p-button-secondary p-button-sm clear-search-btn"
+              ></button>
+            </span>
+          </div>
+        </div>
+      
+        <!-- Action Buttons -->
+        <div class="actions-group">
+          <!-- Selection Actions -->
+          <div class="selection-actions" *ngIf="displayedStudents.length > 0">
+            <p-button
+              label="Select All"
+              severity="secondary"
+              icon="pi pi-check-square"
+              (onClick)="selectAll()"
+              styleClass="p-button-sm p-button-outlined action-btn">
+            </p-button>
+          
+            <p-button
+              *ngIf="selectedStudents.size > 0"
+              label="Contact ({{selectedStudents.size}})"
+              severity="contrast"
+              icon="pi pi-envelope"
+              (onClick)="openContactDialog(getSelectedStudents())"
+              styleClass="p-button-sm action-btn-primary">
+            </p-button>
+          
+            <p-button
+              *ngIf="selectedStudents.size > 0"
+              label="Clear"
+              severity="secondary"
+              icon="pi pi-times"
+              (onClick)="clearSelection()"
+              styleClass="p-button-text p-button-sm action-btn">
+            </p-button>
+          </div>
+        
+          <!-- Export Button -->
+          <p-button
+            label="Export CSV"
+            icon="pi pi-download"
+            (onClick)="exportToCSV()"
+            styleClass="p-button-sm p-button-outlined export-btn">
+          </p-button>
+        </div>
+      </div>
     </div>
 
     <!-- Loading State -->

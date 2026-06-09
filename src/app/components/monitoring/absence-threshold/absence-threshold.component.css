@@ -22,6 +22,15 @@
     flex-shrink: 0;
 }
 
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
 .filter-controls {
   margin-left: auto;
   display: flex;
@@ -90,6 +99,161 @@
     gap: 12px;
     margin-bottom: 8px;
     flex-wrap: wrap;
+}
+
+.filters-actions-container {
+  margin-top: 1rem;
+  padding: 1rem 0 0.5rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filters-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 2;
+  min-width: 0;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f8fafc;
+  padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  border: 1px solid #e2e8f0;
+}
+
+.filter-item:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.filter-icon {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.filter-dropdown,
+.filter-multiselect {
+  min-width: 130px;
+}
+
+:host ::ng-deep .filter-dropdown .p-dropdown,
+:host ::ng-deep .filter-multiselect .p-multiselect {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  height: 32px;
+}
+
+:host ::ng-deep .filter-dropdown .p-dropdown-label,
+:host ::ng-deep .filter-multiselect .p-multiselect-label {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.813rem;
+  color: #1e293b;
+}
+
+:host ::ng-deep .filter-dropdown .p-dropdown-trigger,
+:host ::ng-deep .filter-multiselect .p-multiselect-trigger {
+  width: 2rem;
+}
+
+.search-item {
+  flex: 1;
+  min-width: 180px;
+  background: #f8fafc;
+  padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+}
+
+.search-input {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.813rem;
+}
+
+.search-input:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+:host ::ng-deep .clear-search-btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #94a3b8 !important;
+}
+
+:host ::ng-deep .clear-search-btn:hover {
+  color: #ef4444 !important;
+}
+
+/* Actions Group */
+.actions-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.selection-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-right: 1rem;
+  border-right: 1px solid #e2e8f0;
+}
+
+.action-btn,
+.action-btn-primary,
+.export-btn {
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover,
+.export-btn:hover {
+  transform: translateY(-1px);
+}
+
+.action-btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border: none;
+}
+
+.action-btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-1px);
+}
+
+/* Filter Option Items */
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-option i {
+  font-size: 0.75rem;
+}
+
+/* Green/Yellow/Red/Black dots for filter options */
+.green-live-dot,
+.yellow-live-dot,
+.red-live-dot,
+.black-live-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
 }
 
 .warning-icon {
@@ -778,8 +942,79 @@
     margin: 10px;
 }
 
+@media (max-width: 1024px) {
+  .filters-actions-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filters-group {
+    width: 100%;
+  }
+  
+  .actions-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .selection-actions {
+    border-right: none;
+    padding-right: 0;
+  }
+}
+
 /* Adjust responsive behavior */
 @media (max-width: 768px) {
+    .card-header {
+    margin-bottom: 1rem;
+  }
+  
+  .header-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filters-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-item {
+    width: 100%;
+  }
+  
+  .filter-dropdown,
+  .filter-multiselect {
+    width: 100%;
+  }
+  
+  :host ::ng-deep .filter-dropdown .p-dropdown,
+  :host ::ng-deep .filter-multiselect .p-multiselect {
+    width: 100%;
+  }
+  
+  .search-item {
+    width: 100%;
+  }
+  
+  .actions-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .selection-actions {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  
+  .selection-actions .p-button {
+    flex: 1;
+  }
+  
+  .export-btn {
+    width: 100%;
+  }
     .paginator-container {
         margin-top: 1rem;
         padding-top: 0.75rem;
@@ -843,6 +1078,19 @@
         justify-content: space-between;
         margin-top: 0.5rem;
     }
+}
+
+@media (max-width: 640px) {
+  .filter-item {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .action-btn,
+  .action-btn-primary,
+  .export-btn {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
 }
 
 @keyframes pulseGlow {
