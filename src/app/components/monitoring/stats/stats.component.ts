@@ -299,7 +299,7 @@ export class StatsComponent implements OnInit, OnDestroy {
                   s.seniority === seniority
               );
             
-              const total = info.filter(s => s.trmCde === term).length;
+              const total = info.filter(s => res.some(r => r.student_sis_id === s.idNum) && s.trmCde === term).length;
               const count = atRisk.filter(s => s.trmCde === term).length;
             
               return total === 0 ? 0 : (count * 100) / total;
@@ -330,19 +330,19 @@ export class StatsComponent implements OnInit, OnDestroy {
                       type: 'bar',
                       label: 'Juniors',
                       backgroundColor: documentStyle.getPropertyValue('--p-orange-500'),
-                      data: generateAtRiskData('JR')
+                      data: await generateAtRiskData('JR')
                   },
                   {
                       type: 'bar',
                       label: 'Seniors',
                       backgroundColor: documentStyle.getPropertyValue('--p-purple-500'),
-                      data: generateAtRiskData('SR')
+                      data: await generateAtRiskData('SR')
                   },
                   {
                       type: 'bar',
                       label: 'Graduates',
                       backgroundColor: documentStyle.getPropertyValue('--p-yellow-500'),
-                      data: generateAtRiskData('GR')
+                      data: await generateAtRiskData('GR')
                   }
               ]
           };
