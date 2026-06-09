@@ -279,26 +279,36 @@ export class StatsComponent implements OnInit, OnDestroy {
   getAtRiskStudents() {
     if (isPlatformBrowser(this.platformId)) {
       const sub = this.attendanceService.getRedFlagStudents().subscribe({
-        next: res => {
+        next: async res => {
           const documentStyle = getComputedStyle(document.documentElement);
           const textColor = documentStyle.getPropertyValue('--p-text-color');
           const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
           const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
 
-          const generateAtRiskData = (seniority : string) => {
-            const data: number[] = [];
-            // const students: StudentAttendanceDetails[] = this.info.filter((s: StudentAttendanceDetails) => s.seniority === seniority);
-            this.indexeddbService.getData('FA').then(info => {
-              const atRisk = info.filter(s => (s.studentDiv === 'UG'? s.trmGpa < 2 : s.trmGpa < 3) && s.seniority === seniority);
-              data.push(atRisk.filter(s => s.trmCde === 'FA').length * 100 / info.filter(s => s.trmCde === 'FA').length);
-            });
-            this.indexeddbService.getData('SP').then(info => {
-              const atRisk = info.filter(s => (s.studentDiv === 'UG'? s.trmGpa < 2 : s.trmGpa < 3) && s.seniority === seniority);
-              data.push(atRisk.filter(s => s.trmCde === 'SP').length * 100 / info.filter(s => s.trmCde === 'SP').length);
-            });
-            console.log('At-risk data for', seniority, ':', data);
-            return data;
-            // data.push(atRisk.filter(s => s.trmCde === 'JR').length * 100 / students.filter(s => s.trmCde === 'JR').length);
+          const generateAtRiskData = async (seniority: string): Promise<number[]> => {
+            const [faInfo, spInfo] = await Promise.all([
+              this.indexeddbService.getData('FA'),
+              this.indexeddbService.getData('SP')
+            ]);
+          
+            const computeRate = (info: any[], term: string) => {
+              const atRisk = info.filter(
+                s =>
+                  res.some(r => r.student_sis_id === s.idNum) &&
+                  (s.studentDiv === 'UG' ? s.trmGpa < 2 : s.trmGpa < 3) &&
+                  s.seniority === seniority
+              );
+            
+              const total = info.filter(s => s.trmCde === term).length;
+              const count = atRisk.filter(s => s.trmCde === term).length;
+            
+              return total === 0 ? 0 : (count * 100) / total;
+            };
+          
+            return [
+              computeRate(faInfo, 'FA'),
+              computeRate(spInfo, 'SP')
+            ];
           }
           
           this.atRiskData = {
@@ -308,13 +318,13 @@ export class StatsComponent implements OnInit, OnDestroy {
                       type: 'bar',
                       label: 'Freshmen',
                       backgroundColor: documentStyle.getPropertyValue('--p-cyan-500'),
-                      data: generateAtRiskData('FR')
+                      data: await generateAtRiskData('FR')
                   },
                   {
                       type: 'bar',
                       label: 'Sophomores',
                       backgroundColor: documentStyle.getPropertyValue('--p-gray-500'),
-                      data: generateAtRiskData('SO')
+                      data: await generateAtRiskData('SO')
                   },
                   {
                       type: 'bar',
