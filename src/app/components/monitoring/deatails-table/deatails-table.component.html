@@ -15,13 +15,7 @@
           <span>{{ numberOfStudents }} students</span>
         </div>
         <button pButton type="button" label="Export CSV" icon="pi pi-download" class="p-button-outlined export-btn" (click)="exportToCSV()"></button>
-      
-        <!-- NEW: real‑time ID search -->
-        <span class="p-input-icon-left">
-          <i class="pi pi-search"></i>
-          <input type="text" pInputText placeholder="Filter by Student ID" 
-                 (input)="onIdSearch($event)" class="id-search-input">
-        </span>
+
       </div>
       <div class="student-count-badge">
         <i class="pi pi-users"></i>
@@ -29,6 +23,14 @@
       </div>
       <button pButton type="button" label="Export CSV" icon="pi pi-download" class="p-button-outlined export-btn" (click)="exportToCSV()"></button>
     </div>
+  </div>
+
+  <div style="margin-bottom: 15px; display: flex; justify-content: flex-end;">
+    <span class="p-input-icon-left">
+      <i class="pi pi-search"></i>
+      <input type="text" pInputText placeholder="Filter by Student ID" 
+             (input)="onIdSearch($event)" class="id-search-input">
+    </span>
   </div>
 
   <p-table
