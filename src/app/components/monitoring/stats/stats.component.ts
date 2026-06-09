@@ -286,16 +286,18 @@ export class StatsComponent implements OnInit, OnDestroy {
           const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
 
           const generateAtRiskData = (seniority : string) => {
-            const data = [];
+            const data: number[] = [];
             // const students: StudentAttendanceDetails[] = this.info.filter((s: StudentAttendanceDetails) => s.seniority === seniority);
             this.indexeddbService.getData('FA').then(info => {
-              const atRisk = info.filter(s => s.studentDiv === 'UG'? s.trmGpa < 2 : s.trmGpa < 3);
+              const atRisk = info.filter(s => (s.studentDiv === 'UG'? s.trmGpa < 2 : s.trmGpa < 3) && s.seniority === seniority);
               data.push(atRisk.filter(s => s.trmCde === 'FA').length * 100 / info.filter(s => s.trmCde === 'FA').length);
             });
             this.indexeddbService.getData('SP').then(info => {
-              const atRisk = info.filter(s => s.studentDiv === 'UG'? s.trmGpa < 2 : s.trmGpa < 3);
+              const atRisk = info.filter(s => (s.studentDiv === 'UG'? s.trmGpa < 2 : s.trmGpa < 3) && s.seniority === seniority);
               data.push(atRisk.filter(s => s.trmCde === 'SP').length * 100 / info.filter(s => s.trmCde === 'SP').length);
             });
+            console.log('At-risk data for', seniority, ':', data);
+            return data;
             // data.push(atRisk.filter(s => s.trmCde === 'JR').length * 100 / students.filter(s => s.trmCde === 'JR').length);
           }
           
