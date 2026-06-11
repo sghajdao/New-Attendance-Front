@@ -29,8 +29,8 @@ Reason: Excessive absences (absences: {{item.count}}, limit: {{item.absentLimit}
 Professor Name: {{item.instructor_name}}</pre>
                     </div>
                     <div style="display: flex;">
-                        <p-button disabled="true" (click)="openDialog($event, item)" icon="pi pi-check" label="Approve" variant="outlined" severity="success" />
-                        <p-button disabled="true" *ngIf="isAdmin" (click)="getStudentToDecline(item)" icon="pi pi-times" label="Decline" variant="outlined" severity="danger" />
+                        <p-button disabled="false" (click)="openDialog($event, item)" icon="pi pi-check" label="Approve" variant="outlined" severity="success" />
+                        <p-button disabled="false" *ngIf="isAdmin" (click)="getStudentToDecline(item)" icon="pi pi-times" label="Decline" variant="outlined" severity="danger" />
                         <!-- <p-button icon="pi pi-times" label="Decline" variant="outlined" severity="danger" /> -->
                     </div>
                 </div>

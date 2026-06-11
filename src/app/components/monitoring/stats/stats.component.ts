@@ -306,8 +306,8 @@ export class StatsComponent implements OnInit, OnDestroy {
             };
           
             return [
-              computeRate(faInfo, 'FA'),
-              computeRate(spInfo, 'SP')
+              +computeRate(faInfo, 'FA').toFixed(2),
+              +computeRate(spInfo, 'SP').toFixed(2)
             ];
           }
           
@@ -364,7 +364,7 @@ export class StatsComponent implements OnInit, OnDestroy {
                   x: {
                       stacked: true,
                       ticks: {
-                          color: textColorSecondary
+                          color: '#ffffff'
                       },
                       grid: {
                           color: surfaceBorder,
@@ -374,7 +374,7 @@ export class StatsComponent implements OnInit, OnDestroy {
                   y: {
                       stacked: true,
                       ticks: {
-                          color: textColorSecondary
+                          color: '#ffffff'
                       },
                       grid: {
                           color: surfaceBorder,
