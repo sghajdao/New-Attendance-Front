@@ -34,18 +34,18 @@ export class QuickOverviewComponent implements OnInit, OnDestroy {
             const currentData = data.filter(item => item.trmCde === 'SU').at(0)
             let studentsStop = setInterval(() => {
               this.students++
-              if (this.students === currentData?.students.length) clearInterval(studentsStop)
+              if (this.students === currentData?.students.length || currentData?.students.length === 0) clearInterval(studentsStop)
             })
             let coursesStop = setInterval(() => {
               this.courses++
-              if (this.courses === currentData?.courses.length) clearInterval(coursesStop)
+              if (this.courses === currentData?.courses.length || currentData?.courses.length === 0) clearInterval(coursesStop)
             })
             let attendanceRateStop = setInterval(() => {
               this.attendanceRate++
-              if (this.attendanceRate === currentData?.attendanceRate) clearInterval(attendanceRateStop)
+              if (this.attendanceRate === currentData?.attendanceRate || currentData?.attendanceRate === 0) clearInterval(attendanceRateStop)
             })
             let lateArrivalsStop = setInterval(() => {
-              if (this.lateArrivals === currentData?.lateArrivals)
+              if (this.lateArrivals === currentData?.lateArrivals || currentData?.lateArrivals === 0)
                 clearInterval(lateArrivalsStop)
               this.lateArrivals++
             })
@@ -58,18 +58,18 @@ export class QuickOverviewComponent implements OnInit, OnDestroy {
       const currentData = data.filter(item => item.trmCde === 'SU').at(0)
       let studentsStop = setInterval(() => {
         this.students++
-        if (this.students === currentData?.students.length) clearInterval(studentsStop)
+        if (this.students === currentData?.students.length || currentData?.students.length === 0) clearInterval(studentsStop)
       })
       let coursesStop = setInterval(() => {
         this.courses++
-        if (this.courses === currentData?.courses.length) clearInterval(coursesStop)
+        if (this.courses === currentData?.courses.length || currentData?.courses.length === 0) clearInterval(coursesStop)
       })
       let attendanceRateStop = setInterval(() => {
         this.attendanceRate++
-        if (this.attendanceRate === currentData?.attendanceRate) clearInterval(attendanceRateStop)
+        if (this.attendanceRate === currentData?.attendanceRate || currentData?.attendanceRate === 0) clearInterval(attendanceRateStop)
       })
       let lateArrivalsStop = setInterval(() => {
-        if (this.lateArrivals === currentData?.lateArrivals)
+        if (this.lateArrivals === currentData?.lateArrivals || currentData?.lateArrivals === 0)
           clearInterval(lateArrivalsStop)
         this.lateArrivals++
       })
