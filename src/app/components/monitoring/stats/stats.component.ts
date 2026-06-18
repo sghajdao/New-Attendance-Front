@@ -364,7 +364,7 @@ export class StatsComponent implements OnInit, OnDestroy {
                   x: {
                       stacked: true,
                       ticks: {
-                          color: '#ffffff'
+                          color: documentStyle.getPropertyValue('--p-white-500')
                       },
                       grid: {
                           color: surfaceBorder,
@@ -374,7 +374,7 @@ export class StatsComponent implements OnInit, OnDestroy {
                   y: {
                       stacked: true,
                       ticks: {
-                          color: '#ffffff'
+                          color: documentStyle.getPropertyValue('--p-white-500')
                       },
                       grid: {
                           color: surfaceBorder,

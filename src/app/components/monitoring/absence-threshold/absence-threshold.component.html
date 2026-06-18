@@ -1,4 +1,4 @@
-<!-- absence-threshold.component.html - Updated with categories field in contact dialog -->
+<!-- absence-threshold.component.html - Added date filter -->
 <p-card [style]="{'height': '800px', 'overflow-y': 'auto'}" styleClass="threshold-card">
     <div class="card-header">
       <!-- Header Top Row -->
@@ -35,6 +35,8 @@
         Students who have reached at least 50% of the absence limit
         <span class="student-count" *ngIf="displayedStudents.length">({{displayedStudents.length}} Records, {{numberOfStudents}} Students)</span>
         <span *ngIf="dotColorFilter" class="filter-badge"> · Filtered by {{dotColorFilter}} dot</span>
+        <span *ngIf="percentageFilter" class="filter-badge"> · ≥{{percentageFilter}}%</span>
+        <span *ngIf="meetingDateFrom || meetingDateTo" class="filter-badge"> · Date: {{ meetingDateFrom ? (meetingDateFrom | date:'yyyy-MM-dd') : '...' }} {{ meetingDateFrom && meetingDateTo ? '–' : '' }} {{ meetingDateTo ? (meetingDateTo | date:'yyyy-MM-dd') : '...' }}</span>
         <span class="view-badge" *ngIf="viewMode === 'list'"> · List View</span>
         <span class="view-badge" *ngIf="viewMode === 'grid'"> · Grid View</span>
       </p>
@@ -107,6 +109,36 @@
                 </div>
               </ng-template>
             </p-dropdown>
+          </div>
+        
+          <!-- Date Range Filter -->
+          <div class="filter-item date-filter-item">
+            <i class="pi pi-calendar filter-icon"></i>
+            <p-calendar
+              [(ngModel)]="meetingDateFrom"
+              (onSelect)="updateDateFilter()"
+              placeholder="From"
+              dateFormat="yy-mm-dd"
+              appendTo="body"
+              styleClass="p-inputtext-sm">
+            </p-calendar>
+            <span style="color:#94a3b8; font-size:0.75rem;">–</span>
+            <p-calendar
+              [(ngModel)]="meetingDateTo"
+              (onSelect)="updateDateFilter()"
+              placeholder="To"
+              dateFormat="yy-mm-dd"
+              appendTo="body"
+              styleClass="p-inputtext-sm">
+            </p-calendar>
+            <p-button
+              *ngIf="meetingDateFrom || meetingDateTo"
+              icon="pi pi-times"
+              (onClick)="clearDateFilter()"
+              styleClass="p-button-secondary p-button-sm"
+              pTooltip="Clear date filter"
+              tooltipPosition="top">
+            </p-button>
           </div>
         
           <!-- SIS ID Search -->
@@ -197,9 +229,6 @@
             <div class="card-header-section">
                 <div class="student-info">
                     <img class="student-avatar" src="https://attendance.aui.ma/images/{{ student.id }}" alt="{{ getInitials(student.firstName + ' ' + student.lastName) }}">
-                    <!-- <div class="student-avatar" [ngClass]="getRiskClass(student.value)">
-                        {{ getInitials(student.firstName + ' ' + student.lastName) }}
-                    </div> -->
                     <div class="info-details">
                         <p class="student-name">{{ student.firstName }} {{ student.lastName }} <{{ student.id }}></p>
                         <div class="student-meta">
