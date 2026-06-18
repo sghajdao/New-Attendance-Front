@@ -19,6 +19,7 @@
     position: sticky;
     top: 0;
     z-index: 10;
+    background: white;
     /* keep the existing styles below */
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
