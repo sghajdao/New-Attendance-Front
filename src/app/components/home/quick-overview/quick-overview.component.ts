@@ -32,6 +32,7 @@ export class QuickOverviewComponent implements OnInit, OnDestroy {
             localStorage.setItem('init', JSON.stringify(data))
             localStorage.setItem('lastUpdate', JSON.stringify(new Date()))
             const currentData = data.filter(item => item.trmCde === 'SU').at(0)
+            if (!data || !data.length) return
             let studentsStop = setInterval(() => {
               this.students++
               if (this.students === currentData?.students.length || currentData?.students.length === 0) clearInterval(studentsStop)
@@ -54,6 +55,7 @@ export class QuickOverviewComponent implements OnInit, OnDestroy {
       })
     }
     else if (initData) {
+      if (!initData || !JSON.parse(initData).length) return
       const data: InitData[] = JSON.parse(initData)
       const currentData = data.filter(item => item.trmCde === 'SU').at(0)
       let studentsStop = setInterval(() => {
