@@ -16,12 +16,14 @@
 
 /* Header Styles */
 .card-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    /* keep the existing styles below */
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
     border-bottom: 2px solid #f0f2f5;
     flex-shrink: 0;
-    position: sticky;
-    top: 0;
 }
 
 .header-top {
@@ -236,58 +238,15 @@
   transform: translateY(-1px);
 }
 
-/* Date filter inline styles */
-.date-filter-item {
+/* Filter Option Items */
+.filter-option {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  flex-wrap: nowrap;
+  gap: 8px;
 }
 
-.date-filter-item .p-calendar {
-  width: 120px;
-}
-
-.date-filter-item .p-calendar .p-inputtext {
+.filter-option i {
   font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  width: 100%;
-}
-
-.date-filter-item .p-calendar .p-inputtext:focus {
-  box-shadow: none;
-  outline: none;
-}
-
-.date-filter-item .p-calendar .p-datepicker-trigger {
-  background: transparent !important;
-  border: none !important;
-  color: #94a3b8 !important;
-  width: 2rem;
-  height: 32px;
-}
-
-.date-filter-item .p-calendar .p-datepicker-trigger:hover {
-  color: #3b82f6 !important;
-}
-
-.date-filter-item .p-button.p-button-icon-only {
-  background: transparent !important;
-  border: none !important;
-  color: #94a3b8 !important;
-  width: 2rem;
-  height: 32px;
-}
-
-.date-filter-item .p-button.p-button-icon-only:hover {
-  color: #ef4444 !important;
-}
-
-.filter-item.date-filter-item {
-  padding-right: 0.25rem;
 }
 
 /* Green/Yellow/Red/Black dots for filter options */
@@ -530,6 +489,19 @@
     color: white; */
     object-fit: cover;
 }
+
+/* .student-avatar.low-risk {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+}
+
+.student-avatar.medium-risk {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.student-avatar.high-risk {
+    background: linear-gradient(135deg, #7f1d1d, #991b1b);
+    animation: pulse 2s infinite;
+} */
 
 @keyframes pulse {
     0%, 100% { opacity: 1; }
@@ -1070,14 +1042,6 @@
       width: 100%;
       justify-content: space-between;
       margin-top: 8px;
-    }
-
-    /* Date filter responsive */
-    .date-filter-item {
-      flex-wrap: wrap;
-    }
-    .date-filter-item .p-calendar {
-      width: 100% !important;
     }
 }
 

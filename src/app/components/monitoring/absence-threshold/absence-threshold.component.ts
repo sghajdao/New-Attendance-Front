@@ -1,4 +1,4 @@
-// absence-threshold.component.ts - Added date filter
+// absence-threshold.component.ts - Updated with categories field in contact form
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AttendanceService } from '../../../services/attendance.service';
@@ -94,9 +94,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     { label: 'Graduate', value: 'GR' }
   ];
 
-  // Date filter properties
-  meetingDateFrom: Date | null = null;
-  meetingDateTo: Date | null = null;
+  maxDate: Date = new Date();
 
   // Selection tracking
   selectedStudents: Set<Student> = new Set();
@@ -236,8 +234,6 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         this.dotColorFilter = null;
         this.percentageFilter = null;
         this.classificationFilter = [];
-        this.meetingDateFrom = null;
-        this.meetingDateTo = null;
         this.loading = false;
       },
     
@@ -273,17 +269,17 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     localStorage.setItem('absenceThresholdViewMode', mode);
   }
 
-  // Getter for students after applying all filters
+  // Getter for students after applying dot color filter
   get displayedStudents(): Student[] {
     let result = this.students;
     // Dot color filter
     if (this.dotColorFilter) {
       result = result.filter(student => {
-        const count = this.countPendingMeetings(student.meetings);
+        const count = this.hasPendingMeeting(student);
         if (this.dotColorFilter === 'green') return count === 0;
         if (this.dotColorFilter === 'yellow') return count === 1;
         if (this.dotColorFilter === 'red') return count === 2;
-        if (this.dotColorFilter === 'black') return count >= 3;
+        if (this.dotColorFilter === 'black') return count === 3;
         return true;
       });
     }
@@ -293,34 +289,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       result = result.filter(student => student.value >= minValue);
     }
 
-    // Classification filter
     if (this.classificationFilter.length > 0) {
-      const selectedValues = this.classificationFilter.map((v: any) => v.value);
-      result = result.filter(student => selectedValues.includes(student.seniority));
-    }
-
-    // Date filter (meeting createdAt)
-    if (this.meetingDateFrom || this.meetingDateTo) {
-      result = result.filter(student => {
-        if (!student.meetings || student.meetings.length === 0) return false;
-        // Check if any meeting falls within the date range
-        return student.meetings.some(meeting => {
-          if (!meeting.createdAt) return false;
-          const meetingDate = new Date(meeting.createdAt);
-          // Normalize dates to compare only date part (ignore time)
-          const meetingDateOnly = new Date(meetingDate.getFullYear(), meetingDate.getMonth(), meetingDate.getDate());
-          let from = this.meetingDateFrom ? new Date(this.meetingDateFrom.getFullYear(), this.meetingDateFrom.getMonth(), this.meetingDateFrom.getDate()) : null;
-          let to = this.meetingDateTo ? new Date(this.meetingDateTo.getFullYear(), this.meetingDateTo.getMonth(), this.meetingDateTo.getDate()) : null;
-          if (from && to) {
-            return meetingDateOnly >= from && meetingDateOnly <= to;
-          } else if (from) {
-            return meetingDateOnly >= from;
-          } else if (to) {
-            return meetingDateOnly <= to;
-          }
-          return true;
-        });
-      });
+      result = result.filter(student => this.classificationFilter.map((v: any) => v.value).includes(student.seniority));
     }
 
     if (this.sisIdFilterText) {
@@ -328,6 +298,16 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       result = result.filter(student =>
         student.id.toLowerCase().includes(searchTerm)
       );
+    }
+
+    if (this.maxDate) {
+      result = result.filter(student => {
+        const latestMeeting = student.meetings.reduce((latest, meeting) => {
+          const meetingDate = new Date(meeting.createdAt || 0);
+          return meetingDate > latest ? meetingDate : latest;
+        }, new Date(0));
+        return latestMeeting <= this.maxDate;
+      });
     }
     return result;
   }
@@ -357,9 +337,9 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   // New: set dot filter and clear selection
   setDotColorFilter(color: string | null): void {
     this.dotColorFilter = color;
-    this.currentPage = 1;
+    this.currentPage = 1;               // reset to first page
     this.updatePagination();
-    this.clearSelection();
+    this.clearSelection();              // avoid confusion with hidden selections
   }
 
   // Optional: helper for the filter dropdown to get icon class
@@ -380,23 +360,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     this.clearSelection();
   }
 
-  // Date filter methods
-  updateDateFilter(): void {
-    this.currentPage = 1;
-    this.updatePagination();
-    this.clearSelection();
-  }
-
-  clearDateFilter(): void {
-    this.meetingDateFrom = null;
-    this.meetingDateTo = null;
-    this.currentPage = 1;
-    this.updatePagination();
-    this.clearSelection();
-  }
-
   updatePagination(): void {
-    this.totalPages = Math.ceil(this.displayedStudents.length / this.pageSize);
+    this.totalPages = Math.ceil(this.students.length / this.pageSize);
     if (this.currentPage > this.totalPages && this.totalPages > 0) {
       this.currentPage = this.totalPages;
     }
@@ -414,6 +379,9 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       this.selectedStudents.delete(student);
       student._selected = false;
     } else {
+      // this.selectedStudents.add(student);
+      // student._selected = true;
+      
       for (let item  of this.students.filter(s => s.id === student.id)) {
         this.selectedStudents.add(item);
         item._selected = true;
@@ -493,8 +461,9 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     const meetingType = formValue.meetingType;
     const mailType = formValue.mailType;
     const meetingComment = formValue.comment;
-    const categories = formValue.categories || [];
+    const categories = formValue.categories || []; // Get selected categories array
 
+    // Create tracking records for each selected student
     let ids: string[] = [];
     const trackingRequests = this.contactSelectedStudents.map(student => {
       const trackingData: StudentTracking = {
@@ -512,7 +481,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         ids.push(student.id);
         return this.attendanceService.trackStudent(trackingData);
       }
-      return null as any;
+      return null as any; // This will be filtered out later
     });
 
     forkJoin(trackingRequests.filter((v): v is NonNullable<typeof v> => !!v)).pipe(
@@ -521,13 +490,18 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       })
     ).subscribe({
       next: (results: StudentTracking[]) => {
+        // Success - all requests completed
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
           detail: `Successfully created ${results.length} meeting record(s)`,
           life: 4000
         });
+        
+        // Refresh the data to show updated meetings
         this.loadData();
+        
+        // Clear selection and close dialog
         this.clearSelection();
         this.cancelContactDialog();
       },
@@ -611,14 +585,15 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       return this.students.filter(s => s.value >= 75).length;
   }
 
-  // Helper to count pending meetings (no comment or empty comment)
-  private countPendingMeetings(meetings: any[] = []): number {
-    if (!meetings) return 0;
-    return meetings.filter(m => !m.comment || !m.comment.trim().length).length;
-  }
-
   hasPendingMeeting(student: Student): number {
-    return this.countPendingMeetings(student.meetings);
+    let count = 0
+    for (let item of student.meetings) {
+      if (!item.comment || !item.comment.trim().length)
+        count++;
+    }
+    if (count === 0 && student.meetings.length !== 0)
+      return -1
+    return count;
   }
 
   showHistory(student: Student): void {
@@ -645,9 +620,11 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
 
   exportModalToCSV(): void {
     if (!this.modalRecords.length) {
+      // Optionally show a brief notification or silently ignore
       return;
     }
 
+    // Define CSV headers and field mappings
     const headers = ['ID', 'First Name', 'Last Name', 'Attendance Status', 'Attendance Date', 'Attendance Time', 'Course', 'Faculty'];
     const rows = this.modalRecords.sort((a, b) => new Date(a.attendanceDate).getTime() - new Date(b.attendanceDate).getTime()).map(record => [
       record.idNum || '',
@@ -660,11 +637,13 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       record.teacherName
     ]);
 
+    // Build CSV content
     const csvContent = [
       headers.join(','),
       ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
     ].join('\n');
 
+    // Create a blob and trigger download
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
@@ -676,6 +655,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     URL.revokeObjectURL(url);
   }
 
+  // Helper methods for consistent date/time formatting
   private formatDateToYYYYMMDD(date: any): string {
     if (!date) return '';
     const d = new Date(date);
@@ -697,6 +677,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       return;
     }
   
+    // Define CSV headers matching the fields we want
     const headers = [
       'Student SIS ID', 'First Name', 'Last Name', 'Course SIS ID', 'Course Name',
       'Instructor', 'Status', 'Grade', 'Term Code', 'Seniority',
@@ -726,6 +707,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       ];
     });
   
+    // Build CSV content (escape quotes and commas)
     const escapeCSV = (cell: any) => {
       if (cell === null || cell === undefined) return '';
       const str = String(cell);
@@ -740,6 +722,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       ...rows.map(row => row.map(escapeCSV).join(','))
     ].join('\n');
   
+    // Download file
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
@@ -751,12 +734,14 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     URL.revokeObjectURL(url);
   }
   
+  // Helper: get raw data after applying current filters (dot color + percentage)
   private getFilteredRawData(): RedFlagStudents[] {
     let result = [...this.rawRedFlagData];
   
+    // Dot color filter based on pending meetings count (same logic as in displayedStudents)
     if (this.dotColorFilter) {
       result = result.filter(student => {
-        const pendingCount = this.countPendingMeetings(student.meetings);
+        const pendingCount = this.countPendingMeetings(student.meetings || []);
         if (this.dotColorFilter === 'green') return pendingCount === 0;
         if (this.dotColorFilter === 'yellow') return pendingCount === 1;
         if (this.dotColorFilter === 'red') return pendingCount === 2;
@@ -765,6 +750,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       });
     }
   
+    // Percentage filter
     if (this.percentageFilter) {
       const minValue = parseInt(this.percentageFilter, 10);
       result = result.filter(student => {
@@ -774,33 +760,16 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     }
 
     if (this.classificationFilter.length > 0) {
-      const selectedValues = this.classificationFilter.map((v: any) => v.value);
-      result = result.filter(student => selectedValues.includes(student.seniority));
-    }
-
-    // Apply date filter to raw data as well
-    if (this.meetingDateFrom || this.meetingDateTo) {
-      result = result.filter(student => {
-        if (!student.meetings || student.meetings.length === 0) return false;
-        return student.meetings.some(meeting => {
-          if (!meeting.createdAt) return false;
-          const meetingDate = new Date(meeting.createdAt);
-          const meetingDateOnly = new Date(meetingDate.getFullYear(), meetingDate.getMonth(), meetingDate.getDate());
-          let from = this.meetingDateFrom ? new Date(this.meetingDateFrom.getFullYear(), this.meetingDateFrom.getMonth(), this.meetingDateFrom.getDate()) : null;
-          let to = this.meetingDateTo ? new Date(this.meetingDateTo.getFullYear(), this.meetingDateTo.getMonth(), this.meetingDateTo.getDate()) : null;
-          if (from && to) {
-            return meetingDateOnly >= from && meetingDateOnly <= to;
-          } else if (from) {
-            return meetingDateOnly >= from;
-          } else if (to) {
-            return meetingDateOnly <= to;
-          }
-          return true;
-        });
-      });
+      result = result.filter(student => this.classificationFilter.map((v: any) => v.value).includes(student.seniority));
     }
   
     return result;
+  }
+  
+  // Helper to count pending meetings (no comment or empty comment)
+  private countPendingMeetings(meetings: any[]): number {
+    if (!meetings) return 0;
+    return meetings.filter(m => !m.comment || !m.comment.trim().length).length;
   }
 
   ngOnDestroy(): void {
