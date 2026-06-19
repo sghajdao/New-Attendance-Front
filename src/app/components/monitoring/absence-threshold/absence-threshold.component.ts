@@ -309,6 +309,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         return latestMeeting <= this.maxDate;
       });
     }
+
+    this.numberOfStudents = new Set(result.map(s => s.id)).size;
     return result;
   }
 
@@ -465,7 +467,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
 
     // Create tracking records for each selected student
     let ids: string[] = [];
-    const trackingRequests = this.contactSelectedStudents.map(student => {
+    let trackingRequests: StudentTracking[] = [];
+    this.contactSelectedStudents.map(student => {
       const trackingData: StudentTracking = {
         studentSisId: student.id,
         firstName: student.firstName,
@@ -479,25 +482,20 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       };
       if (!ids.includes(student.id)) {
         ids.push(student.id);
-        return this.attendanceService.trackStudent(trackingData);
+        trackingRequests.push(trackingData);
       }
-      return null as any; // This will be filtered out later
     });
 
-    forkJoin(trackingRequests.filter((v): v is NonNullable<typeof v> => !!v)).pipe(
-      finalize(() => {
-        this.isContactSaving = false;
-      })
-    ).subscribe({
-      next: (results: StudentTracking[]) => {
+    this.attendanceService.trackStudents(trackingRequests).subscribe({
+      next: (results: { students: StudentTracking[] }) => {
         // Success - all requests completed
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
-          detail: `Successfully created ${results.length} meeting record(s)`,
+          detail: `Successfully created ${results.students.length} meeting record(s)`,
           life: 4000
         });
-        
+        this.isContactSaving = false;
         // Refresh the data to show updated meetings
         this.loadData();
         
@@ -507,6 +505,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error creating meeting records:', err);
+        this.isContactSaving = false;
         this.messageService.add({
           severity: 'error',
           summary: 'Error',

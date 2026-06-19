@@ -67,6 +67,10 @@ export class AttendanceService {
     return this.http.post<StudentTracking>(environment.trackingUrl + '/track', request)
   }
 
+  trackStudents(request: StudentTracking[]) {
+    return this.http.post<{ students: StudentTracking[] }>(environment.trackingUrl + '/tracks', { students: request })
+  }
+
   getTracking() {
     return this.http.get<StudentTracking[]>(environment.trackingUrl + '/get')
   }
