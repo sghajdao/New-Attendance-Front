@@ -83,7 +83,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     { label: '≥ 50%', value: '50' },
     { label: '≥ 60%', value: '60' },
     { label: '≥ 75%', value: '75' },
-    { label: '≥ 90%', value: '90' }
+    { label: '> 100%', value: '100' }
   ];
 
   classificationFilter: string[] = [];
@@ -287,8 +287,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     }
     // Percentage filter
     if (this.percentageFilter) {
-      const minValue = parseInt(this.percentageFilter, 10);
-      result = result.filter(student => student.value >= minValue);
+      const minValue = parseInt(this.percentageFilter);
+      result = result.filter(student => minValue === 100? student.value > 100 : student.value >= minValue);
     }
 
     if (this.classificationFilter.length > 0) {
