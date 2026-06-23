@@ -595,8 +595,6 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       else
         responed++
     }
-    if (count === 0 && student.meetings.length !== 0)
-      return -1
     if (responed !== 0)
       return -2
     return count;
