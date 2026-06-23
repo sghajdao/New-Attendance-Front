@@ -81,7 +81,6 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   percentageFilterOptions = [
     { label: 'All', value: null },
     { label: '≥ 50%', value: '50' },
-    { label: '≥ 60%', value: '60' },
     { label: '≥ 75%', value: '75' },
     { label: '> 100%', value: '100' }
   ];
@@ -288,7 +287,12 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     // Percentage filter
     if (this.percentageFilter) {
       const minValue = parseInt(this.percentageFilter);
-      result = result.filter(student => minValue === 100? student.value > 100 : student.value >= minValue);
+      let maxValue = 0
+      if (minValue === 50)
+        maxValue = 75
+      if (minValue === 75)
+        maxValue = 100
+      result = result.filter(student => minValue === 100? student.value > 100 : (student.value >= minValue && student.value < maxValue));
     }
 
     if (this.classificationFilter.length > 0) {
@@ -298,7 +302,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     if (this.sisIdFilterText) {
       const searchTerm = this.sisIdFilterText.toLowerCase();
       result = result.filter(student =>
-        student.id.toLowerCase().includes(searchTerm) || (student.firstName + ' ' + student.lastName).includes(searchTerm)
+        student.id.toLowerCase().includes(searchTerm) || (student.firstName.includes(searchTerm) || student.lastName.includes(searchTerm))
       );
     }
 
