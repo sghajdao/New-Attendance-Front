@@ -588,13 +588,16 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
 
   hasPendingMeeting(student: Student): number {
     let count = 0
+    let responed = 0
     for (let item of student.meetings) {
       if (!item.comment || !item.comment.trim().length)
         count++;
+      else
+        responed++
     }
     if (count === 0 && student.meetings.length !== 0)
       return -1
-    if (student.meetings.length !== 0 && student.meetings.length !== count)
+    if (responed !== 0)
       return -2
     return count;
   }
