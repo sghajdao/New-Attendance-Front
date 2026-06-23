@@ -586,8 +586,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       return Math.round(sum / this.students.length);
   }
 
-  getCriticalCount(): number {
-      return this.students.filter(s => s.value >= 75).length;
+  getCriticalCount(): [number, number] {
+      return [this.students.filter(s => s.value >= 75).length, this.students.filter(s => s.value === 100).length];
   }
 
   hasPendingMeeting(student: Student): number {
