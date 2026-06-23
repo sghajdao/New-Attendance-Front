@@ -129,7 +129,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   currentPage: number = 1;
   pageSize: number = 6;
   totalPages: number = 0;
-  pageSizeOptions: number[] = [6, 12, 18];
+  pageSizeOptions: number[] = [5, 10, 20, 50];
 
   get paginatedStudents(): typeof this.displayedStudents {
     const start = (this.currentPage - 1) * this.pageSize;
