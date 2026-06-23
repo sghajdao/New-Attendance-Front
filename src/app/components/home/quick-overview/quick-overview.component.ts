@@ -19,13 +19,11 @@ export class QuickOverviewComponent implements OnInit, OnDestroy {
   attendanceRate: number = 0
   lateArrivals: number = 0
 
-  sub?: Subscription
-
   ngOnInit(): void {
     const lastUpdate = localStorage.getItem('lastUpdate')
     const initData = localStorage.getItem('init')
     if (!(lastUpdate && new Date().getDate() <= new Date(JSON.parse(lastUpdate)).getDate() && new Date().getMonth() <= new Date(JSON.parse(lastUpdate)).getMonth()) || !initData) {
-      this.sub = this.attendanceService.getInitData().subscribe({
+      this.attendanceService.getInitData().subscribe({
         next: data => {
           if (data) {
             localStorage.removeItem('init')
@@ -79,6 +77,5 @@ export class QuickOverviewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.sub?.unsubscribe()
   }
 }
