@@ -19,6 +19,7 @@
     margin-top: 20px;
 }
 
+/* ── base button ── */
 .driver-button {
     display: flex;
     align-items: center;
@@ -32,9 +33,92 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    transition: 0.3s;
+    transition: background-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    border: 2px solid transparent;
+    font-weight: 500;
 }
 
 .driver-button:hover {
-    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Details (Blue) ── */
+.btn-details {
+    background-color: #e8f0fe;
+    color: #5f6368;
+    border-color: #d2e3fc;
+}
+.btn-details.active {
+    background-color: #1a73e8;
+    color: white;
+    border-color: #1a73e8;
+    box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+}
+.btn-details:hover:not(.active) {
+    background-color: #d2e3fc;
+}
+.btn-details.active:hover {
+    background-color: #1558b0;
+    border-color: #1558b0;
+}
+
+/* ── Absences (Orange) ── */
+.btn-absences {
+    background-color: #fef3e0;
+    color: #5f6368;
+    border-color: #fde6c4;
+}
+.btn-absences.active {
+    background-color: #e37400;
+    color: white;
+    border-color: #e37400;
+    box-shadow: 0 2px 8px rgba(227, 116, 0, 0.3);
+}
+.btn-absences:hover:not(.active) {
+    background-color: #fde6c4;
+}
+.btn-absences.active:hover {
+    background-color: #c46200;
+    border-color: #c46200;
+}
+
+/* ── Meetings (Green) ── */
+.btn-meetings {
+    background-color: #e6f4ea;
+    color: #5f6368;
+    border-color: #cce8d6;
+}
+.btn-meetings.active {
+    background-color: #188038;
+    color: white;
+    border-color: #188038;
+    box-shadow: 0 2px 8px rgba(24, 128, 56, 0.3);
+}
+.btn-meetings:hover:not(.active) {
+    background-color: #cce8d6;
+}
+.btn-meetings.active:hover {
+    background-color: #116d2e;
+    border-color: #116d2e;
+}
+
+/* ── Stats (Purple) ── */
+.btn-stats {
+    background-color: #ede7f6;
+    color: #5f6368;
+    border-color: #d5c6e8;
+}
+.btn-stats.active {
+    background-color: #7c3aed;
+    color: white;
+    border-color: #7c3aed;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+}
+.btn-stats:hover:not(.active) {
+    background-color: #d5c6e8;
+}
+.btn-stats.active:hover {
+    background-color: #6d28d9;
+    border-color: #6d28d9;
 }

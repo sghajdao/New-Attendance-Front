@@ -1,30 +1,45 @@
 <div class="page">
     <div class="content">
         <app-filters (search)="getSearchDto($event)"></app-filters>
+
         <div class="driver-buttons">
-            <button class="driver-button" (click)="changeDriver(0)" [style]="drivers[0] ? 'background-color: white; color: black;' : 'background-color: #F0F8FF; color: grey;'">
-                <i class="pi pi-file" style="font-size: 1rem"></i>
-                Details
-            </button>
-            <button class="driver-button" (click)="changeDriver(1)" [style]="drivers[1] ? 'background-color: white; color: black;' : 'background-color: #F0F8FF; color: grey;'">
-                <i class="pi pi-exclamation-triangle" style="font-size: 1rem"></i>
-                Absences
-            </button>
-            <button class="driver-button" (click)="changeDriver(2)" [style]="drivers[2] ? 'background-color: white; color: black;' : 'background-color: #F0F8FF; color: grey;'">
-                <i class="pi pi-calendar" style="font-size: 1rem"></i>
-                Meetings
-            </button>
-            <button class="driver-button" (click)="changeDriver(3)" [style]="drivers[3] ? 'background-color: white; color: black;' : 'background-color: #F0F8FF; color: grey;'">
-                <i class="pi pi-chart-bar" style="font-size: 1rem"></i>
-                Stats
-            </button>
-        </div>
-        <app-deatails-table *ngIf="drivers[0]" [searchDto]="searchDto"></app-deatails-table>
-        <app-absence-threshold *ngIf="drivers[1]" [searchDto]="searchDto"></app-absence-threshold>
-        <app-meeting-history *ngIf="drivers[2]" [searchDto]="searchDto"></app-meeting-history>
-        <app-stats *ngIf="drivers[3]" [searchDto]="searchDto"></app-stats>
-    </div>
-    <app-navbar></app-navbar>
+            <!-- Button 0: Details – Blue -->
+            <button class="driver-button btn-details" 
+        [class.active]="drivers[0]" 
+        (click)="changeDriver(0)">
+  <i class="pi pi-file"></i> Details
+</button>
+
+        <!-- Button 1: Absences – Orange -->
+        <button class="driver-button btn-details" 
+        [class.active]="drivers[1]" 
+        (click)="changeDriver(1)">
+  <i class="pi pi-file"></i> Absences
+</button>
+
+    <!-- Button 2: Meetings – Green -->
+    <button class="driver-button btn-details" 
+        [class.active]="drivers[2]" 
+        (click)="changeDriver(2)">
+  <i class="pi pi-file"></i> Meetings
+</button>
+
+<!-- Button 3: Stats – Purple -->
+<button class="driver-button btn-details" 
+        [class.active]="drivers[3]" 
+        (click)="changeDriver(3)">
+  <i class="pi pi-file"></i> Stats
+</button>
+</div>
+
+<!-- Dynamic content panels -->
+<app-deatails-table *ngIf="drivers[0]" [searchDto]="searchDto"></app-deatails-table>
+<app-absence-threshold *ngIf="drivers[1]" [searchDto]="searchDto"></app-absence-threshold>
+<app-meeting-history *ngIf="drivers[2]" [searchDto]="searchDto"></app-meeting-history>
+<app-stats *ngIf="drivers[3]" [searchDto]="searchDto"></app-stats>
+</div>
+
+<app-navbar></app-navbar>
 </div>
 
 <p-toast />
