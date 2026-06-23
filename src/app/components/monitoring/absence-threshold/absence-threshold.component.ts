@@ -604,6 +604,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
 
   showHistory(student: Student): void {
     this.selectedStudentForHistory = student;
+    this.selectedStudentForHistory.meetings.sort((a, b) => new Date(b.createdAt!).getDate() - new Date(a.createdAt!).getDate())
     this.displayHistoryDialog = true;
   }
   
