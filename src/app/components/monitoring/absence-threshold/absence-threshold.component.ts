@@ -298,7 +298,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     if (this.sisIdFilterText) {
       const searchTerm = this.sisIdFilterText.toLowerCase();
       result = result.filter(student =>
-        student.id.toLowerCase().includes(searchTerm)
+        student.id.toLowerCase().includes(searchTerm) || (student.firstName + ' ' + student.lastName).includes(searchTerm)
       );
     }
 
