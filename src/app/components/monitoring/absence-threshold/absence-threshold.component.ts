@@ -73,7 +73,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     { label: '🟢 No contact yet', value: 'green' },
     { label: '🟡 Emailed (1st time)', value: 'yellow' },
     { label: '🔴 Emailed (2nd time)', value: 'red' },
-    { label: '⚫ Emailed (3rd time)', value: 'black' }
+    { label: '⚫ Emailed (3rd time)', value: 'black' },
+    { label: '🔵 Responded', value: 'blue' }
   ];
 
   percentageFilter: string | null = null;
@@ -277,9 +278,10 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       result = result.filter(student => {
         const count = this.hasPendingMeeting(student);
         if (this.dotColorFilter === 'green') return count === 0;
-        if (this.dotColorFilter === 'yellow') return count === 1;
-        if (this.dotColorFilter === 'red') return count === 2;
-        if (this.dotColorFilter === 'black') return count === 3;
+        if (this.dotColorFilter === 'yellow') return count === 1 && student.meetings.length === 1;
+        if (this.dotColorFilter === 'red') return count === 2 && student.meetings.length === 2;
+        if (this.dotColorFilter === 'black') return count === 3 && student.meetings.length === 3;
+        if (this.dotColorFilter === 'blue') return count === -2;
         return true;
       });
     }
@@ -592,6 +594,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     }
     if (count === 0 && student.meetings.length !== 0)
       return -1
+    if (student.meetings.length !== 0 && student.meetings.length !== count)
+      return -2
     return count;
   }
 

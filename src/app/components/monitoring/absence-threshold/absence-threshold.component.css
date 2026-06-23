@@ -254,6 +254,7 @@
 .green-live-dot,
 .yellow-live-dot,
 .red-live-dot,
+.blue-live-dot,
 .black-live-dot {
   width: 10px;
   height: 10px;
@@ -626,6 +627,15 @@
     border-radius: 50%;
     background: #000;
     box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.355);
+    animation: pulseGlow 2s infinite;
+}
+
+.blue-live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3b82f6; /* Blue */
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.35);
     animation: pulseGlow 2s infinite;
 }
 

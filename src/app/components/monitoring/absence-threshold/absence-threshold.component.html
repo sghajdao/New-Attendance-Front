@@ -233,6 +233,7 @@
                     <span *ngIf="hasPendingMeeting(student) === 1" class="yellow-live-dot"></span>
                     <span *ngIf="hasPendingMeeting(student) === 2" class="red-live-dot"></span>
                     <span *ngIf="hasPendingMeeting(student) > 2" class="black-live-dot"></span>
+                    <span *ngIf="hasPendingMeeting(student) === -2" class="blue-live-dot"></span>
                 </div>
                 <div class="progress-bar-container">
                     <div 
