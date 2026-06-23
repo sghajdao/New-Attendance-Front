@@ -11,13 +11,9 @@
         
         <!-- View Toggle Buttons -->
         <div class="view-toggle" *ngIf="students.length">
-          <!-- Subtitle -->
           <p class="subtitle">
-            Students who have reached at least 50% of the absence limit
-            <span class="student-count" *ngIf="displayedStudents.length">({{displayedStudents.length}} Records, {{numberOfStudents}} Students)</span>
-            <span *ngIf="dotColorFilter" class="filter-badge"> · Filtered by {{dotColorFilter}} dot</span>
             <span class="view-badge" *ngIf="viewMode === 'list'"> · List View</span>
-            <span class="view-badge" *ngIf="viewMode === 'grid'"> · Grid View</span>
+        <span class="view-badge" *ngIf="viewMode === 'grid'"> · Grid View</span>
           </p>
           <p-button
             [ngClass]="{'active-view': viewMode === 'grid'}"
@@ -38,7 +34,12 @@
         </div>
       </div>
     
-      
+      <!-- Subtitle -->
+      <p class="subtitle">
+        Students who have reached at least 50% of the absence limit
+        <span class="student-count" *ngIf="displayedStudents.length">({{displayedStudents.length}} Records, {{numberOfStudents}} Students)</span>
+        <span *ngIf="dotColorFilter" class="filter-badge"> · Filtered by {{dotColorFilter}} dot</span>
+      </p>
     
       <!-- Filters and Actions Container -->
       <div class="filters-actions-container" *ngIf="students.length">
