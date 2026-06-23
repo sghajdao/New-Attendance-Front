@@ -163,7 +163,7 @@ export class TeacherListComponent implements OnChanges, OnInit {
     const csvRows: string[] = [];
   
     // Extract headers
-    const headers = Object.keys(this.students[0]);
+    const headers = Object.keys(this.students.map(({marked_at, marked_time, ...rest}) => rest)[0]);
     csvRows.push(headers.join(','));
   
     // Add rows
