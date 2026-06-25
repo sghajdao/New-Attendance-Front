@@ -759,7 +759,7 @@ export class StatsComponent implements OnInit, OnDestroy {
       counts.late,
       counts.absent,
       counts.present + counts.late + counts.absent
-    ]).sort((a, b) => (b[4] as number) - (a[4] as number)); // sort by total
+    ]).sort((a, b) => (b[3] as number) - (a[3] as number)); // sort by total
 
     this.downloadCSV([['Course', 'Present', 'Late', 'Absent', 'Total'], ...rows], 'all_course_attendance');
   }
@@ -792,7 +792,7 @@ export class StatsComponent implements OnInit, OnDestroy {
       data.late,
       data.absent,
       data.present + data.late + data.absent
-    ]).sort((a, b) => (b[4] as number) - (a[4] as number));
+    ]).sort((a, b) => (b[5] as number) - (a[5] as number));
 
     this.downloadCSV([['Student ID', 'First Name', 'Last Name', 'Present', 'Late', 'Absent', 'Total'], ...rows], 'all_student_attendance');
   }

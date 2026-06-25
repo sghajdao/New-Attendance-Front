@@ -39,7 +39,6 @@ export interface StudentCourseAggregate {
   hold: string;
   trmGpa: number;
   wfReason: string;
-  meetings: StudentTracking[];
 }
 
 @Component({
@@ -272,7 +271,6 @@ export class DetailsTableComponent implements OnInit, OnDestroy {
           hold: record.hold? record.hold.trim() : 'No Hold',
           trmGpa: record.trmGpa,
           wfReason: record.wfReason,
-          meetings: record.meetings || []
         });
       }
 
@@ -413,10 +411,6 @@ export class DetailsTableComponent implements OnInit, OnDestroy {
     return `${year}-${month}-${day}`;
   }
 
-  getDoneMeetings(student: StudentCourseAggregate) {
-    return student.meetings.filter(m => m.comment && m.comment.trim() !== '').length;
-  }
-
   /**
    * Exports the currently displayed table data (filtered students) to a CSV file.
    */
@@ -432,7 +426,7 @@ export class DetailsTableComponent implements OnInit, OnDestroy {
       'WF Reason', 'Term GPA', 'Midterm Grade', 'Drop Date', 'Withdraw Date', 'Schedule', 'Level',
       'School', 'Major', 'Term Code', 'Year Code',
       'Professor ID', 'Professor Name', 'Total Presences', 'Total Absences',
-      'Total Latenesses', 'Absence Limit', 'Meeting Requests', 'Meetings'
+      'Total Latenesses', 'Absence Limit'
     ];
 
     // Build rows from the current students array (already filtered)
@@ -484,9 +478,7 @@ export class DetailsTableComponent implements OnInit, OnDestroy {
         escape(student.totalPresences),
         escape(student.totalAbsences),
         escape(student.totalLatenesses),
-        escape(student.absentLimit),
-        escape(student.meetings.length),
-        escape(this.getDoneMeetings(student))
+        escape(student.absentLimit)
       ];
     });
 

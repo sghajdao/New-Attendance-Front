@@ -102,8 +102,6 @@
         <th style="min-width: 100px;">Major</th>
         <th style="min-width: 100px;">School</th>
         <th style="min-width: 100px;">Visa Type</th>
-        <th style="min-width: 120px;">Meeting Requests</th>
-        <th style="min-width: 90px;">Done Meetings</th>
         <th style="min-width: 100px;">Hold</th>
         <th pSortableColumn="entanceYr" style="min-width: 100px;">
           Entrance Year <p-sortIcon field="entanceYr"></p-sortIcon>
@@ -190,8 +188,6 @@
             [rounded]="true"
           />
         </td>
-        <td><strong>{{ student.meetings.length }}</strong></td>
-        <td><strong>{{ getDoneMeetings(student) }}</strong></td>
         <td> 
           <strong>{{ student.hold }}</strong>
         </td>
