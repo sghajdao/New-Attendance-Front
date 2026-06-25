@@ -31,6 +31,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { FiltersComponent } from './filters/filters.component';
 import { NavbarComponent } from './navbar/navbar.component';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 
 @NgModule({
@@ -70,6 +71,7 @@ import { NavbarComponent } from './navbar/navbar.component';
     ChartModule,
     EditorModule,
     ConfirmDialogModule,
-  ]
+  ],
+  providers: [MessageService, ConfirmationService]
 })
 export class DsaModule { }
