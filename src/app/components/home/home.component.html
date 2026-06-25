@@ -7,7 +7,7 @@
         <p class="subtitle">Track and analyze student attendance with powerful filtering capabilities. Filter by students, courses, and seniority levels to get the insights you need.</p>
       </div>
     </div>
-    <div style="display: flex;justify-content: center;margin-top: 20px;">
+    <div style="display: flex;justify-content: center;margin-top: 20px;gap: 15px;">
       <button *ngIf="!accessMonitoring && !accessDsa" style="width: 250px;height: 50px;" routerLink="/form" class="filter-button"><i class="pi pi-filter" style="font-size: 15px"></i>&emsp;Start Filtering Data</button>
       <button *ngIf="accessMonitoring" style="width: 250px;height: 50px;" routerLink="/tracking" class="filter-button"><i class="pi pi-filter" style="font-size: 15px"></i>&emsp;Track Student Status</button>
       <button *ngIf="accessDsa" style="width: 250px;height: 50px;" routerLink="/dsa" class="filter-button"><i class="pi pi-filter" style="font-size: 15px"></i>&emsp;DSA Control Panel</button>
