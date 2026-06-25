@@ -1,0 +1,268 @@
+<!-- deatails-table.component.html -->
+<p-card styleClass="student-card">
+  <div class="card-header">
+    <div class="header-left">
+      <div class="title-section">
+        <i class="pi pi-file mr-2" style="font-size: 1.2rem"></i>
+        <span class="title">Student Details Table</span>
+      </div>
+      <p class="subtitle">Attendance summary per student per course (click any row for detailed records)</p>
+    </div>
+    <div class="header-actions">
+      <div class="header-actions">
+        <div class="student-count-badge">
+          <i class="pi pi-users"></i>
+          <span>{{ numberOfStudents }} students</span>
+        </div>
+        <button pButton type="button" label="Export CSV" icon="pi pi-download" class="p-button-outlined export-btn" (click)="exportToCSV()"></button>
+
+      </div>
+      <div class="student-count-badge">
+        <i class="pi pi-users"></i>
+        <span>{{ numberOfStudents }} students</span>
+      </div>
+      <button pButton type="button" label="Export CSV" icon="pi pi-download" class="p-button-outlined export-btn" (click)="exportToCSV()"></button>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 15px; display: flex; justify-content: flex-end;">
+    <span class="p-input-icon-left">
+      <i class="pi pi-search"></i>
+      <input type="text" pInputText placeholder="Filter by Student ID" 
+             (input)="onIdSearch($event)" class="id-search-input">
+    </span>
+  </div>
+
+  <p-table
+    #dt
+    [value]="filteredStudents"
+    stripedRows
+    [tableStyle]="{'min-width': '100%'}"
+    [paginator]="true"
+    [rows]="5"
+    [rowsPerPageOptions]="[5, 10, 20, 30]"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    styleClass="p-datatable-sm custom-datatable"
+    [loading]="isLoading"
+  >
+    <ng-template pTemplate="loadingbody">
+      <tr>
+        <td colspan="23" class="text-center">
+          <div class="flex flex-column align-items-center justify-content-center p-4">
+            <i class="pi pi-spinner pi-spin" style="font-size: 2.5rem; color: #3b82f6;"></i>
+            <p class="mt-2 text-gray-500">Loading student data...</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="idNum" style="min-width: 90px;">
+          Student ID <p-sortIcon field="idNum"></p-sortIcon>
+        </th>
+        <th pSortableColumn="firstName" style="min-width: 200px;">
+          Full Name <p-sortIcon field="firstName"></p-sortIcon>
+        </th>
+        <th pSortableColumn="seniority" style="min-width: 90px;">
+          Seniority <p-sortIcon field="seniority"></p-sortIcon>
+        </th>
+        <th style="min-width: 90px;">Division</th>
+        <th pSortableColumn="crsCde" style="min-width: 140px;">
+          Course <p-sortIcon field="crsCde"></p-sortIcon>
+        </th>
+        <!-- Aggregated attendance columns -->
+        <th style="min-width: 100px;">Total Presences</th>
+        <th style="min-width: 100px;">Total Absences</th>
+        <th style="min-width: 100px;">Total Latenesses</th>
+        <th style="min-width: 100px;">Absence Limit</th>
+        <th style="min-width: 90px;">Status</th>
+
+        <th style="min-width: 100px;">Grade Changed Date</th>
+        <th style="min-width: 100px;">Schedule</th>
+        <th pSortableColumn="crsDiv" style="min-width: 70px;">
+          Level <p-sortIcon field="crsDiv"></p-sortIcon>
+        </th>
+        <th pSortableColumn="teacherId" style="min-width: 100px;">
+          Professor ID <p-sortIcon field="teacherId"></p-sortIcon>
+        </th>
+        <th pSortableColumn="teacherName" style="min-width: 200px;">
+          Professor Name <p-sortIcon field="teacherName"></p-sortIcon>
+        </th>
+        <th pSortableColumn="midtermGrade" style="min-width: 90px;">
+          Midterm Grade <p-sortIcon field="midtermGrade"></p-sortIcon>
+        </th>
+        <th pSortableColumn="grade" style="min-width: 70px;">
+          Final Grade <p-sortIcon field="grade"></p-sortIcon>
+        </th>
+        <th pSortableColumn="trmGpa" style="min-width: 90px;">
+          Term GPA <p-sortIcon field="trmGpa"></p-sortIcon>
+        </th>
+        <th style="min-width: 100px;">Major</th>
+        <th style="min-width: 100px;">School</th>
+        <th style="min-width: 100px;">Visa Type</th>
+        <th style="min-width: 120px;">Meeting Requests</th>
+        <th style="min-width: 90px;">Done Meetings</th>
+        <th style="min-width: 100px;">Hold</th>
+        <th pSortableColumn="entanceYr" style="min-width: 100px;">
+          Entrance Year <p-sortIcon field="entanceYr"></p-sortIcon>
+        </th>
+        <th style="min-width: 70px;">
+          Entrance Term
+        </th>
+        <th style="min-width: 100px;">WF Reason</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-student>
+      <tr
+        [ngClass]="{'expelled-row': student.status === 'Expelled'}"
+        (click)="onRowClick(student)"
+        style="cursor: pointer;"
+      >
+        <td>
+          <span class="student-id">{{ student.idNum }}</span>
+        </td>
+        <td>
+          <div class="student-name">
+            <!-- <i class="pi pi-user mr-2" style="font-size: 0.85rem; color: #4f8aff;"></i> -->
+             <img src="https://attendance.aui.ma/images/{{ student.idNum }}" alt="Profile Image" class="profile-image mr-2" />
+            {{ student.firstName }} {{ student.lastName }}
+          </div>
+        </td>
+        <td> 
+          <span class="seniority-badge">{{ student.seniority }}</span>
+        </td>
+        <td>
+          <p-tag
+            severity="contrast"
+            [style]="{'border-radius': '20px', 'background': '#eef2ff', 'color': '#3b5bdb'}"
+            [value]="student.studentDiv"
+            [rounded]="true"
+          />
+        </td>
+        <td>
+          <span class="course-code">{{ student.crsCde }}</span>
+        </td>
+        <td><strong>{{ student.totalPresences }}</strong></td>
+        <td><strong>{{ student.totalAbsences }}</strong></td>
+        <td><strong>{{ student.totalLatenesses }}</strong></td>
+        <td><p-badge severity="danger" [value]="student.absentLimit" /></td>
+        <td>
+          <p-tag [severity]="getStatusSeverity(student.status)" [value]="student.status" [rounded]="true" />
+        </td>
+        <td>{{ student.gradeChangeDate || '-' }}</td>
+        <td>{{ student.schedule || '-' }}</td>
+        <td>
+          <p-tag severity="info" [value]="student.crsDiv" [rounded]="true" styleClass="level-tag" />
+        </td>
+        <td>
+          <span class="student-id">{{ student.teacherId }}</span>
+        </td>
+        <td>
+          <div class="student-name">
+            <i class="pi pi-user mr-2" style="font-size: 0.85rem; color: #4f8aff;"></i>
+            {{ student.teacherName }}
+          </div>
+        </td>
+        <td>{{ student.midtermGrade || '-' }}</td>
+        <td>
+          <p-tag [severity]="getGradeSeverity(student.grade)" [value]="student.grade || '-'" [rounded]="true" />
+        </td>
+        <td>{{ student.trmGpa || '-' }}</td>
+        <td> 
+          <span class="seniority-badge">{{ student.major }}</span>
+        </td>
+        <td>
+          <p-tag
+            severity="contrast"
+            [style]="{'border-radius': '20px', 'background': '#eef2ff', 'color': '#3b5bdb'}"
+            [value]="student.schoolCde"
+            [rounded]="true"
+          />
+        </td>
+        <td>
+          <p-tag
+            severity="contrast"
+            [style]="{'border-radius': '20px', 'background': '#eef2ff', 'color': '#3b5bdb'}"
+            [value]="student.visaType"
+            [rounded]="true"
+          />
+        </td>
+        <td><strong>{{ student.meetings.length }}</strong></td>
+        <td><strong>{{ getDoneMeetings(student) }}</strong></td>
+        <td> 
+          <strong>{{ student.hold }}</strong>
+        </td>
+        <td>{{ student.entanceYr }}</td>
+        <td>{{ student.entanceTrm }}</td>
+        <td>
+          <strong>{{ student.wfReason }}</strong>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="25" class="empty-message">
+          <i class="pi pi-inbox mr-2"></i> No students found.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>
+
+<!-- Modal Dialog for detailed attendance records -->
+<p-dialog
+  header="{{ modalTitle }}"
+  [(visible)]="showModal"
+  [modal]="true"
+  [style]="{ width: '60vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <ng-template pTemplate="content">
+    <div *ngIf="modalRecords.length > 0; else noRecords">
+      <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+        <img src="https://attendance.aui.ma/images/{{ modalRecords[0].idNum }}" alt="Profile Image" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;" />
+      </div>
+      <div class="tags">
+        <p-tag icon="pi pi-check" severity="success" value="Presences: {{totalPresences}}" />
+        <p-tag icon="pi pi-clock" severity="warn" value="Latenesses: {{totalLatenesses}}" />
+        <p-tag icon="pi pi-times" severity="danger" value="Absences: {{totalAbsences}}" />
+      </div>
+      <p-table [value]="modalRecords" [tableStyle]="{ 'min-width': '100%' }" styleClass="p-datatable-sm">
+        <ng-template #header>
+          <tr>
+            <th>Attendance Status</th>
+            <th>Attendance Date</th>
+            <th>Attendance Time</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-record>
+          <tr>
+            <td>
+              <p-tag
+                [severity]="record.attendance === 'present' ? 'success' : (record.attendance === 'absent' ? 'danger' : 'warning')"
+                [value]="record.attendance | uppercase"
+                [rounded]="true"
+              />
+            </td>
+            <td>{{ record.attendanceDate | date:'yyyy-MM-dd' }}</td>
+            <td>{{ record.attendanceTime }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+    <ng-template #noRecords>
+      <div class="p-3 text-center text-gray-500">No attendance records found for this student and course.</div>
+    </ng-template>
+  </ng-template>
+  <ng-template pTemplate="footer" style="margin-top: 15px">
+    <button pButton type="button" label="Export CSV" icon="pi pi-download"
+          (click)="exportModalToCSV()" class="p-button-outlined"></button>
+    <button pButton type="button" label="Close" icon="pi pi-times"
+          (click)="closeModal()" class="p-button-text"></button>
+  </ng-template>
+</p-dialog>

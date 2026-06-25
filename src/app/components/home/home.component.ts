@@ -13,10 +13,13 @@ export class HomeComponent implements OnInit {
   ) {}
 
   accessMonitoring: boolean = false;
+  accessDsa: boolean = false
 
   ngOnInit(): void {
     const email = localStorage.getItem('email');
     if (email && (email === 'D.Chayabaynou@aui.ma' || email === 'S.Ghajdaoui@aui.ma' || email === 'A.Bettahi@aui.ma'))
       this.accessMonitoring = true;
+    if (email && (email === 'Y.Akhoubi@aui.ma' || email === 'S.Ghajdaoui@aui.ma' || email === 'A.Bettahi@aui.ma'))
+      this.accessDsa = true;
   }
 }

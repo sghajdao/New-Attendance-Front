@@ -1,0 +1,7 @@
+<div class="page">
+    <div class="content">
+        <app-filters style="margin-bottom: 20px;" (search)="getSearchDto($event)"></app-filters>
+
+        <app-details-table [searchDto]="searchDto"></app-details-table>
+    </div>
+</div>

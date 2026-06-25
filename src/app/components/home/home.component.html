@@ -8,8 +8,9 @@
       </div>
     </div>
     <div style="display: flex;justify-content: center;margin-top: 20px;">
-      <button *ngIf="!accessMonitoring" style="width: 250px;height: 50px;" routerLink="/form" class="filter-button"><i class="pi pi-filter" style="font-size: 15px"></i>&emsp;Start Filtering Data</button>
-      <button *ngIf="accessMonitoring" style="width: 250px;height: 50px;" routerLink="/tracking" class="filter-button"><i class="pi pi-filter" style="font-size: 15px"></i>&emsp;Track student status</button>
+      <button *ngIf="!accessMonitoring && !accessDsa" style="width: 250px;height: 50px;" routerLink="/form" class="filter-button"><i class="pi pi-filter" style="font-size: 15px"></i>&emsp;Start Filtering Data</button>
+      <button *ngIf="accessMonitoring" style="width: 250px;height: 50px;" routerLink="/tracking" class="filter-button"><i class="pi pi-filter" style="font-size: 15px"></i>&emsp;Track Student Status</button>
+      <button *ngIf="accessDsa" style="width: 250px;height: 50px;" routerLink="/dsa" class="filter-button"><i class="pi pi-filter" style="font-size: 15px"></i>&emsp;DSA Control Panel</button>
     </div>
     
     <app-filtering-details></app-filtering-details>

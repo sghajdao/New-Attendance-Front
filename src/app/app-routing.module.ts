@@ -22,6 +22,10 @@ const routes: Routes = [
     path: "auth",
     loadChildren:()=>import("./components/auth/auth.module").then(m=>m.AuthModule),
   },
+  {
+    path: "dsa",
+    loadChildren:()=>import("./components/dsa/dsa.module").then(m=>m.DsaModule),
+  },
 ];
 
 @NgModule({

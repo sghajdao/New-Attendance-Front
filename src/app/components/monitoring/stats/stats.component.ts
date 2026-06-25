@@ -138,7 +138,7 @@ export class StatsComponent implements OnInit, OnDestroy {
         this.infoBackup = [...filteredData];
         this.loadTrackingData();
         this.computeAttendanceCharts();
-        this.getAtRiskStudents();
+        // this.getAtRiskStudents();
         this.loading = false;
       },
 
@@ -276,118 +276,118 @@ export class StatsComponent implements OnInit, OnDestroy {
     this.statusChartOptions = this.getDoughnutOptions();
   }
 
-  getAtRiskStudents() {
-    if (isPlatformBrowser(this.platformId)) {
-      const sub = this.attendanceService.getRedFlagStudents().subscribe({
-        next: async res => {
-          const documentStyle = getComputedStyle(document.documentElement);
-          const textColor = documentStyle.getPropertyValue('--p-text-color');
-          const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
-          const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
+  // getAtRiskStudents() {
+  //   if (isPlatformBrowser(this.platformId)) {
+  //     const sub = this.attendanceService.getRedFlagStudents().subscribe({
+  //       next: async res => {
+  //         const documentStyle = getComputedStyle(document.documentElement);
+  //         const textColor = documentStyle.getPropertyValue('--p-text-color');
+  //         const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
+  //         const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
 
-          const generateAtRiskData = async (seniority: string): Promise<number[]> => {
-            const [faInfo, spInfo] = await Promise.all([
-              this.indexeddbService.getData('FA'),
-              this.indexeddbService.getData('SP')
-            ]);
+  //         const generateAtRiskData = async (seniority: string): Promise<number[]> => {
+  //           const [faInfo, spInfo] = await Promise.all([
+  //             this.indexeddbService.getData('FA'),
+  //             this.indexeddbService.getData('SP')
+  //           ]);
           
-            const computeRate = (info: any[], term: string) => {
-              const atRisk = info.filter(
-                s =>
-                  res.some(r => r.student_sis_id === s.idNum) &&
-                  (s.studentDiv === 'UG' ? s.trmGpa < 2 : s.trmGpa < 3) &&
-                  s.seniority === seniority
-              );
+  //           const computeRate = (info: any[], term: string) => {
+  //             const atRisk = info.filter(
+  //               s =>
+  //                 res.some(r => r.student_sis_id === s.idNum) &&
+  //                 (s.studentDiv === 'UG' ? s.trmGpa < 2 : s.trmGpa < 3) &&
+  //                 s.seniority === seniority
+  //             );
             
-              const total = info.filter(s => res.some(r => r.student_sis_id === s.idNum) && s.trmCde === term).length;
-              const count = atRisk.filter(s => s.trmCde === term).length;
+  //             const total = info.filter(s => res.some(r => r.student_sis_id === s.idNum) && s.trmCde === term).length;
+  //             const count = atRisk.filter(s => s.trmCde === term).length;
             
-              return total === 0 ? 0 : (count * 100) / total;
-            };
+  //             return total === 0 ? 0 : (count * 100) / total;
+  //           };
           
-            return [
-              +computeRate(faInfo, 'FA').toFixed(2),
-              +computeRate(spInfo, 'SP').toFixed(2)
-            ];
-          }
+  //           return [
+  //             +computeRate(faInfo, 'FA').toFixed(2),
+  //             +computeRate(spInfo, 'SP').toFixed(2)
+  //           ];
+  //         }
           
-          this.atRiskData = {
-              labels: ['Fall 2526', 'Spring 2526'],
-              datasets: [
-                  {
-                      type: 'bar',
-                      label: 'Freshmen',
-                      backgroundColor: documentStyle.getPropertyValue('--p-cyan-500'),
-                      data: await generateAtRiskData('FR')
-                  },
-                  {
-                      type: 'bar',
-                      label: 'Sophomores',
-                      backgroundColor: documentStyle.getPropertyValue('--p-gray-500'),
-                      data: await generateAtRiskData('SO')
-                  },
-                  {
-                      type: 'bar',
-                      label: 'Juniors',
-                      backgroundColor: documentStyle.getPropertyValue('--p-orange-500'),
-                      data: await generateAtRiskData('JR')
-                  },
-                  {
-                      type: 'bar',
-                      label: 'Seniors',
-                      backgroundColor: documentStyle.getPropertyValue('--p-purple-500'),
-                      data: await generateAtRiskData('SR')
-                  },
-                  {
-                      type: 'bar',
-                      label: 'Graduates',
-                      backgroundColor: documentStyle.getPropertyValue('--p-yellow-500'),
-                      data: await generateAtRiskData('GR')
-                  }
-              ]
-          };
-          this.atRiskOptions = {
-              maintainAspectRatio: false,
-              aspectRatio: 0.8,
-              plugins: {
-                  tooltip: {
-                      mode: 'index',
-                      intersect: false
-                  },
-                  legend: {
-                      labels: {
-                          color: textColor
-                      }
-                  }
-              },
-              scales: {
-                  x: {
-                      stacked: true,
-                      ticks: {
-                          color: documentStyle.getPropertyValue('--p-white-500')
-                      },
-                      grid: {
-                          color: surfaceBorder,
-                          drawBorder: false
-                      }
-                  },
-                  y: {
-                      stacked: true,
-                      ticks: {
-                          color: documentStyle.getPropertyValue('--p-white-500')
-                      },
-                      grid: {
-                          color: surfaceBorder,
-                          drawBorder: false
-                      }
-                  }
-              }
-            };
-          }
-        })
-        this.subscriptions.push(sub);
-      }
-  }
+  //         this.atRiskData = {
+  //             labels: ['Fall 2526', 'Spring 2526'],
+  //             datasets: [
+  //                 {
+  //                     type: 'bar',
+  //                     label: 'Freshmen',
+  //                     backgroundColor: documentStyle.getPropertyValue('--p-cyan-500'),
+  //                     data: await generateAtRiskData('FR')
+  //                 },
+  //                 {
+  //                     type: 'bar',
+  //                     label: 'Sophomores',
+  //                     backgroundColor: documentStyle.getPropertyValue('--p-gray-500'),
+  //                     data: await generateAtRiskData('SO')
+  //                 },
+  //                 {
+  //                     type: 'bar',
+  //                     label: 'Juniors',
+  //                     backgroundColor: documentStyle.getPropertyValue('--p-orange-500'),
+  //                     data: await generateAtRiskData('JR')
+  //                 },
+  //                 {
+  //                     type: 'bar',
+  //                     label: 'Seniors',
+  //                     backgroundColor: documentStyle.getPropertyValue('--p-purple-500'),
+  //                     data: await generateAtRiskData('SR')
+  //                 },
+  //                 {
+  //                     type: 'bar',
+  //                     label: 'Graduates',
+  //                     backgroundColor: documentStyle.getPropertyValue('--p-yellow-500'),
+  //                     data: await generateAtRiskData('GR')
+  //                 }
+  //             ]
+  //         };
+  //         this.atRiskOptions = {
+  //             maintainAspectRatio: false,
+  //             aspectRatio: 0.8,
+  //             plugins: {
+  //                 tooltip: {
+  //                     mode: 'index',
+  //                     intersect: false
+  //                 },
+  //                 legend: {
+  //                     labels: {
+  //                         color: textColor
+  //                     }
+  //                 }
+  //             },
+  //             scales: {
+  //                 x: {
+  //                     stacked: true,
+  //                     ticks: {
+  //                         color: documentStyle.getPropertyValue('--p-white-500')
+  //                     },
+  //                     grid: {
+  //                         color: surfaceBorder,
+  //                         drawBorder: false
+  //                     }
+  //                 },
+  //                 y: {
+  //                     stacked: true,
+  //                     ticks: {
+  //                         color: documentStyle.getPropertyValue('--p-white-500')
+  //                     },
+  //                     grid: {
+  //                         color: surfaceBorder,
+  //                         drawBorder: false
+  //                     }
+  //                 }
+  //             }
+  //           };
+  //         }
+  //       })
+  //       this.subscriptions.push(sub);
+  //     }
+  // }
 
   private getPieOptions() {
     return {
@@ -505,7 +505,7 @@ export class StatsComponent implements OnInit, OnDestroy {
       .map(([course, counts]) => ({
         course: course.length > 25 ? course.substring(0, 22) + '...' : course,
         ...counts,
-        total: counts.present + counts.late + counts.absent
+        total: counts.absent
       }))
       .sort((a, b) => b.total - a.total)
       .slice(0, 10)
@@ -562,7 +562,7 @@ export class StatsComponent implements OnInit, OnDestroy {
         present: data.present,
         late: data.late,
         absent: data.absent,
-        total: data.present + data.late + data.absent
+        total: data.absent
       }))
       .sort((a, b) => b.total - a.total)
       .slice(0, 10);
