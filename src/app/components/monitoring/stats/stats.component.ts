@@ -31,10 +31,6 @@ export class StatsComponent implements OnInit, OnDestroy {
 
   // Original stats
   totalEvents = 0;
-  uniqueStudentsCount = 0;
-  totalCourseEnrollments = 0;
-  mostCommonType = 'N/A';
-  avgEventsPerStudent = 0;
 
   // New stats for follow-up
   totalNotifiedStudents = 0;
@@ -203,9 +199,6 @@ export class StatsComponent implements OnInit, OnDestroy {
     }
 
     this.totalEvents = this.students.length;
-    this.uniqueStudentsCount = studentMap.size;
-    this.totalCourseEnrollments = totalCoursesTemp;
-    this.avgEventsPerStudent = this.totalEvents / this.uniqueStudentsCount;
 
     let maxCount = 0;
     let mostCommon = 'N/A';
@@ -215,7 +208,6 @@ export class StatsComponent implements OnInit, OnDestroy {
         mostCommon = type;
       }
     }
-    this.mostCommonType = mostCommon;
 
     // Pie chart - Type distribution
     this.pieChartData = {
@@ -238,8 +230,8 @@ export class StatsComponent implements OnInit, OnDestroy {
     };
 
     // New stats
-    this.totalNotifiedStudents = this.students.length;
-    this.pendingVisits = this.students.filter(s => !s.comment || s.comment.trim() === '').length;
+    this.totalNotifiedStudents = new Set(this.students.map(item => item.studentSisId)).size;
+    this.pendingVisits = new Set(this.students.filter(s => !s.comment || s.comment.trim() === '').map(item => item.studentSisId)).size;
     this.completedVisits = this.totalNotifiedStudents - this.pendingVisits;
 
     const courseStudentMap = new Map<string, Set<string>>();
@@ -453,10 +445,6 @@ export class StatsComponent implements OnInit, OnDestroy {
 
   private setEmptyOriginalStats(): void {
     this.totalEvents = 0;
-    this.uniqueStudentsCount = 0;
-    this.totalCourseEnrollments = 0;
-    this.mostCommonType = 'N/A';
-    this.avgEventsPerStudent = 0;
   }
 
   private setEmptyOriginalCharts(): void {
