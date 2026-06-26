@@ -20,6 +20,8 @@ export interface Student {
   course: string; 
   seniority: string; 
   id: string; 
+  absentLimit: number,
+  absences: number,
   meetings: StudentTracking[];
   _selected?: boolean; // For UI binding
 }
@@ -188,6 +190,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
             firstName: student.firstName,
             lastName: student.lastName,
             id: student.student_sis_id,
+            absentLimit: student.absentLimit,
+            absences: student.count,
             meetings: student.meetings || [],
             _selected: false
           })
