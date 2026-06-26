@@ -39,6 +39,7 @@ export interface StudentCourseAggregate {
   hold: string;
   trmGpa: number;
   wfReason: string;
+  tuitionCde: string;
   meetings: StudentTracking[];
 }
 
@@ -272,6 +273,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
           hold: record.hold? record.hold.trim() : 'No Hold',
           trmGpa: record.trmGpa,
           wfReason: record.wfReason,
+          tuitionCde: record.tuitionCde,
           meetings: record.meetings || []
         });
       }

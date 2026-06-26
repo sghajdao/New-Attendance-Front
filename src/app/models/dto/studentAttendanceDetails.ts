@@ -30,5 +30,6 @@ export interface StudentAttendanceDetails {
     trmGpa: number;
     wfReason: string;
     probation: string;
+    tuitionCde: string;
     meetings: StudentTracking[];
 }
