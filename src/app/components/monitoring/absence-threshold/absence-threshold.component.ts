@@ -309,6 +309,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         const matchesSearch = !searchTerm || 
           student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (student.firstName?.toLowerCase() + ' ' + student.lastName?.toLowerCase()).includes(searchTerm.toLowerCase()) ||
           student.id.toLowerCase().includes(searchTerm.toLowerCase());
         
         return matchesSearch;
