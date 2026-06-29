@@ -40,6 +40,7 @@ export interface StudentCourseAggregate {
   trmGpa: number;
   wfReason: string;
   tuitionCde: string;
+  mobilePhone: number,
   meetings: StudentTracking[];
 }
 
@@ -274,6 +275,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
           trmGpa: record.trmGpa,
           wfReason: record.wfReason,
           tuitionCde: record.tuitionCde,
+          mobilePhone: record.mobilePhone,
           meetings: record.meetings || []
         });
       }
@@ -434,7 +436,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
       'WF Reason', 'Term GPA', 'Midterm Grade', 'Drop Date', 'Withdraw Date', 'Schedule', 'Level',
       'School', 'Major', 'Term Code', 'Year Code',
       'Professor ID', 'Professor Name', 'Total Presences', 'Total Absences',
-      'Total Latenesses', 'Absence Limit', 'Meeting Requests', 'Meetings'
+      'Total Latenesses', 'Absence Limit', 'Mobile Phone', 'Meeting Requests', 'Meetings'
     ];
 
     // Build rows from the current students array (already filtered)
@@ -487,6 +489,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
         escape(student.totalAbsences),
         escape(student.totalLatenesses),
         escape(student.absentLimit),
+        escape(student.mobilePhone),
         escape(student.meetings.length),
         escape(this.getDoneMeetings(student))
       ];

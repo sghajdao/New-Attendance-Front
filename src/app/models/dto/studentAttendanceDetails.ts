@@ -31,5 +31,6 @@ export interface StudentAttendanceDetails {
     wfReason: string;
     probation: string;
     tuitionCde: string;
+    mobilePhone: number;
     meetings: StudentTracking[];
 }
