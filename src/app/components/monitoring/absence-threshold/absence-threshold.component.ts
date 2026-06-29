@@ -573,8 +573,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   }
 
   getThresholdSeverity(value: number): 'success' | 'warning' | 'danger' | 'info' {
-      if (value >= 75) return 'danger';
-      if (value >= 50) return 'warning';
+      if (value >= 100) return 'danger';
+      if (value >= 75) return 'warning';
       return 'info';
   }
 
@@ -585,8 +585,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   }
 
   getProgressClass(value: number): string {
-      if (value >= 75) return 'high';
-      if (value >= 50) return 'medium';
+      if (value >= 100) return 'high';
+      if (value >= 75) return 'medium';
       return 'low';
   }
 
