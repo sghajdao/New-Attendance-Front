@@ -572,10 +572,10 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       return seniorityMap[seniority] || seniority;
   }
 
-  getThresholdSeverity(value: number): 'success' | 'warning' | 'danger' | 'info' {
-      if (value >= 100) return 'danger';
-      if (value >= 75) return 'warning';
-      return 'info';
+  getThresholdSeverity(value: number): 'warn' | 'danger' | 'contrast' {
+      if (value >= 100) return 'contrast';
+      if (value >= 75) return 'danger';
+      return 'warn';
   }
 
   getRiskClass(value: number): string {
