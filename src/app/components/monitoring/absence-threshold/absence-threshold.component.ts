@@ -738,7 +738,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         student.absentLimit,
         `${percentage}%`,
         student.meetings?.length || 0,
-        this.formatMeetingDate(student.meetings && student.meetings.length > 0 ? student.meetings.filter(item => item.mailType === 'first email')[0].createdAt : null),
+        this.formatMeetingDate(student.meetings && student.meetings.length > 0 && student.meetings.filter(item => item.mailType === 'first email').length > 0 ? student.meetings.filter(item => item.mailType === 'first email')[0].createdAt : null),
         this.formatMeetingDate(student.meetings && student.meetings.length > 1 && student.meetings.filter(item => item.mailType === 'first reminder').length > 0 ? student.meetings.filter(item => item.mailType === 'first reminder')[0]?.createdAt : null),
         this.formatMeetingDate(student.meetings && student.meetings.length > 2 && student.meetings.filter(item => item.mailType === 'last reminder').length > 0 ? student.meetings.filter(item => item.mailType === 'last reminder')[0]?.createdAt : null),
         student.marked_by_sis_id
