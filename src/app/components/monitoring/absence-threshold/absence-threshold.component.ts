@@ -281,9 +281,9 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       result = result.filter(student => {
         const count = this.hasPendingMeeting(student);
         if (this.dotColorFilter === 'green') return count === 0;
-        if (this.dotColorFilter === 'yellow') return count === 1 && student.meetings.length === 1;
-        if (this.dotColorFilter === 'red') return count === 2 && student.meetings.length === 2;
-        if (this.dotColorFilter === 'black') return count === 3 && student.meetings.length === 3;
+        if (this.dotColorFilter === 'yellow') return count === 1;
+        if (this.dotColorFilter === 'red') return count === 2;
+        if (this.dotColorFilter === 'black') return count === 3;
         if (this.dotColorFilter === 'blue') return count === -2;
         return true;
       });
@@ -602,16 +602,33 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
 
   hasPendingMeeting(student: Student): number {
     let count = 0
-    let responed = 0
-    for (let item of student.meetings) {
-      if (!item.comment || !item.comment.trim().length)
-        count++;
-      else
-        responed++
-    }
+    let responed = student.meetings.filter(item => item.comment && item.comment.trim().length).length;
+
+    let firstEmail = student.meetings.filter(item => item.mailType === 'first email').length;
+    let secondEmail = student.meetings.filter(item => item.mailType === 'first reminder').length;
+    let thirdEmail = student.meetings.filter(item => item.mailType === 'last reminder').length;
+
+    if (thirdEmail > 0 && !responed)
+      return 3
+    if (secondEmail > 0 && !responed)
+      return 2
+    if (firstEmail > 0 && !responed)
+      return 1
+    if (student.meetings.length === 0)
+      return 0
     if (responed !== 0)
       return -2
-    return count;
+    else return 0
+
+    // for (let item of student.meetings) {
+    //   if (!item.comment || !item.comment.trim().length)
+    //     count++;
+    //   else
+    //     responed++
+    // }
+    // if (responed !== 0)
+    //   return -2
+    // return count;
   }
 
   showHistory(student: Student): void {
