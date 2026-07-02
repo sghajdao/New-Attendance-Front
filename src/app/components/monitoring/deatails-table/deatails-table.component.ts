@@ -171,7 +171,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
     }
     const searchTerm = this.searchIdNum.trim().toLowerCase();
     return this.students.filter(student =>
-      student.idNum.toLowerCase().includes(searchTerm)
+      student.idNum.toLowerCase().includes(searchTerm) || student.firstName.toLowerCase().includes(searchTerm) || student.lastName.toLowerCase().includes(searchTerm) || (student.firstName + ' ' + student.lastName).toLowerCase().includes(searchTerm)
     );
   }
 
