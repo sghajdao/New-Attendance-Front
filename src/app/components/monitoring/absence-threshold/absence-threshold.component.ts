@@ -718,7 +718,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
       'Student SIS ID', 'First Name', 'Last Name', 'Course SIS ID', 'Course Name',
       'Instructor', 'Status', 'Grade', 'Term Code', 'Seniority',
       'Absence Count', 'Absence Limit', 'Absence Percentage',
-      'Meetings Count', 'First Mail Date', 'Marked By SIS ID'
+      'Meetings Count', 'First Mail Date', 'First reminder Date', 'Last reminder Date', 'Marked By SIS ID'
     ];
   
     const rows = filteredRaw.sort((a, b) => b.count - a.count).map(student => {
@@ -739,6 +739,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         `${percentage}%`,
         student.meetings?.length || 0,
         this.formatMeetingDate(student.meetings && student.meetings.length > 0 ? student.meetings[0].createdAt : null),
+        this.formatMeetingDate(student.meetings && student.meetings.length > 1 ? student.meetings.filter(item => item.meetingType === 'first reminder')[0]?.createdAt : null),
+        this.formatMeetingDate(student.meetings && student.meetings.length > 2 ? student.meetings.filter(item => item.meetingType === 'last reminder')[0]?.createdAt : null),
         student.marked_by_sis_id
       ];
     });
