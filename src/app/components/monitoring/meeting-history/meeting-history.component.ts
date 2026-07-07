@@ -564,9 +564,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       'First Name',
       'Last Name',
       'Course SIS ID',
-      'First Mail Date',
-      'First Reminder Date',
-      'Last Reminder Date',
+      'Meeting Date',
       'Meeting Type',
       'Mailing Type',
       'Categories',
@@ -574,9 +572,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
     ];
 
     const rows = dataToExport.map(item => {
-      const firstMailDate = item.meetings.length > 0 ? new Date(item.meetings.find((m: StudentTracking) => m.mailType === 'first email')?.createdAt).toLocaleString() : '';
-      const firstReminderDate = item.meetings.length > 1 ? new Date(item.meetings.find((m: StudentTracking) => m.mailType === 'first reminder')?.createdAt).toLocaleString() : '';
-      const lastReminderDate = item.meetings.length > 2 ? new Date(item.meetings.find((m: StudentTracking) => m.mailType === 'last reminder')?.createdAt).toLocaleString() : '';
+      const meetingDate = item.createdAt ? new Date(item.createdAt).toLocaleString() : '';
       const courseId = this.viewMode === 'table' ? item.singleCourse : (item.coursSisId || []).join(', ');
       const categories = (item.categoryArray || item.categories || []).join(', ');
       
@@ -585,9 +581,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
         item.firstName || '',
         item.lastName || '',
         courseId,
-        firstMailDate,
-        firstReminderDate,
-        lastReminderDate,
+        meetingDate,
         item.meetingType || '',
         item.mailType || '',
         categories,
