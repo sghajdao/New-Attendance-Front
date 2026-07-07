@@ -728,11 +728,11 @@ export class StatsComponent implements OnInit, OnDestroy {
   exportCourseAttendance(): void {
     if (!this.info || !this.info.length) return;
 
-    const courseMap = new Map<string, { present: number; late: number; absent: number, presencePercentage: number, faculty: string }>();
+    const courseMap = new Map<string, { present: number; late: number; absent: number, presencePercentage: string, faculty: string }>();
     for (const record of this.info) {
       const course = record.crsCde || 'Unknown Course';
       if (!courseMap.has(course)) {
-        courseMap.set(course, { present: 0, late: 0, absent: 0, presencePercentage: 0, faculty: record.teacherName });
+        courseMap.set(course, { present: 0, late: 0, absent: 0, presencePercentage: '0', faculty: record.teacherName });
       }
       const stats = courseMap.get(course)!;
       const att = (record.attendance || '').toLowerCase();
@@ -747,7 +747,7 @@ export class StatsComponent implements OnInit, OnDestroy {
       counts.late,
       counts.absent,
       counts.present + counts.late + counts.absent,
-      counts.presencePercentage = ((counts.present + counts.late) / (counts.present + counts.late + counts.absent)) * 100,
+      counts.presencePercentage = (((counts.present + counts.late) / (counts.present + counts.late + counts.absent)) * 100).toFixed(2) + '%',
       counts.faculty
     ]).sort((a, b) => (b[3] as number) - (a[3] as number)); // sort by total
 
@@ -760,12 +760,12 @@ export class StatsComponent implements OnInit, OnDestroy {
   exportStudentAttendance(): void {
     if (!this.info || !this.info.length) return;
 
-    const studentMap = new Map<string, { id: string; firstname: string; lastname: string; present: number; late: number; absent: number, presencePercentage: number, classification: string }>();
+    const studentMap = new Map<string, { id: string; firstname: string; lastname: string; present: number; late: number; absent: number, presencePercentage: string, classification: string }>();
     for (const record of this.info) {
       const studentId = record.idNum;
       const fullName = `${record.firstName || ''} ${record.lastName || ''}`.trim() || studentId;
       if (!studentMap.has(studentId)) {
-        studentMap.set(studentId, { id: studentId, firstname: record.firstName || '', lastname: record.lastName || '', present: 0, late: 0, absent: 0, presencePercentage: 0, classification: record.seniority || ''});
+        studentMap.set(studentId, { id: studentId, firstname: record.firstName || '', lastname: record.lastName || '', present: 0, late: 0, absent: 0, presencePercentage: '0', classification: record.seniority || ''});
       }
       const stats = studentMap.get(studentId)!;
       const att = (record.attendance || '').toLowerCase();
@@ -774,17 +774,22 @@ export class StatsComponent implements OnInit, OnDestroy {
       else stats.absent++;
     }
 
-    const rows = Array.from(studentMap.entries()).map(([id, data]) => [
-      data.id,
-      data.firstname,
-      data.lastname,
-      data.present,
-      data.late,
-      data.absent,
-      data.present + data.late + data.absent,
-      data.presencePercentage = ((data.present + data.late) / (data.present + data.late + data.absent)) * 100,
-      data.classification
-    ]).sort((a, b) => (b[5] as number) - (a[5] as number));
+    const rows = Array.from(studentMap.entries()).map(([id, data]) => {
+      const total = data.present + data.late + data.absent;
+      const presencePercentage = total ? ((data.present + data.late) / total * 100).toFixed(2) : '0.00';
+      data.presencePercentage = presencePercentage;
+      return [
+        data.id,
+        data.firstname,
+        data.lastname,
+        data.present,
+        data.late,
+        data.absent,
+        total,
+        presencePercentage + '%',
+        data.classification
+      ];
+    }).sort((a, b) => (b[6] as number) - (a[6] as number));
 
     this.downloadCSV([['Student ID', 'First Name', 'Last Name', 'Present', 'Late', 'Absent', 'Total', 'Presence Percentage', 'Classification'], ...rows], 'all_student_attendance');
   }
