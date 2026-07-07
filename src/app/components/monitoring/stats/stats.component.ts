@@ -231,7 +231,7 @@ export class StatsComponent implements OnInit, OnDestroy {
 
     // New stats
     this.totalNotifiedStudents = new Set(this.students.map(item => item.studentSisId)).size;
-    this.pendingVisits = new Set(this.students.filter(s => !s.comment || s.comment.trim() === '').map(item => item.studentSisId)).size;
+    this.pendingVisits = new Set(this.students.filter(s => !s.comment || s.comment.trim().length === 0).map(item => item.studentSisId)).size;
     this.completedVisits = this.totalNotifiedStudents - this.pendingVisits;
 
     const courseStudentMap = new Map<string, Set<string>>();
@@ -728,11 +728,11 @@ export class StatsComponent implements OnInit, OnDestroy {
   exportCourseAttendance(): void {
     if (!this.info || !this.info.length) return;
 
-    const courseMap = new Map<string, { present: number; late: number; absent: number }>();
+    const courseMap = new Map<string, { present: number; late: number; absent: number, presencePercentage: number, faculty: string }>();
     for (const record of this.info) {
       const course = record.crsCde || 'Unknown Course';
       if (!courseMap.has(course)) {
-        courseMap.set(course, { present: 0, late: 0, absent: 0 });
+        courseMap.set(course, { present: 0, late: 0, absent: 0, presencePercentage: 0, faculty: record.teacherName });
       }
       const stats = courseMap.get(course)!;
       const att = (record.attendance || '').toLowerCase();
@@ -746,10 +746,12 @@ export class StatsComponent implements OnInit, OnDestroy {
       counts.present,
       counts.late,
       counts.absent,
-      counts.present + counts.late + counts.absent
+      counts.present + counts.late + counts.absent,
+      counts.presencePercentage = ((counts.present + counts.late) / (counts.present + counts.late + counts.absent)) * 100,
+      counts.faculty
     ]).sort((a, b) => (b[3] as number) - (a[3] as number)); // sort by total
 
-    this.downloadCSV([['Course', 'Present', 'Late', 'Absent', 'Total'], ...rows], 'all_course_attendance');
+    this.downloadCSV([['Course', 'Present', 'Late', 'Absent', 'Total', 'Presence Percentage', 'Faculty'], ...rows], 'all_course_attendance');
   }
 
   /**
@@ -758,12 +760,12 @@ export class StatsComponent implements OnInit, OnDestroy {
   exportStudentAttendance(): void {
     if (!this.info || !this.info.length) return;
 
-    const studentMap = new Map<string, { id: string; firstname: string; lastname: string; present: number; late: number; absent: number }>();
+    const studentMap = new Map<string, { id: string; firstname: string; lastname: string; present: number; late: number; absent: number, presencePercentage: number, classification: string }>();
     for (const record of this.info) {
       const studentId = record.idNum;
       const fullName = `${record.firstName || ''} ${record.lastName || ''}`.trim() || studentId;
       if (!studentMap.has(studentId)) {
-        studentMap.set(studentId, { id: studentId, firstname: record.firstName || '', lastname: record.lastName || '', present: 0, late: 0, absent: 0 });
+        studentMap.set(studentId, { id: studentId, firstname: record.firstName || '', lastname: record.lastName || '', present: 0, late: 0, absent: 0, presencePercentage: 0, classification: record.seniority || ''});
       }
       const stats = studentMap.get(studentId)!;
       const att = (record.attendance || '').toLowerCase();
@@ -779,10 +781,12 @@ export class StatsComponent implements OnInit, OnDestroy {
       data.present,
       data.late,
       data.absent,
-      data.present + data.late + data.absent
+      data.present + data.late + data.absent,
+      data.presencePercentage = ((data.present + data.late) / (data.present + data.late + data.absent)) * 100,
+      data.classification
     ]).sort((a, b) => (b[5] as number) - (a[5] as number));
 
-    this.downloadCSV([['Student ID', 'First Name', 'Last Name', 'Present', 'Late', 'Absent', 'Total'], ...rows], 'all_student_attendance');
+    this.downloadCSV([['Student ID', 'First Name', 'Last Name', 'Present', 'Late', 'Absent', 'Total', 'Presence Percentage', 'Classification'], ...rows], 'all_student_attendance');
   }
 
   /**

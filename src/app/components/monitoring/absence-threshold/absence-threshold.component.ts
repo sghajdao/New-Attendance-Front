@@ -608,14 +608,14 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
     let secondEmail = student.meetings.filter(item => item.mailType === 'first reminder').length;
     let thirdEmail = student.meetings.filter(item => item.mailType === 'last reminder').length;
 
+    if (!student.meetings || student.meetings.length === 0)
+      return 0
     if (thirdEmail > 0 && !responed)
       return 3
     if (secondEmail > 0 && !responed)
       return 2
     if (firstEmail > 0 && !responed)
       return 1
-    if (student.meetings.length === 0)
-      return 0
     if (responed !== 0)
       return -2
     else return 0

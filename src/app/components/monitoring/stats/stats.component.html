@@ -36,7 +36,7 @@
   <div class="charts-row" *ngIf="students.length > 0">
     <div class="chart-container">
       <div class="chart-header">
-        <h3>📌 Student Follow-up Status</h3>
+        <h3>📌 Served Student Follow-up Status</h3>
         <button class="csv-btn" (click)="exportFollowUpStatus()" title="Download CSV">📥 CSV</button>
       </div>
       <div class="chart-wrapper"><p-chart type="doughnut" [data]="statusChartData" [options]="statusChartOptions"></p-chart></div>
