@@ -784,7 +784,7 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
         if (this.dotColorFilter === 'yellow') return pendingCount === 1;
         if (this.dotColorFilter === 'red') return pendingCount === 2;
         if (this.dotColorFilter === 'black') return pendingCount >= 3;
-        if (this.dotColorFilter === 'black') return pendingCount === -2;
+        if (this.dotColorFilter === 'blue') return pendingCount === -2;
         return true;
       });
     }
