@@ -50,14 +50,18 @@
     </div>
   </div>
 
-  <!-- <div class="charts-row">
-    <div class="chart-container">
-      <p class="chart-title">🚨 At-Risk Students by Academic Level</p>
-      <p-chart type="bar" [data]="atRiskData" [options]="atRiskOptions" class="h-[30rem]" />
+  <!-- NEW Row 4: Categories chart -->
+  <div class="charts-row" *ngIf="students.length > 0">
+    <div class="chart-container" style="flex: 1 1 100%; min-width: 100%;">
+      <div class="chart-header">
+        <h3>📂 Categories Distribution</h3>
+        <button class="csv-btn" (click)="exportCategories()" title="Download CSV">📥 CSV</button>
+      </div>
+      <div class="chart-wrapper"><p-chart height="280px" type="bar" [data]="categoriesChartData" [options]="categoriesChartOptions"></p-chart></div>
     </div>
-  </div> -->
+  </div>
 
-  <!-- Row 4: Attendance charts -->
+  <!-- Row 5: Attendance charts -->
   <div class="charts-row" *ngIf="info && info.length > 0">
     <div class="chart-container">
       <div class="chart-header">

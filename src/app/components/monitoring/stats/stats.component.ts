@@ -49,6 +49,9 @@ export class StatsComponent implements OnInit, OnDestroy {
   topCoursesChartData: any;
   topCoursesChartOptions: any;
 
+  categoriesChartData: any;
+  categoriesChartOptions: any;
+
   courseAttendanceChartData: any;
   courseAttendanceChartOptions: any;
   studentAttendanceChartData: any;
@@ -261,7 +264,47 @@ export class StatsComponent implements OnInit, OnDestroy {
       datasets: [{ data: [this.pendingVisits, this.completedVisits], backgroundColor: ['#EF5350', '#66BB6A'], hoverBackgroundColor: ['#E53935', '#4CAF50'], borderWidth: 0 }]
     };
 
+    // ---------- NEW: Categories chart ----------
+    const categoryMap = new Map<string, number>();
+    for (const student of this.students) {
+      const categories = student.categories || [];
+      for (const cat of categories) {
+        if (cat && cat.trim()) {
+          const key = cat.trim();
+          categoryMap.set(key, (categoryMap.get(key) || 0) + 1);
+        }
+      }
+    }
+    // Sort categories by count descending and take top 10 if many
+    const sortedCategories = Array.from(categoryMap.entries())
+      .sort((a, b) => b[1] - a[1]);
+    // For display, we can show all or limit to top 10; let's show all but if too many, slice?
+    // We'll show top 15 to keep chart readable.
+    const topCategories = sortedCategories.slice(0, 15);
+    const otherCount = sortedCategories.slice(15).reduce((sum, [, count]) => sum + count, 0);
+    const labels = topCategories.map(([cat]) => cat);
+    const data = topCategories.map(([, count]) => count);
+    if (otherCount > 0) {
+      labels.push('Other');
+      data.push(otherCount);
+    }
+
+    const colors = ['#42A5F5', '#66BB6A', '#FFA726', '#FF7043', '#AB47BC', '#EC407A', '#26C6DA', '#7E57C2', '#FFCA28', '#5C6BC0',
+                    '#26A69A', '#D4E157', '#8D6E63', '#B39DDB', '#F06292', '#A1887F'];
+    this.categoriesChartData = {
+      labels: labels,
+      datasets: [{
+        label: 'Occurrences',
+        data: data,
+        backgroundColor: colors.slice(0, data.length),
+        borderRadius: 6,
+        barPercentage: 0.9,
+        categoryPercentage: 0.9
+      }]
+    };
+
     // Chart options with datalabels (numbers on every piece/bar)
+    this.categoriesChartOptions = this.getBarOptions('Categories', 'Occurrences', '#42A5F5'); // color is overridden by dataset
     this.pieChartOptions = this.getPieOptions();
     this.barChartOptions = this.getBarOptions('Students', 'Events', '#42A5F5');
     this.topCoursesChartOptions = this.getBarOptions('Courses', 'Notified Students', '#FFA726');
@@ -466,6 +509,8 @@ export class StatsComponent implements OnInit, OnDestroy {
     this.topCoursesChartData = { labels: ['No Data'], datasets: [{ label: 'Students', data: [0], backgroundColor: '#B0BEC5' }] };
     this.statusChartOptions = this.getDoughnutOptions();
     this.topCoursesChartOptions = this.getBarOptions('Courses', 'Notified Students', '#B0BEC5');
+    this.categoriesChartData = { labels: ['No Data'], datasets: [{ label: 'Categories', data: [0], backgroundColor: '#B0BEC5' }] };
+    this.categoriesChartOptions = this.getBarOptions('Categories', 'Occurrences', '#B0BEC5');
   }
 
   private computeAttendanceCharts(): void {
@@ -789,7 +834,7 @@ export class StatsComponent implements OnInit, OnDestroy {
         presencePercentage + '%',
         data.classification
       ];
-    }).sort((a, b) => (b[6] as number) - (a[6] as number));
+    }).sort((a, b) => (b[5] as number) - (a[5] as number));
 
     this.downloadCSV([['Student ID', 'First Name', 'Last Name', 'Present', 'Late', 'Absent', 'Total', 'Presence Percentage', 'Classification'], ...rows], 'all_student_attendance');
   }
@@ -825,6 +870,24 @@ export class StatsComponent implements OnInit, OnDestroy {
       ['Visited (comment present)', completed]
     ];
     this.downloadCSV([['Status', 'Count'], ...rows], 'follow_up_status');
+  }
+
+  exportCategories(): void {
+    if (!this.students.length) return;
+    const categoryMap = new Map<string, number>();
+    for (const student of this.students) {
+      const categories = student.categories || [];
+      for (const cat of categories) {
+        if (cat && cat.trim()) {
+          const key = cat.trim();
+          categoryMap.set(key, (categoryMap.get(key) || 0) + 1);
+        }
+      }
+    }
+    const rows = Array.from(categoryMap.entries())
+      .map(([category, count]) => [category, count])
+      .sort((a, b) => (b[1] as number) - (a[1] as number));
+    this.downloadCSV([['Category', 'Occurrences'], ...rows], 'categories_distribution');
   }
 
   ngOnDestroy(): void {
