@@ -808,6 +808,8 @@ export class AbsenceThresholdComponent implements OnInit, OnDestroy {
   // Helper to count pending meetings (no comment or empty comment)
   private countPendingMeetings(meetings: any[]): number {
     if (!meetings) return 0;
+    let responed = meetings.filter(item => item.comment && item.comment.trim().length).length;
+    if (responed !== 0) return -2;
     return meetings.filter(m => !m.comment || !m.comment.trim().length).length;
   }
 
