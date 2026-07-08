@@ -234,8 +234,9 @@ export class StatsComponent implements OnInit, OnDestroy {
 
     // New stats
     this.totalNotifiedStudents = new Set(this.students.map(item => item.studentSisId)).size;
-    this.pendingVisits = new Set(this.students.filter(s => !s.comment || s.comment.trim().length === 0).map(item => item.studentSisId)).size;
-    this.completedVisits = this.totalNotifiedStudents - this.pendingVisits;
+    this.completedVisits = new Set(this.students.filter(s => s.comment && s.comment.trim().length > 0).map(item => item.studentSisId)).size;
+    this.pendingVisits = this.totalNotifiedStudents - this.completedVisits;
+
 
     const courseStudentMap = new Map<string, Set<string>>();
     for (const student of this.students) {
