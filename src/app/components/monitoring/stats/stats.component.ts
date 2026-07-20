@@ -45,6 +45,8 @@ export class StatsComponent implements OnInit, OnDestroy {
   barChartData: any;
   barChartOptions: any;
   statusChartData: any;
+  savedStudentsDataGr: any;
+  savedStudentsDataUg: any;
   statusChartOptions: any;
   topCoursesChartData: any;
   topCoursesChartOptions: any;
@@ -263,6 +265,16 @@ export class StatsComponent implements OnInit, OnDestroy {
     this.statusChartData = {
       labels: ['Unresponsive (comment empty)', 'Responsive (comment present)'],
       datasets: [{ data: [this.pendingVisits, this.completedVisits], backgroundColor: ['#EF5350', '#66BB6A'], hoverBackgroundColor: ['#E53935', '#4CAF50'], borderWidth: 0 }]
+    };
+
+    this.savedStudentsDataGr = {
+      labels: ['Saved (≥ 3)', 'At Risk (< 3)'],
+      datasets: [{ data: [this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa >= 3).length, this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa < 3).length], backgroundColor: ['#EF5350', '#66BB6A'], hoverBackgroundColor: ['#E53935', '#4CAF50'], borderWidth: 0 }]
+    };
+
+    this.savedStudentsDataUg = {
+      labels: ['Saved (≥ 2)', 'At Risk (< 2)'],
+      datasets: [{ data: [this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa >= 2).length, this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa < 2).length], backgroundColor: ['#EF5350', '#66BB6A'], hoverBackgroundColor: ['#E53935', '#4CAF50'], borderWidth: 0 }]
     };
 
     // ---------- NEW: Categories chart ----------
@@ -871,6 +883,23 @@ export class StatsComponent implements OnInit, OnDestroy {
       ['Visited (comment present)', completed]
     ];
     this.downloadCSV([['Status', 'Count'], ...rows], 'follow_up_status');
+  }
+
+  exportSavedStudents(division: string): void {
+    if (!this.students.length) return;
+
+    const pending = this.students.filter(s => !s.comment || s.comment.trim() === '').length;
+    const completed = this.students.length - pending;
+
+    const rows = [
+      ['Saved', division === 'GR' ? this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa >= 3).length :
+        this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa >= 2).length
+      ],
+      ['At Risk', division === 'GR' ? this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa < 3).length :
+        this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa < 2).length
+      ]
+    ];
+    this.downloadCSV([['Status', 'Count'], ...rows], `saved_students_${division}`);
   }
 
   exportCategories(): void {
