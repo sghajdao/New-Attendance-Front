@@ -1,7 +1,7 @@
 <div class="page">
     <div class="content">
         <app-filters (search)="getSearchDto($event)"></app-filters>
-
+        <br>
         <app-details-table *ngIf="drivers[0]" [searchDto]="searchDto"></app-details-table>
     </div>
 </div>
