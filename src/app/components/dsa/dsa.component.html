@@ -1,8 +1,24 @@
 <div class="page">
     <div class="content">
         <app-filters (search)="getSearchDto($event)"></app-filters>
-        <br>
-        <app-details-table [searchDto]="searchDto"></app-details-table>
+        
+        <div class="driver-buttons">
+          <!-- Button 0: Details – Blue -->
+          <button class="driver-button btn-details" 
+                  [class.active]="drivers[0]" 
+                  (click)="changeDriver(0)">
+            <i class="pi pi-file"></i> Details
+          </button>
+          
+          <!-- Button 1: Absences – Orange -->
+          <button class="driver-button btn-absences" 
+            [class.active]="drivers[1]" 
+            (click)="changeDriver(1)">
+            <i class="pi pi-exclamation-triangle"></i> Absences
+          </button>
+        </div>
+
+        <app-details-table *ngIf="drivers[0]" [searchDto]="searchDto"></app-details-table>
     </div>
 </div>
 

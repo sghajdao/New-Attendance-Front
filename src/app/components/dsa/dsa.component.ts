@@ -8,13 +8,13 @@ import { SearchDto } from '../../models/dto/searchDto';
   styleUrl: './dsa.component.css'
 })
 export class DsaComponent implements OnInit {
-  drivers: boolean[] = [true, false, false, false];
+  drivers: boolean[] = [true, false];
   searchDto?: SearchDto;
 
   ngOnInit(): void {}
 
   changeDriver(index: number): void {
-    this.drivers = [false, false, false, false];
+    this.drivers = [false, false];
     this.drivers[index] = !this.drivers[index];
   }
 
