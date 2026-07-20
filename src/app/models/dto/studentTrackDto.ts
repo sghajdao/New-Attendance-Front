@@ -3,6 +3,7 @@ export interface StudentTrackDto {
     studentSisId?: string;
     studentName?: string;
     coursSisId?: string[];
+    seniority?: string;
     createdAt?: Date;
     meetingType?: string;
     mailType?: string;

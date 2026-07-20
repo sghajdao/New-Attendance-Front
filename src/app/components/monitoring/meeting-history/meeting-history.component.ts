@@ -564,6 +564,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       'First Name',
       'Last Name',
       'Course SIS ID',
+      'Classification',
       'Meeting Date',
       'Meeting Type',
       'Mailing Type',
@@ -575,12 +576,12 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
       const meetingDate = item.createdAt ? new Date(item.createdAt).toLocaleString() : '';
       const courseId = this.viewMode === 'table' ? item.singleCourse : (item.coursSisId || []).join(', ');
       const categories = (item.categoryArray || item.categories || []).join(', ');
-      
       return [
         item.studentSisId || '',
         item.firstName || '',
         item.lastName || '',
         courseId,
+        item.siniority || '',
         meetingDate,
         item.meetingType || '',
         item.mailType || '',

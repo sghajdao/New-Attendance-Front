@@ -581,7 +581,7 @@ export class StatsComponent implements OnInit, OnDestroy {
           backgroundColor: '#EF5350',
           borderRadius: 4,
           barPercentage: 0.9,
-          categoryPercentage: 0.9
+          catseniorityentage: 0.9
         }
       ]
     };
@@ -737,7 +737,7 @@ export class StatsComponent implements OnInit, OnDestroy {
     if (!this.students.length) return;
 
     // Recompute student event counts from full data
-    const studentMap = new Map<string, { id: string; firstname: string; lastname: string; count: number }>();
+    const studentMap = new Map<string, { id: string; firstname: string; lastname: string; seniority: string; count: number }>();
     for (const tracking of this.students) {
       const studentId = tracking.studentSisId || tracking.firstName + ' ' + tracking.lastName || 'unknown';
       const studentName = tracking.firstName + ' ' + tracking.lastName || studentId;
@@ -745,15 +745,16 @@ export class StatsComponent implements OnInit, OnDestroy {
         id: studentId,
         firstname: tracking.firstName || '',
         lastname: tracking.lastName || '',
+        seniority: tracking.seniority || '',
         count: (studentMap.get(studentId)?.count || 0) + 1
       });
     }
 
     const rows = Array.from(studentMap.entries())
-      .map(([id, data]) => [data.id, data.firstname, data.lastname, data.count])
-      .sort((a, b) => (b[3] as number) - (a[3] as number)); // sort descending
+      .map(([id, data]) => [data.id, data.firstname, data.lastname, data.seniority, data.count])
+      .sort((a, b) => (b[4] as number) - (a[4] as number)); // sort descending
 
-    this.downloadCSV([['Student ID', 'First Name', 'Last Name', 'Number of Tracking Events'], ...rows], 'all_notified_students');
+    this.downloadCSV([['Student ID', 'First Name', 'Last Name', 'Classification', 'Number of Tracking Events'], ...rows], 'all_notified_students');
   }
 
   /**
