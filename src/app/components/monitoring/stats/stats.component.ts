@@ -519,6 +519,8 @@ export class StatsComponent implements OnInit, OnDestroy {
 
   private setEmptyNewCharts(): void {
     this.statusChartData = { labels: ['No Data'], datasets: [{ data: [1], backgroundColor: ['#B0BEC5'] }] };
+    this.savedStudentsDataGr = { labels: ['No Data'], datasets: [{ data: [1], backgroundColor: ['#B0BEC5'] }] };
+    this.savedStudentsDataUg = { labels: ['No Data'], datasets: [{ data: [1], backgroundColor: ['#B0BEC5'] }] };
     this.topCoursesChartData = { labels: ['No Data'], datasets: [{ label: 'Students', data: [0], backgroundColor: '#B0BEC5' }] };
     this.statusChartOptions = this.getDoughnutOptions();
     this.topCoursesChartOptions = this.getBarOptions('Courses', 'Notified Students', '#B0BEC5');
