@@ -581,7 +581,7 @@ export class MeetingHistoryComponent implements OnInit, OnDestroy {
         item.firstName || '',
         item.lastName || '',
         courseId,
-        item.siniority || '',
+        item.seniority || '',
         meetingDate,
         item.meetingType || '',
         item.mailType || '',

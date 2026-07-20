@@ -581,7 +581,7 @@ export class StatsComponent implements OnInit, OnDestroy {
           backgroundColor: '#EF5350',
           borderRadius: 4,
           barPercentage: 0.9,
-          catseniorityentage: 0.9
+          categoryPercentage: 0.9
         }
       ]
     };
