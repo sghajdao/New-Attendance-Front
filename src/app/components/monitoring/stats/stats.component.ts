@@ -50,14 +50,16 @@ export class StatsComponent implements OnInit, OnDestroy {
   statusChartOptions: any;
   topCoursesChartData: any;
   topCoursesChartOptions: any;
-
+  
   categoriesChartData: any;
   categoriesChartOptions: any;
-
+  
   courseAttendanceChartData: any;
   courseAttendanceChartOptions: any;
   studentAttendanceChartData: any;
   studentAttendanceChartOptions: any;
+  savedStudentsChartDataGr: any;
+  savedStudentsChartDataUg: any;
 
   coursesAttendanceReport: any
   studentsAttendanceReport: any
@@ -269,7 +271,7 @@ export class StatsComponent implements OnInit, OnDestroy {
 
     this.savedStudentsDataGr = {
       labels: ['Saved (≥ 3)', 'At Risk (< 3)'],
-      datasets: [{ data: [new Set(this.info.filter(s => s.studentDiv === 'GR' && s.meetings.length && s.trmGpa >= 3).map(s => s.idNum)).size, new Set(this.info.filter(s => s.studentDiv === 'GR' && s.meetings.length && s.trmGpa < 3).map(s => s.idNum)).size], backgroundColor: ['#EF5350', '#66BB6A'], hoverBackgroundColor: ['#E53935', '#4CAF50'], borderWidth: 0 }]
+      datasets: [{ data: [new Set(this.info.filter(s => s.studentDiv === 'GR' && s.meetings.length && s.trmGpa >= 3).map(s => s.idNum)).size, new Set(this.info.filter(s => s.studentDiv === 'GR' && s.meetings.length && s.trmGpa < 3).map(s => s.idNum)).size], backgroundColor: ['#EF5350', '#66BB6A'], hoverBackgroundColor: ['#E53935', '#4CAF50'], borderWidth: 0 }],
     };
 
     this.savedStudentsDataUg = {
@@ -323,119 +325,6 @@ export class StatsComponent implements OnInit, OnDestroy {
     this.topCoursesChartOptions = this.getBarOptions('Courses', 'Notified Students', '#FFA726');
     this.statusChartOptions = this.getDoughnutOptions();
   }
-
-  // getAtRiskStudents() {
-  //   if (isPlatformBrowser(this.platformId)) {
-  //     const sub = this.attendanceService.getRedFlagStudents().subscribe({
-  //       next: async res => {
-  //         const documentStyle = getComputedStyle(document.documentElement);
-  //         const textColor = documentStyle.getPropertyValue('--p-text-color');
-  //         const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
-  //         const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
-
-  //         const generateAtRiskData = async (seniority: string): Promise<number[]> => {
-  //           const [faInfo, spInfo] = await Promise.all([
-  //             this.indexeddbService.getData('FA'),
-  //             this.indexeddbService.getData('SP')
-  //           ]);
-          
-  //           const computeRate = (info: any[], term: string) => {
-  //             const atRisk = info.filter(
-  //               s =>
-  //                 res.some(r => r.student_sis_id === s.idNum) &&
-  //                 (s.studentDiv === 'UG' ? s.trmGpa < 2 : s.trmGpa < 3) &&
-  //                 s.seniority === seniority
-  //             );
-            
-  //             const total = info.filter(s => res.some(r => r.student_sis_id === s.idNum) && s.trmCde === term).length;
-  //             const count = atRisk.filter(s => s.trmCde === term).length;
-            
-  //             return total === 0 ? 0 : (count * 100) / total;
-  //           };
-          
-  //           return [
-  //             +computeRate(faInfo, 'FA').toFixed(2),
-  //             +computeRate(spInfo, 'SP').toFixed(2)
-  //           ];
-  //         }
-          
-  //         this.atRiskData = {
-  //             labels: ['Fall 2526', 'Spring 2526'],
-  //             datasets: [
-  //                 {
-  //                     type: 'bar',
-  //                     label: 'Freshmen',
-  //                     backgroundColor: documentStyle.getPropertyValue('--p-cyan-500'),
-  //                     data: await generateAtRiskData('FR')
-  //                 },
-  //                 {
-  //                     type: 'bar',
-  //                     label: 'Sophomores',
-  //                     backgroundColor: documentStyle.getPropertyValue('--p-gray-500'),
-  //                     data: await generateAtRiskData('SO')
-  //                 },
-  //                 {
-  //                     type: 'bar',
-  //                     label: 'Juniors',
-  //                     backgroundColor: documentStyle.getPropertyValue('--p-orange-500'),
-  //                     data: await generateAtRiskData('JR')
-  //                 },
-  //                 {
-  //                     type: 'bar',
-  //                     label: 'Seniors',
-  //                     backgroundColor: documentStyle.getPropertyValue('--p-purple-500'),
-  //                     data: await generateAtRiskData('SR')
-  //                 },
-  //                 {
-  //                     type: 'bar',
-  //                     label: 'Graduates',
-  //                     backgroundColor: documentStyle.getPropertyValue('--p-yellow-500'),
-  //                     data: await generateAtRiskData('GR')
-  //                 }
-  //             ]
-  //         };
-  //         this.atRiskOptions = {
-  //             maintainAspectRatio: false,
-  //             aspectRatio: 0.8,
-  //             plugins: {
-  //                 tooltip: {
-  //                     mode: 'index',
-  //                     intersect: false
-  //                 },
-  //                 legend: {
-  //                     labels: {
-  //                         color: textColor
-  //                     }
-  //                 }
-  //             },
-  //             scales: {
-  //                 x: {
-  //                     stacked: true,
-  //                     ticks: {
-  //                         color: documentStyle.getPropertyValue('--p-white-500')
-  //                     },
-  //                     grid: {
-  //                         color: surfaceBorder,
-  //                         drawBorder: false
-  //                     }
-  //                 },
-  //                 y: {
-  //                     stacked: true,
-  //                     ticks: {
-  //                         color: documentStyle.getPropertyValue('--p-white-500')
-  //                     },
-  //                     grid: {
-  //                         color: surfaceBorder,
-  //                         drawBorder: false
-  //                     }
-  //                 }
-  //             }
-  //           };
-  //         }
-  //       })
-  //       this.subscriptions.push(sub);
-  //     }
-  // }
 
   private getPieOptions() {
     return {
@@ -581,6 +470,50 @@ export class StatsComponent implements OnInit, OnDestroy {
           label: 'Absent',
           data: courseEntries.map(c => c.absent),
           backgroundColor: '#EF5350',
+          borderRadius: 4,
+          barPercentage: 0.9,
+          categoryPercentage: 0.9
+        }
+      ]
+    };
+
+    this.savedStudentsChartDataGr = {
+      labels: ['SO', 'JR', 'SR'],
+      datasets: [
+        {
+          label: '% of At-Risk Students who had ≥ 3 SGPA',
+          data: new Set(this.info.filter(s => s.studentDiv === 'GR' && s.meetings.length && s.trmGpa >= 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'GR' && s.meetings.length && s.seniority === 'SO').map(s => s.idNum)).size,
+          backgroundColor: '#66BB6A',
+          borderRadius: 4,
+          barPercentage: 0.9,
+          categoryPercentage: 0.9
+        },
+        {
+          label: '% of At-Risk Students who had ≤ 3 SGPA',
+          data: new Set(this.info.filter(s => s.studentDiv === 'GR' && s.meetings.length && s.trmGpa < 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'GR' && s.meetings.length && s.seniority === 'SO').map(s => s.idNum)).size,
+          backgroundColor: '#FFA726',
+          borderRadius: 4,
+          barPercentage: 0.9,
+          categoryPercentage: 0.9
+        }
+      ]
+    };
+
+    this.savedStudentsChartDataUg = {
+      labels: ['SO', 'JR', 'SR'],
+      datasets: [
+        {
+          label: '% of At-Risk Students who had ≥ 2 SGPA',
+          data: new Set(this.info.filter(s => s.studentDiv === 'UG' && s.meetings.length && s.trmGpa >= 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'UG' && s.meetings.length && s.seniority === 'SO').map(s => s.idNum)).size,
+          backgroundColor: '#66BB6A',
+          borderRadius: 4,
+          barPercentage: 0.9,
+          categoryPercentage: 0.9
+        },
+        {
+          label: '% of At-Risk Students who had ≤ 2 SGPA',
+          data: new Set(this.info.filter(s => s.studentDiv === 'UG' && s.meetings.length && s.trmGpa < 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'UG' && s.meetings.length && s.seniority === 'SO').map(s => s.idNum)).size,
+          backgroundColor: '#FFA726',
           borderRadius: 4,
           barPercentage: 0.9,
           categoryPercentage: 0.9

@@ -100,6 +100,27 @@
     </div>
   </div>
 
+  <div class="charts-row" *ngIf="info && info.length > 0">
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>👩‍🎓 At Risk Students GR</h3>
+        <button class="csv-btn" (click)="exportCourseAttendance()" title="Download CSV">📥 CSV</button>
+      </div>
+      <div class="chart-wrapper">
+        <p-chart height="280px" type="bar" [data]="savedStudentsChartDataGr" [options]="courseAttendanceChartOptions"></p-chart>
+      </div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>👩‍🎓 At Risk Students UG</h3>
+        <button class="csv-btn" (click)="exportStudentAttendance()" title="Download CSV">📥 CSV</button>
+      </div>
+      <div class="chart-wrapper">
+        <p-chart height="280px" type="bar" [data]="savedStudentsChartDataUg" [options]="studentAttendanceChartOptions"></p-chart>
+      </div>
+    </div>
+  </div>
+
   <div *ngIf="loading" class="loading-container">
         <p-progress-spinner ariaLabel="loading" strokeWidth="4" />
         <p class="loading-text">Loading attendance data...</p>
