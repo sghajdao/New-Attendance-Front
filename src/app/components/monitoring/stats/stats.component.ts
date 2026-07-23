@@ -1003,14 +1003,14 @@ export class StatsComponent implements OnInit, OnDestroy {
       this.downloadCSV([['Classification', 'Total Students', 'Saved', 'At Risk', 'Saved %', 'At Risk %']], `saved_students_${division}`);
       return;
     }
-  
+
     const threshold = division === 'GR' ? 3 : 2;
     const divRecords = this.info.filter(r => r.studentDiv === division);
     if (!divRecords.length) {
       this.downloadCSV([['Classification', 'Total Students', 'Saved', 'At Risk', 'Saved %', 'At Risk %']], `saved_students_${division}`);
       return;
     }
-  
+
     // Group by seniority, unique students
     const seniorityMap = new Map<string, { students: Set<string>, gpaMap: Map<string, number> }>();
     for (const record of divRecords) {
@@ -1025,7 +1025,7 @@ export class StatsComponent implements OnInit, OnDestroy {
         entry.gpaMap.set(studentId, record.trmGpa);
       }
     }
-  
+
     const rows: any[][] = [];
     for (const [seniority, { students, gpaMap }] of seniorityMap.entries()) {
       let saved = 0;
@@ -1042,11 +1042,76 @@ export class StatsComponent implements OnInit, OnDestroy {
       const atRiskPercent = total > 0 ? ((atRisk / total) * 100).toFixed(1) : '0.0';
       rows.push([seniority, total, saved, atRisk, savedPercent + '%', atRiskPercent + '%']);
     }
-  
+
     rows.sort((a, b) => a[0].localeCompare(b[0]));
     const header = ['Classification', 'Total Students', 'Saved', 'At Risk', 'Saved %', 'At Risk %'];
     this.downloadCSV([header, ...rows], `saved_students_${division}_by_classification`);
   }
+
+  /**
+ * Export list of at-risk GR students (GPA < 3.0) with details.
+ */
+exportGRAtRisk(): void {
+  this.exportAtRiskList('GR', 3);
+}
+
+/**
+ * Export list of at-risk UG students (GPA < 2.0) with details.
+ */
+exportUGAtRisk(): void {
+  this.exportAtRiskList('UG', 2);
+}
+
+/**
+ * Private helper to export at-risk students for a given division and GPA threshold.
+ */
+private exportAtRiskList(division: string, threshold: number): void {
+  // Filter records for this division
+  const records = this.info.filter(r => r.studentDiv === division);
+  if (!records.length) {
+    console.warn(`No ${division} students found`);
+    return;
+  }
+
+  // Deduplicate by student ID, keep first occurrence (GPA and classification are stable)
+  const studentMap = new Map<string, any>();
+  for (const record of records) {
+    const gpa = record.trmGpa;
+    // Only keep at-risk students
+    if (isNaN(gpa) || gpa >= threshold) continue;
+    if (!studentMap.has(record.idNum)) {
+      studentMap.set(record.idNum, {
+        id: record.idNum,
+        firstName: record.firstName || '',
+        lastName: record.lastName || '',
+        seniority: record.seniority || '',
+        major: record.major || '',
+        trmGpa: gpa
+      });
+    }
+  }
+
+  if (studentMap.size === 0) {
+    console.warn(`No at-risk ${division} students found`);
+    return;
+  }
+
+  const students = Array.from(studentMap.values());
+  // Sort by GPA ascending (lowest first)
+  students.sort((a, b) => a.trmGpa - b.trmGpa);
+
+  const rows = students.map(s => [
+    s.id,
+    s.firstName,
+    s.lastName,
+    s.seniority,
+    s.major,
+    s.trmGpa !== undefined && !isNaN(s.trmGpa) ? s.trmGpa.toFixed(2) : ''
+  ]);
+
+  const header = ['Student ID', 'First Name', 'Last Name', 'Classification', 'Major', 'Term GPA'];
+  this.downloadCSV([header, ...rows], `at_risk_${division}_students`);
+}
 
   exportCategories(): void {
     if (!this.students.length) return;
