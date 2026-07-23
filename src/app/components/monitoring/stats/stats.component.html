@@ -104,7 +104,7 @@
     <div class="chart-container">
       <div class="chart-header">
         <h3>👩‍🎓 At Risk Students GR</h3>
-        <button class="csv-btn" (click)="exportCourseAttendance()" title="Download CSV">📥 CSV</button>
+        <button class="csv-btn" (click)="exportSavedStudents('GR')" title="Download CSV">📥 CSV</button>
       </div>
       <div class="chart-wrapper">
         <p-chart height="280px" type="bar" [data]="savedStudentsChartDataGr" [options]="savedStudentsChartOptions"></p-chart>
@@ -113,7 +113,7 @@
     <div class="chart-container">
       <div class="chart-header">
         <h3>👩‍🎓 At Risk Students UG</h3>
-        <button class="csv-btn" (click)="exportStudentAttendance()" title="Download CSV">📥 CSV</button>
+        <button class="csv-btn" (click)="exportSavedStudents('UG')" title="Download CSV">📥 CSV</button>
       </div>
       <div class="chart-wrapper">
         <p-chart height="280px" type="bar" [data]="savedStudentsChartDataUg" [options]="savedStudentsChartOptions"></p-chart>
