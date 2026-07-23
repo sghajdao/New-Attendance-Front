@@ -277,7 +277,7 @@ export class StatsComponent implements OnInit, OnDestroy {
 
     this.savedStudentsDataUg = {
       labels: ['Saved (≥ 2)', 'At Risk (< 2)'],
-      datasets: [{ data: [new Set(this.info.filter(s => s.seniority === 'UG' && s.meetings.length > 0 && s.trmGpa >= 2).map(s => s.idNum)).size, new Set(this.info.filter(s => s.seniority === 'UG' && s.meetings.length > 0 && s.trmGpa < 2).map(s => s.idNum)).size], backgroundColor: ['#66BB6A', '#EF5350'], hoverBackgroundColor: ['#4CAF50', '#E53935'], borderWidth: 0 }]
+      datasets: [{ data: [new Set(this.info.filter(s => ['SO', 'JR', 'SR'].includes(s.seniority) && s.meetings.length > 0 && s.trmGpa >= 2).map(s => s.idNum)).size, new Set(this.info.filter(s => ['SO', 'JR', 'SR'].includes(s.seniority) && s.meetings.length > 0 && s.trmGpa < 2).map(s => s.idNum)).size], backgroundColor: ['#66BB6A', '#EF5350'], hoverBackgroundColor: ['#4CAF50', '#E53935'], borderWidth: 0 }]
     };
 
     // ---------- NEW: Categories chart ----------
@@ -594,8 +594,8 @@ export class StatsComponent implements OnInit, OnDestroy {
       datasets: [
         {
           label: '% of At-Risk Students who had ≥ 3 SGPA',
-          data: studentsEntries.filter(s => s.seniority === 'SO' && s.meetings > 0 && s.gpa >= 3).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
-          // data: new Set(this.info.filter(s => s.seniority === 'GR' && s.trmGpa >= 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'GR' && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: studentsEntries.filter(s => s.seniority === 'GR' && s.meetings > 0 && s.gpa >= 3).length * 100 / studentsEntries.filter(s => s.seniority === 'GR').length,
+          // data: new Set(this.info.filter(s => s.seniority === 'GR' && s.trmGpa >= 3 && s.seniority === 'GR').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'GR' && s.seniority === 'GR').map(s => s.idNum)).size,
           backgroundColor: '#66BB6A',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -603,8 +603,8 @@ export class StatsComponent implements OnInit, OnDestroy {
         },
         {
           label: '% of At-Risk Students who had ≤ 3 SGPA',
-          data: studentsEntries.filter(s => s.seniority === 'SO' && s.meetings > 0 && s.gpa < 3).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
-          // data: new Set(this.info.filter(s => s.seniority === 'GR' && s.trmGpa < 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'GR' && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: studentsEntries.filter(s => s.seniority === 'GR' && s.meetings > 0 && s.gpa < 3).length * 100 / studentsEntries.filter(s => s.seniority === 'GR').length,
+          // data: new Set(this.info.filter(s => s.seniority === 'GR' && s.trmGpa < 3 && s.seniority === 'GR').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'GR' && s.seniority === 'GR').map(s => s.idNum)).size,
           backgroundColor: '#FFA726',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -618,8 +618,8 @@ export class StatsComponent implements OnInit, OnDestroy {
       datasets: [
         {
           label: '% of At-Risk Students who had ≥ 2 SGPA',
-          data: studentsEntries.filter(s => s.seniority === 'SO' && s.meetings > 0 && s.gpa >= 2).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
-          // data: new Set(this.info.filter(s => s.seniority === 'UG' && s.trmGpa >= 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'UG' && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: studentsEntries.filter(s => ['SO', 'JR', 'SR'].includes(s.seniority) && s.meetings > 0 && s.gpa >= 2).length * 100 / studentsEntries.filter(s => ['SO', 'JR', 'SR'].includes(s.seniority)).length,
+          // data: new Set(this.info.filter(s => s.seniority === 'UG' && s.trmGpa >= 2 && ['SO', 'JR', 'SR'].includes(s.seniority)).map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'UG' && ['SO', 'JR', 'SR'].includes(s.seniority)).map(s => s.idNum)).size,
           backgroundColor: '#66BB6A',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -627,8 +627,8 @@ export class StatsComponent implements OnInit, OnDestroy {
         },
         {
           label: '% of At-Risk Students who had ≤ 2 SGPA',
-          data: studentsEntries.filter(s => s.seniority === 'SO' && s.meetings > 0 && s.gpa < 2).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
-          // data: new Set(this.info.filter(s => s.seniority === 'UG' && s.trmGpa < 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'UG' && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: studentsEntries.filter(s => ['SO', 'JR', 'SR'].includes(s.seniority) && s.meetings > 0 && s.gpa < 2).length * 100 / studentsEntries.filter(s => ['SO', 'JR', 'SR'].includes(s.seniority)).length,
+          // data: new Set(this.info.filter(s => s.seniority === 'UG' && s.trmGpa < 2 && ['SO', 'JR', 'SR'].includes(s.seniority)).map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'UG' && ['SO', 'JR', 'SR'].includes(s.seniority)).map(s => s.idNum)).size,
           backgroundColor: '#FFA726',
           borderRadius: 4,
           barPercentage: 0.9,
