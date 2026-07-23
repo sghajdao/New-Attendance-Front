@@ -56,14 +56,14 @@
         <h3>📌 Saved GR Student Follow-up Status</h3>
         <button class="csv-btn" (click)="exportSavedStudents('GR')" title="Download CSV">📥 CSV</button>
       </div>
-      <div class="chart-wrapper"><p-chart type="doughnut" [data]="savedStudentsDataGr" [options]="statusChartOptions"></p-chart></div>
+      <div class="chart-wrapper"><p-chart type="doughnut" [data]="savedStudentsDataGr" [options]="getSavedStudentsOptions('GR')"></p-chart></div>
     </div>
     <div class="chart-container">
       <div class="chart-header">
         <h3>📌 Saved UG Student Follow-up Status</h3>
         <button class="csv-btn" (click)="exportSavedStudents('UG')" title="Download CSV">📥 CSV</button>
       </div>
-      <div class="chart-wrapper"><p-chart type="doughnut" [data]="savedStudentsDataUg" [options]="statusChartOptions"></p-chart></div>
+      <div class="chart-wrapper"><p-chart type="doughnut" [data]="savedStudentsDataUg" [options]="getSavedStudentsOptions('UG')"></p-chart></div>
     </div>
   </div>
 

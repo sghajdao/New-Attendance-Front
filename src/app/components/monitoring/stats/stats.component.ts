@@ -271,12 +271,12 @@ export class StatsComponent implements OnInit, OnDestroy {
 
     this.savedStudentsDataGr = {
       labels: ['Saved (≥ 3)', 'At Risk (< 3)'],
-      datasets: [{ data: [new Set(this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa >= 3).map(s => s.idNum)).size, new Set(this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa < 3).map(s => s.idNum)).size], backgroundColor: ['#EF5350', '#66BB6A'], hoverBackgroundColor: ['#E53935', '#4CAF50'], borderWidth: 0 }],
+      datasets: [{ data: [new Set(this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa >= 3).map(s => s.idNum)).size, new Set(this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa < 3).map(s => s.idNum)).size], backgroundColor: ['#66BB6A', '#EF5350'], hoverBackgroundColor: ['#4CAF50', '#E53935'], borderWidth: 0 }],
     };
 
     this.savedStudentsDataUg = {
       labels: ['Saved (≥ 2)', 'At Risk (< 2)'],
-      datasets: [{ data: [new Set(this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa >= 2).map(s => s.idNum)).size, new Set(this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa < 2).map(s => s.idNum)).size], backgroundColor: ['#EF5350', '#66BB6A'], hoverBackgroundColor: ['#E53935', '#4CAF50'], borderWidth: 0 }]
+      datasets: [{ data: [new Set(this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa >= 2).map(s => s.idNum)).size, new Set(this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa < 2).map(s => s.idNum)).size], backgroundColor: ['#66BB6A', '#EF5350'], hoverBackgroundColor: ['#4CAF50', '#E53935'], borderWidth: 0 }]
     };
 
     // ---------- NEW: Categories chart ----------
@@ -353,6 +353,26 @@ export class StatsComponent implements OnInit, OnDestroy {
       plugins: {
         legend: { position: 'bottom', labels: { font: { size: 12 }, usePointStyle: true } },
         tooltip: { callbacks: { label: (ctx: any) => `${ctx.label}: ${ctx.raw} (${((ctx.raw / this.totalNotifiedStudents) * 100).toFixed(1)}%)` } },
+        datalabels: {
+          color: 'white',
+          font: { weight: 'bold', size: 14 },
+          textShadowBlur: 8,
+          textShadowColor: 'rgba(0,0,0,0.6)',
+          anchor: 'center',
+          align: 'center',
+          formatter: (value: number) => value
+        }
+      }
+    };
+  }
+
+  getSavedStudentsOptions(div: string) {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 12 }, usePointStyle: true } },
+        tooltip: { callbacks: { label: (ctx: any) => `${ctx.label}: ${ctx.raw} (${((ctx.raw / new Set(this.info.filter(s => s.studentDiv === div).map(s => s.idNum)).size * 100).toFixed(1))}%)` } },
         datalabels: {
           color: 'white',
           font: { weight: 'bold', size: 14 },
@@ -482,7 +502,7 @@ export class StatsComponent implements OnInit, OnDestroy {
       datasets: [
         {
           label: '% of At-Risk Students who had ≥ 3 SGPA',
-          data: new Set(this.info.filter(s => s.studentDiv === 'GR' && s.meetings.length && s.trmGpa >= 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'GR' && s.meetings.length && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: new Set(this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa >= 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'GR' && s.seniority === 'SO').map(s => s.idNum)).size,
           backgroundColor: '#66BB6A',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -490,7 +510,7 @@ export class StatsComponent implements OnInit, OnDestroy {
         },
         {
           label: '% of At-Risk Students who had ≤ 3 SGPA',
-          data: new Set(this.info.filter(s => s.studentDiv === 'GR' && s.meetings.length && s.trmGpa < 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'GR' && s.meetings.length && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: new Set(this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa < 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'GR' && s.seniority === 'SO').map(s => s.idNum)).size,
           backgroundColor: '#FFA726',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -504,7 +524,7 @@ export class StatsComponent implements OnInit, OnDestroy {
       datasets: [
         {
           label: '% of At-Risk Students who had ≥ 2 SGPA',
-          data: new Set(this.info.filter(s => s.studentDiv === 'UG' && s.meetings.length && s.trmGpa >= 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'UG' && s.meetings.length && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: new Set(this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa >= 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'UG' && s.seniority === 'SO').map(s => s.idNum)).size,
           backgroundColor: '#66BB6A',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -512,7 +532,7 @@ export class StatsComponent implements OnInit, OnDestroy {
         },
         {
           label: '% of At-Risk Students who had ≤ 2 SGPA',
-          data: new Set(this.info.filter(s => s.studentDiv === 'UG' && s.meetings.length && s.trmGpa < 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'UG' && s.meetings.length && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: new Set(this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa < 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'UG' && s.seniority === 'SO').map(s => s.idNum)).size,
           backgroundColor: '#FFA726',
           borderRadius: 4,
           barPercentage: 0.9,

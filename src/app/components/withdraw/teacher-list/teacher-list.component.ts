@@ -167,7 +167,7 @@ export class TeacherListComponent implements OnChanges, OnInit {
     csvRows.push(headers.join(','));
   
     // Add rows
-    this.students.sort((a, b) => b.count - a.count).map(({marked_at, marked_time, attendance,...rest}) => rest).forEach(student => {
+    this.students.map(({marked_at, marked_time, attendance,...rest}) => rest).forEach(student => {
       const values = headers.map(h => {
         const val = (student as Record<string, any>)[h] ?? '';
         // Escape quotes and commas
