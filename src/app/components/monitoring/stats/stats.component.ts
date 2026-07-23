@@ -272,12 +272,12 @@ export class StatsComponent implements OnInit, OnDestroy {
 
     this.savedStudentsDataGr = {
       labels: ['Saved (≥ 3)', 'At Risk (< 3)'],
-      datasets: [{ data: [new Set(this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa >= 3).map(s => s.idNum)).size, new Set(this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa < 3).map(s => s.idNum)).size], backgroundColor: ['#66BB6A', '#EF5350'], hoverBackgroundColor: ['#4CAF50', '#E53935'], borderWidth: 0 }],
+      datasets: [{ data: [new Set(this.info.filter(s => s.seniority === 'GR' && s.meetings.length > 0 && s.trmGpa >= 3).map(s => s.idNum)).size, new Set(this.info.filter(s => s.seniority === 'GR' && s.meetings.length > 0 && s.trmGpa < 3).map(s => s.idNum)).size], backgroundColor: ['#66BB6A', '#EF5350'], hoverBackgroundColor: ['#4CAF50', '#E53935'], borderWidth: 0 }],
     };
 
     this.savedStudentsDataUg = {
       labels: ['Saved (≥ 2)', 'At Risk (< 2)'],
-      datasets: [{ data: [new Set(this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa >= 2).map(s => s.idNum)).size, new Set(this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa < 2).map(s => s.idNum)).size], backgroundColor: ['#66BB6A', '#EF5350'], hoverBackgroundColor: ['#4CAF50', '#E53935'], borderWidth: 0 }]
+      datasets: [{ data: [new Set(this.info.filter(s => s.seniority === 'UG' && s.meetings.length > 0 && s.trmGpa >= 2).map(s => s.idNum)).size, new Set(this.info.filter(s => s.seniority === 'UG' && s.meetings.length > 0 && s.trmGpa < 2).map(s => s.idNum)).size], backgroundColor: ['#66BB6A', '#EF5350'], hoverBackgroundColor: ['#4CAF50', '#E53935'], borderWidth: 0 }]
     };
 
     // ---------- NEW: Categories chart ----------
@@ -373,7 +373,7 @@ export class StatsComponent implements OnInit, OnDestroy {
       maintainAspectRatio: false,
       plugins: {
         legend: { position: 'bottom', labels: { font: { size: 12 }, usePointStyle: true } },
-        tooltip: { callbacks: { label: (ctx: any) => `${ctx.label}: ${ctx.raw} (${((ctx.raw / new Set(this.info.filter(s => s.studentDiv === div).map(s => s.idNum)).size * 100).toFixed(1))}%)` } },
+        tooltip: { callbacks: { label: (ctx: any) => `${ctx.label}: ${ctx.raw} (${((ctx.raw / new Set(this.info.filter(s => s.seniority === div).map(s => s.idNum)).size * 100).toFixed(1))}%)` } },
         datalabels: {
           color: 'white',
           font: { weight: 'bold', size: 14 },
@@ -440,7 +440,7 @@ export class StatsComponent implements OnInit, OnDestroy {
 
   private buildSavedStudentsChart(division: string, threshold: number): any {
     // Filter records for this division
-    const divRecords = this.info.filter(r => r.studentDiv === division);
+    const divRecords = this.info.filter(r => r.seniority === division);
     if (!divRecords.length) {
       return {
         labels: ['No Data'],
@@ -585,7 +585,8 @@ export class StatsComponent implements OnInit, OnDestroy {
 
     const studentsEntries = this.info.map(student => ({
       seniority: student.seniority,
-      gpa: student.trmGpa
+      gpa: student.trmGpa,
+      meetings: student.meetings.length
     }))
 
     this.savedStudentsChartDataGr = {
@@ -593,8 +594,8 @@ export class StatsComponent implements OnInit, OnDestroy {
       datasets: [
         {
           label: '% of At-Risk Students who had ≥ 3 SGPA',
-          data: studentsEntries.filter(s => s.seniority === 'SO' && s.gpa >= 3).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
-          // data: new Set(this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa >= 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'GR' && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: studentsEntries.filter(s => s.seniority === 'SO' && s.meetings > 0 && s.gpa >= 3).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
+          // data: new Set(this.info.filter(s => s.seniority === 'GR' && s.trmGpa >= 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'GR' && s.seniority === 'SO').map(s => s.idNum)).size,
           backgroundColor: '#66BB6A',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -602,8 +603,8 @@ export class StatsComponent implements OnInit, OnDestroy {
         },
         {
           label: '% of At-Risk Students who had ≤ 3 SGPA',
-          data: studentsEntries.filter(s => s.seniority === 'SO' && s.gpa < 3).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
-          // data: new Set(this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa < 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'GR' && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: studentsEntries.filter(s => s.seniority === 'SO' && s.meetings > 0 && s.gpa < 3).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
+          // data: new Set(this.info.filter(s => s.seniority === 'GR' && s.trmGpa < 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'GR' && s.seniority === 'SO').map(s => s.idNum)).size,
           backgroundColor: '#FFA726',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -617,8 +618,8 @@ export class StatsComponent implements OnInit, OnDestroy {
       datasets: [
         {
           label: '% of At-Risk Students who had ≥ 2 SGPA',
-          data: studentsEntries.filter(s => s.seniority === 'SO' && s.gpa >= 2).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
-          // data: new Set(this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa >= 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'UG' && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: studentsEntries.filter(s => s.seniority === 'SO' && s.meetings > 0 && s.gpa >= 2).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
+          // data: new Set(this.info.filter(s => s.seniority === 'UG' && s.trmGpa >= 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'UG' && s.seniority === 'SO').map(s => s.idNum)).size,
           backgroundColor: '#66BB6A',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -626,8 +627,8 @@ export class StatsComponent implements OnInit, OnDestroy {
         },
         {
           label: '% of At-Risk Students who had ≤ 2 SGPA',
-          data: studentsEntries.filter(s => s.seniority === 'SO' && s.gpa < 2).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
-          // data: new Set(this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa < 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'UG' && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: studentsEntries.filter(s => s.seniority === 'SO' && s.meetings > 0 && s.gpa < 2).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
+          // data: new Set(this.info.filter(s => s.seniority === 'UG' && s.trmGpa < 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'UG' && s.seniority === 'SO').map(s => s.idNum)).size,
           backgroundColor: '#FFA726',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -1005,7 +1006,7 @@ export class StatsComponent implements OnInit, OnDestroy {
     }
 
     const threshold = division === 'GR' ? 3 : 2;
-    const divRecords = this.info.filter(r => r.studentDiv === division);
+    const divRecords = this.info.filter(r => r.seniority === division);
     if (!divRecords.length) {
       this.downloadCSV([['Classification', 'Total Students', 'Saved', 'At Risk', 'Saved %', 'At Risk %']], `saved_students_${division}`);
       return;
@@ -1067,7 +1068,7 @@ exportUGAtRisk(): void {
  */
 private exportAtRiskList(division: string, threshold: number): void {
   // Filter records for this division
-  const records = this.info.filter(r => r.studentDiv === division);
+  const records = this.info.filter(r => r.seniority === division);
   if (!records.length) {
     console.warn(`No ${division} students found`);
     return;

@@ -432,7 +432,7 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
     // Define headers exactly as displayed in the table (order matters)
     const headers = [
       'Student ID', 'First Name', 'Last Name', 'Entrance Year', 'Entrance Term',
-      'Division', 'Visa Type', 'Course', 'Status', 'Seniority', 'Grade',
+      'Division', 'Visa Type', 'Course', 'Status', 'Classification', 'Grade',
       'WF Reason', 'Term GPA', 'Midterm Grade', 'Drop Date', 'Withdraw Date', 'Schedule', 'Level',
       'School', 'Major', 'Term Code', 'Year Code',
       'Professor ID', 'Professor Name', 'Total Presences', 'Total Absences',
@@ -473,8 +473,8 @@ export class DeatailsTableComponent implements OnInit, OnDestroy {
         escape(student.seniority),
         escape(student.grade || '-'),
         escape(student.wfReason || '-'),
-        escape(student.midtermGrade || '-'),
         escape(student.trmGpa || '-'),
+        escape(student.midtermGrade || '-'),
         escape(dropDate),
         escape(withdrawDate),
         escape(student.schedule || '-'),
