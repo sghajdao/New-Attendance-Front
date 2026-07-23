@@ -636,6 +636,7 @@ export class StatsComponent implements OnInit, OnDestroy {
         }
       ]
     };
+    console.log(studentsEntries.filter(s => s.seniority !== 'GR' && s.meetings > 0 && s.gpa >= 2))
   
     // --- Attendance by Student (Top 10 by total attendance records) ---
     const studentMap = new Map<string, { name: string; present: number; late: number; absent: number }>();
