@@ -58,6 +58,7 @@ export class StatsComponent implements OnInit, OnDestroy {
   courseAttendanceChartOptions: any;
   studentAttendanceChartData: any;
   studentAttendanceChartOptions: any;
+  savedStudentsChartOptions: any;
   savedStudentsChartDataGr: any;
   savedStudentsChartDataUg: any;
 
@@ -437,6 +438,91 @@ export class StatsComponent implements OnInit, OnDestroy {
     this.categoriesChartOptions = this.getBarOptions('Categories', 'Occurrences', '#B0BEC5');
   }
 
+  private buildSavedStudentsChart(division: string, threshold: number): any {
+    // Filter records for this division
+    const divRecords = this.info.filter(r => r.studentDiv === division);
+    if (!divRecords.length) {
+      return {
+        labels: ['No Data'],
+        datasets: [
+          { label: 'Saved', data: [0], backgroundColor: '#B0BEC5' },
+          { label: 'At Risk', data: [0], backgroundColor: '#B0BEC5' }
+        ],
+        _totalCounts: [0],
+        _savedCounts: [0],
+        _atRiskCounts: [0]
+      };
+    }
+
+    // Group by seniority, collect unique student IDs and their GPA (use first encountered)
+    const seniorityMap = new Map<string, Set<string>>();
+    const seniorityGpaMap = new Map<string, Map<string, number>>();
+    for (const record of divRecords) {
+      const seniority = record.seniority || 'Unknown';
+      const studentId = record.idNum;
+      const gpa = record.trmGpa;
+      if (!seniorityMap.has(seniority)) {
+        seniorityMap.set(seniority, new Set());
+        seniorityGpaMap.set(seniority, new Map());
+      }
+      seniorityMap.get(seniority)!.add(studentId);
+      if (!seniorityGpaMap.get(seniority)!.has(studentId)) {
+        seniorityGpaMap.get(seniority)!.set(studentId, gpa);
+      }
+    }
+
+    const seniorities = Array.from(seniorityMap.keys()).sort();
+    const totalCounts: number[] = [];
+    const savedCounts: number[] = [];
+    const atRiskCounts: number[] = [];
+
+    for (const seniority of seniorities) {
+      const gpaMap = seniorityGpaMap.get(seniority)!;
+      let saved = 0;
+      let atRisk = 0;
+      for (const [, gpa] of gpaMap.entries()) {
+        if (!isNaN(gpa) && gpa >= threshold) {
+          saved++;
+        } else {
+          atRisk++;
+        }
+      }
+      const total = saved + atRisk;
+      totalCounts.push(total);
+      savedCounts.push(saved);
+      atRiskCounts.push(atRisk);
+    }
+
+    // Convert to percentages
+    const savedPercentages = savedCounts.map((s, i) => (totalCounts[i] > 0) ? (s / totalCounts[i]) * 100 : 0);
+    const atRiskPercentages = atRiskCounts.map((a, i) => (totalCounts[i] > 0) ? (a / totalCounts[i]) * 100 : 0);
+
+    return {
+      labels: seniorities,
+      datasets: [
+        {
+          label: `Saved (≥ ${threshold})`,
+          data: savedPercentages,
+          backgroundColor: '#66BB6A',
+          borderRadius: 4,
+          barPercentage: 0.9,
+          categoryPercentage: 0.9
+        },
+        {
+          label: `At Risk (< ${threshold})`,
+          data: atRiskPercentages,
+          backgroundColor: '#EF5350',
+          borderRadius: 4,
+          barPercentage: 0.9,
+          categoryPercentage: 0.9
+        }
+      ],
+      _totalCounts: totalCounts,
+      _savedCounts: savedCounts,
+      _atRiskCounts: atRiskCounts
+    };
+  }
+
   private computeAttendanceCharts(): void {
     if (!this.info || this.info.length === 0) {
       this.setEmptyAttendanceCharts();
@@ -631,6 +717,9 @@ export class StatsComponent implements OnInit, OnDestroy {
   
     this.courseAttendanceChartOptions = groupedBarOptions;
     this.studentAttendanceChartOptions = groupedBarOptions;
+    this.savedStudentsChartDataGr = this.buildSavedStudentsChart('GR', 3);
+    this.savedStudentsChartDataUg = this.buildSavedStudentsChart('UG', 2);
+    this.savedStudentsChartOptions = this.getSavedStudentsChartOptions();
 
     const studentsGpa: Map<string, number> = new Map();
     for (const i of this.info) {
@@ -640,6 +729,53 @@ export class StatsComponent implements OnInit, OnDestroy {
       }
     }
     this.savedStudents = `${Array.from(studentsGpa.values()).filter(gpa => gpa >= 2).length} - (${studentsGpa.size > 0 ? ((Array.from(studentsGpa.values()).filter(gpa => gpa >= 2).length / studentsGpa.size) * 100).toFixed(1) : '0'}%)`;
+  }
+
+  private getSavedStudentsChartOptions(): any {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { font: { size: 12 } } },
+        tooltip: {
+          callbacks: {
+            label: function(context: any) {
+              const datasetLabel = context.dataset.label || '';
+              const value = context.raw;
+              const index = context.dataIndex;
+              const chart = context.chart;
+              const totalCounts = chart.data._totalCounts || [];
+              const savedCounts = chart.data._savedCounts || [];
+              const atRiskCounts = chart.data._atRiskCounts || [];
+              const total = totalCounts[index] || 0;
+              const isSaved = datasetLabel.includes('Saved');
+              const count = isSaved ? savedCounts[index] : atRiskCounts[index];
+              return `${datasetLabel}: ${count} (${value.toFixed(1)}%) of ${total}`;
+            }
+          }
+        },
+        datalabels: {
+          color: 'white',
+          font: { weight: 'bold', size: 12 },
+          anchor: 'end',
+          align: 'top',
+          offset: 2,
+          formatter: (value: number) => value.toFixed(0) + '%'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 100,
+          ticks: { stepSize: 10, callback: (value: number) => value + '%' },
+          title: { display: true, text: 'Percentage of Students' }
+        },
+        x: {
+          ticks: { autoSkip: false, rotation: 25, font: { size: 11 } },
+          title: { display: true, text: 'Classification' }
+        }
+      }
+    };
   }
   
   private setEmptyAttendanceCharts(): void {
@@ -655,6 +791,18 @@ export class StatsComponent implements OnInit, OnDestroy {
     this.studentAttendanceChartData = emptyData;
     this.courseAttendanceChartOptions = this.getBarOptions('', 'Records', '#B0BEC5');
     this.studentAttendanceChartOptions = this.getBarOptions('', 'Records', '#B0BEC5');
+    this.savedStudentsChartDataGr = {
+    labels: ['No Data'],
+    datasets: [
+      { label: 'Saved', data: [0], backgroundColor: '#B0BEC5' },
+      { label: 'At Risk', data: [0], backgroundColor: '#B0BEC5' }
+    ],
+    _totalCounts: [0],
+    _savedCounts: [0],
+    _atRiskCounts: [0]
+    };
+    this.savedStudentsChartDataUg = { ...this.savedStudentsChartDataGr };
+    this.savedStudentsChartOptions = this.getSavedStudentsChartOptions();
   }
 
   // ========== CSV Export Methods ==========

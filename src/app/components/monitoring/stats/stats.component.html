@@ -107,7 +107,7 @@
         <button class="csv-btn" (click)="exportCourseAttendance()" title="Download CSV">📥 CSV</button>
       </div>
       <div class="chart-wrapper">
-        <p-chart height="280px" type="bar" [data]="savedStudentsChartDataGr" [options]="courseAttendanceChartOptions"></p-chart>
+        <p-chart height="280px" type="bar" [data]="savedStudentsChartDataGr" [options]="savedStudentsChartOptions"></p-chart>
       </div>
     </div>
     <div class="chart-container">
@@ -116,7 +116,7 @@
         <button class="csv-btn" (click)="exportStudentAttendance()" title="Download CSV">📥 CSV</button>
       </div>
       <div class="chart-wrapper">
-        <p-chart height="280px" type="bar" [data]="savedStudentsChartDataUg" [options]="studentAttendanceChartOptions"></p-chart>
+        <p-chart height="280px" type="bar" [data]="savedStudentsChartDataUg" [options]="savedStudentsChartOptions"></p-chart>
       </div>
     </div>
   </div>
