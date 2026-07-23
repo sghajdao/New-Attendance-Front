@@ -618,8 +618,8 @@ export class StatsComponent implements OnInit, OnDestroy {
       datasets: [
         {
           label: '% of At-Risk Students who had ≥ 2 SGPA',
-          data: studentsEntries.filter(s => ['SO', 'JR', 'SR'].includes(s.seniority) && s.meetings > 0 && s.gpa >= 2).length * 100 / studentsEntries.filter(s => ['SO', 'JR', 'SR'].includes(s.seniority)).length,
-          // data: new Set(this.info.filter(s => s.seniority === 'UG' && s.trmGpa >= 2 && ['SO', 'JR', 'SR'].includes(s.seniority)).map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'UG' && ['SO', 'JR', 'SR'].includes(s.seniority)).map(s => s.idNum)).size,
+          data: studentsEntries.filter(s => s.seniority === 'SO' && s.meetings > 0 && s.gpa >= 2).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
+          // data: new Set(this.info.filter(s => s.seniority === 'UG' && s.trmGpa >= 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'UG' && s.seniority === 'SO').map(s => s.idNum)).size,
           backgroundColor: '#66BB6A',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -627,8 +627,8 @@ export class StatsComponent implements OnInit, OnDestroy {
         },
         {
           label: '% of At-Risk Students who had ≤ 2 SGPA',
-          data: studentsEntries.filter(s => ['SO', 'JR', 'SR'].includes(s.seniority) && s.meetings > 0 && s.gpa < 2).length * 100 / studentsEntries.filter(s => ['SO', 'JR', 'SR'].includes(s.seniority)).length,
-          // data: new Set(this.info.filter(s => s.seniority === 'UG' && s.trmGpa < 2 && ['SO', 'JR', 'SR'].includes(s.seniority)).map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'UG' && ['SO', 'JR', 'SR'].includes(s.seniority)).map(s => s.idNum)).size,
+          data: studentsEntries.filter(s => s.seniority === 'SO' && s.meetings > 0 && s.gpa < 2).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
+          // data: new Set(this.info.filter(s => s.seniority === 'UG' && s.trmGpa < 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'UG' && s.seniority === 'SO').map(s => s.idNum)).size,
           backgroundColor: '#FFA726',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -1053,20 +1053,20 @@ export class StatsComponent implements OnInit, OnDestroy {
  * Export list of at-risk GR students (GPA < 3.0) with details.
  */
 exportGRAtRisk(): void {
-  this.exportAtRiskList('GR', 3);
+  this.exportAtRiskList('GR');
 }
 
 /**
  * Export list of at-risk UG students (GPA < 2.0) with details.
  */
 exportUGAtRisk(): void {
-  this.exportAtRiskList('UG', 2);
+  this.exportAtRiskList('UG');
 }
 
 /**
  * Private helper to export at-risk students for a given division and GPA threshold.
  */
-private exportAtRiskList(division: string, threshold: number): void {
+private exportAtRiskList(division: string): void {
   // Filter records for this division
   const records = this.info.filter(r => r.seniority === division);
   if (!records.length) {
@@ -1079,7 +1079,7 @@ private exportAtRiskList(division: string, threshold: number): void {
   for (const record of records) {
     const gpa = record.trmGpa;
     // Only keep at-risk students
-    if (isNaN(gpa) || gpa >= threshold) continue;
+    if (isNaN(gpa)) continue;
     if (!studentMap.has(record.idNum)) {
       studentMap.set(record.idNum, {
         id: record.idNum,
