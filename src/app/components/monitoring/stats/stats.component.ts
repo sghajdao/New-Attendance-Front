@@ -497,12 +497,18 @@ export class StatsComponent implements OnInit, OnDestroy {
       ]
     };
 
+    const studentsEntries = this.info.map(student => ({
+      seniority: student.seniority,
+      gpa: student.trmGpa
+    }))
+
     this.savedStudentsChartDataGr = {
-      labels: ['SO', 'JR', 'SR'],
+      labels: studentsEntries.map(s => s.seniority),
       datasets: [
         {
           label: '% of At-Risk Students who had ≥ 3 SGPA',
-          data: new Set(this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa >= 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'GR' && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: studentsEntries.filter(s => s.seniority === 'SO' && s.gpa >= 3).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
+          // data: new Set(this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa >= 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'GR' && s.seniority === 'SO').map(s => s.idNum)).size,
           backgroundColor: '#66BB6A',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -510,7 +516,8 @@ export class StatsComponent implements OnInit, OnDestroy {
         },
         {
           label: '% of At-Risk Students who had ≤ 3 SGPA',
-          data: new Set(this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa < 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'GR' && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: studentsEntries.filter(s => s.seniority === 'SO' && s.gpa < 3).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
+          // data: new Set(this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa < 3 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'GR' && s.seniority === 'SO').map(s => s.idNum)).size,
           backgroundColor: '#FFA726',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -520,11 +527,12 @@ export class StatsComponent implements OnInit, OnDestroy {
     };
 
     this.savedStudentsChartDataUg = {
-      labels: ['SO', 'JR', 'SR'],
+      labels: studentsEntries.map(s => s.seniority),
       datasets: [
         {
           label: '% of At-Risk Students who had ≥ 2 SGPA',
-          data: new Set(this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa >= 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'UG' && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: studentsEntries.filter(s => s.seniority === 'SO' && s.gpa >= 2).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
+          // data: new Set(this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa >= 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'UG' && s.seniority === 'SO').map(s => s.idNum)).size,
           backgroundColor: '#66BB6A',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -532,7 +540,8 @@ export class StatsComponent implements OnInit, OnDestroy {
         },
         {
           label: '% of At-Risk Students who had ≤ 2 SGPA',
-          data: new Set(this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa < 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'UG' && s.seniority === 'SO').map(s => s.idNum)).size,
+          data: studentsEntries.filter(s => s.seniority === 'SO' && s.gpa < 2).length * 100 / studentsEntries.filter(s => s.seniority === 'SO').length,
+          // data: new Set(this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa < 2 && s.seniority === 'SO').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.studentDiv === 'UG' && s.seniority === 'SO').map(s => s.idNum)).size,
           backgroundColor: '#FFA726',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -848,11 +857,11 @@ export class StatsComponent implements OnInit, OnDestroy {
     const completed = this.students.length - pending;
 
     const rows = [
-      ['Saved', division === 'GR' ? this.info.filter(s => s.studentDiv === 'GR' && s.meetings.length && s.trmGpa >= 3).length :
-        this.info.filter(s => s.studentDiv === 'UG' && s.meetings.length && s.trmGpa >= 2).length
+      ['Saved', division === 'GR' ? this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa >= 3).length :
+        this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa >= 2).length
       ],
-      ['At Risk', division === 'GR' ? this.info.filter(s => s.studentDiv === 'GR' && s.meetings.length && s.trmGpa < 3).length :
-        this.info.filter(s => s.studentDiv === 'UG' && s.meetings.length && s.trmGpa < 2).length
+      ['At Risk', division === 'GR' ? this.info.filter(s => s.studentDiv === 'GR' && s.trmGpa < 3).length :
+        this.info.filter(s => s.studentDiv === 'UG' && s.trmGpa < 2).length
       ]
     ];
     this.downloadCSV([['Status', 'Count'], ...rows], `saved_students_${division}`);
