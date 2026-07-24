@@ -602,7 +602,7 @@ export class StatsComponent implements OnInit, OnDestroy {
           categoryPercentage: 0.9
         },
         {
-          label: '% of At-Risk Students who had ≤ 3 SGPA',
+          label: '% of At-Risk Students who had < 3 SGPA',
           data: studentsEntries.filter(s => s.seniority === 'GR' && s.meetings > 0 && s.gpa < 3).length * 100 / studentsEntries.filter(s => s.seniority === 'GR').length,
           // data: new Set(this.info.filter(s => s.seniority === 'GR' && s.trmGpa < 3 && s.seniority === 'GR').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority === 'GR' && s.seniority === 'GR').map(s => s.idNum)).size,
           backgroundColor: '#FFA726',
@@ -614,7 +614,7 @@ export class StatsComponent implements OnInit, OnDestroy {
     };
 
     this.savedStudentsChartDataUg = {
-      labels: studentsEntries.filter(s => s.seniority !== 'GR').map(s => s.seniority),
+      labels: ['SO', 'JR', 'SR'],
       datasets: [
         {
           label: '% of At-Risk Students who had ≥ 2 SGPA',
@@ -626,7 +626,7 @@ export class StatsComponent implements OnInit, OnDestroy {
           categoryPercentage: 0.9
         },
         {
-          label: '% of At-Risk Students who had ≤ 2 SGPA',
+          label: '% of At-Risk Students who had < 2 SGPA',
           data: studentsEntries.filter(s => s.seniority !== 'GR' && s.meetings > 0 && s.gpa < 2).length * 100 / studentsEntries.filter(s => s.seniority !== 'GR').length,
           // data: new Set(this.info.filter(s => s.seniority !== 'UG' && s.trmGpa < 2 && s.seniority !== 'GR').map(s => s.idNum)).size * 100 / new Set(this.info.filter(s => s.seniority !== 'UG' && s.seniority !== 'GR').map(s => s.idNum)).size,
           backgroundColor: '#FFA726',
