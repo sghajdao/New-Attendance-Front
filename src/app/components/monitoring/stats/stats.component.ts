@@ -614,7 +614,7 @@ export class StatsComponent implements OnInit, OnDestroy {
     };
 
     this.savedStudentsChartDataUg = {
-      labels: studentsEntries.map(s => s.seniority),
+      labels: studentsEntries.filter(s => s.seniority !== 'GR').map(s => s.seniority),
       datasets: [
         {
           label: '% of At-Risk Students who had ≥ 2 SGPA',
@@ -724,7 +724,7 @@ export class StatsComponent implements OnInit, OnDestroy {
     this.savedStudentsChartOptions = this.getSavedStudentsChartOptions();
 
     const studentsGpa: Map<string, number> = new Map();
-    for (const i of this.info) {
+    for (const i of this.info.filter(s => s.meetings.length > 0)) {
       const gpa = i.trmGpa;
       if (!isNaN(gpa)) {
         studentsGpa.set(i.idNum, gpa);
