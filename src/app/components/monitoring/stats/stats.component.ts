@@ -440,7 +440,7 @@ export class StatsComponent implements OnInit, OnDestroy {
 
   private buildSavedStudentsChart(division: string, threshold: number): any {
     // Filter records for this division
-    const divRecords = division === 'GR'? this.info.filter(r => r.seniority === division) : this.info.filter(r => r.seniority !== 'GR');
+    const divRecords = division === 'GR'? this.info.filter(r => r.seniority === division && r.meetings.length > 0) : this.info.filter(r => r.seniority !== 'GR' && r.meetings.length > 0);
     if (!divRecords.length) {
       return {
         labels: ['No Data'],
