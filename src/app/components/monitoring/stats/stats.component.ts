@@ -1106,7 +1106,7 @@ private exportAtRiskList(division: string): void {
     s.lastName,
     s.seniority,
     s.major,
-    s.trmGpa !== undefined && !isNaN(s.trmGpa) ? s.trmGpa.toFixed(2) : ''
+    s.trmGpa !== undefined && !isNaN(s.trmGpa) && s.trmGpa !== null ? s.trmGpa.toFixed(2) : ''
   ]);
 
   const header = ['Student ID', 'First Name', 'Last Name', 'Classification', 'Major', 'Term GPA'];
