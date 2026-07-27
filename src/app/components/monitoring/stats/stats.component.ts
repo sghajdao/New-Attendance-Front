@@ -618,7 +618,7 @@ export class StatsComponent implements OnInit, OnDestroy {
       datasets: [
         {
           label: '% of At-Risk Students who had ≥ 2 SGPA',
-          data: studentsEntries.filter(s => s.seniority !== 'GR' && s.meetings > 0 && s.gpa >= 2).length * 100 / studentsEntries.filter(s => s.seniority !== 'GR').length,
+          data: studentsEntries.filter(s => s.seniority !== 'GR' && s.seniority !== 'FR' && s.meetings > 0 && s.gpa >= 2).length * 100 / studentsEntries.filter(s => s.seniority !== 'GR').length,
           backgroundColor: '#66BB6A',
           borderRadius: 4,
           barPercentage: 0.9,
@@ -626,7 +626,7 @@ export class StatsComponent implements OnInit, OnDestroy {
         },
         {
           label: '% of At-Risk Students who had < 2 SGPA',
-          data: studentsEntries.filter(s => s.seniority !== 'GR' && s.meetings > 0 && s.gpa < 2).length * 100 / studentsEntries.filter(s => s.seniority !== 'GR').length,
+          data: studentsEntries.filter(s => s.seniority !== 'GR' && s.seniority !== 'FR' && s.meetings > 0 && s.gpa < 2).length * 100 / studentsEntries.filter(s => s.seniority !== 'GR').length,
           backgroundColor: '#FFA726',
           borderRadius: 4,
           barPercentage: 0.9,
