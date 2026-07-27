@@ -1067,7 +1067,7 @@ exportUGAtRisk(): void {
  */
 private exportAtRiskList(division: string): void {
   // Filter records for this division
-  const records = this.info.filter(r => r.seniority === division);
+  const records = division === 'GR'? this.info.filter(r => r.seniority === division) : this.info.filter(r => r.seniority !== 'GR');
   if (!records.length) {
     console.warn(`No ${division} students found`);
     return;
